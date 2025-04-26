@@ -180,7 +180,7 @@ const Header = () => {
               <Search />
             </div>
 
-            <div className="col3 w-[10%] lg:w-[30%] flex items-center pl-7">
+            <div className="col3 w-[20%] lg:w-[40%] flex items-center pl-7">
               <ul className="flex items-center justify-end gap-0 lg:gap-3 w-full">
                 <li className="list-none relative">
                   <select
