@@ -212,7 +212,7 @@ const Header = () => {
                 {context.isLogin === false && context?.windowWidth > 992 ? (
                   <li className="list-none px-2">
                     <Link
-                      href="/become-vendor"
+                      href="https://soqqna-vendor.netlify.app/"
                       className="link transition text-[15px] font-[500] px-2"
                     >
                       {t("header.becomeVendor")}
@@ -246,12 +246,15 @@ const Header = () => {
 
                           {context?.windowWidth > 992 && (
                             <div className="info flex flex-col">
-                              <h4 className="leading-3 text-[14px] text-[rgba(0,0,0,0.6)] font-[500] mb-0 capitalize text-left justify-start">
+                              <h4 className="leading-3 text-[14px] text-[rgba(0,0,0,0.6)] font-[500] mb-0 capitalize text-center justify-center">
+                                Welcome
+                                <br />
+                                <br />
                                 {context?.userData?.name}
                               </h4>
-                              <span className="text-[13px] text-[rgba(0,0,0,0.6)]  font-[400] capitalize text-left justify-start">
+                              {/* <span className="text-[13px] text-[rgba(0,0,0,0.6)]  font-[400] capitalize text-left justify-start">
                                 {context?.userData?.email}
-                              </span>
+                              </span> */}
                             </div>
                           )}
                         </Button>

@@ -2,18 +2,20 @@
 import React, { useEffect, useState } from "react";
 import AccountSidebar from "@/components/AccountSidebar";
 import { Button } from "@mui/material";
-import { FaAngleDown } from "react-icons/fa6";
+import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import Badge from "@/components/Badge";
-import { FaAngleUp } from "react-icons/fa6";
 import { fetchDataFromApi } from "@/utils/api";
 import Pagination from "@mui/material/Pagination";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 
 const Orders = () => {
   const [isOpenOrderdProduct, setIsOpenOrderdProduct] = useState(null);
   const [orders, setOrders] = useState([]);
-
   const [page, setPage] = useState(1);
   const [openModalOrder, setOpenModalOrder] = useState(null);
+  const [currentOrder, setCurrentOrder] = useState(null);
+
   const isShowOrderdProduct = (index) => {
     if (isOpenOrderdProduct === index) {
       setIsOpenOrderdProduct(null);
@@ -38,6 +40,23 @@ const Orders = () => {
     );
   }, [page]);
 
+  // const generateInvoice = async (order) => {
+  //   setCurrentOrder(order); // Set the current order
+  //   setTimeout(async () => {
+  //     // Give React time to render
+  //     const invoiceContent = document.getElementById("invoice-content");
+  //     const canvas = await html2canvas(invoiceContent);
+  //     const imgData = canvas.toDataURL("image/png");
+
+  //     const pdf = new jsPDF("p", "mm", "a4");
+  //     const imgProps = pdf.getImageProperties(imgData);
+  //     const pdfWidth = pdf.internal.pageSize.getWidth();
+  //     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+  //     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+  //     pdf.save(`invoice_${currentOrder?._id}.pdf`);
+  //   }, 100); // wait 100ms so `currentOrder` invoice is ready
+  // };
   return (
     <section className="py-5 lg:py-10 w-full">
       <div className="container flex flex-col lg:flex-row gap-5">
@@ -62,13 +81,13 @@ const Orders = () => {
                   <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                       <th scope="col" className="px-6 py-3">
-                        &nbsp;
+                         
                       </th>
                       <th scope="col" className="px-6 py-3 whitespace-nowrap">
                         Order Id
                       </th>
                       <th scope="col" className="px-6 py-3 whitespace-nowrap">
-                        Paymant Id
+                        Payment Id
                       </th>
                       <th scope="col" className="px-6 py-3 whitespace-nowrap">
                         Name
@@ -86,9 +105,6 @@ const Orders = () => {
                         Total Amount
                       </th>
                       <th scope="col" className="px-6 py-3 whitespace-nowrap">
-                        Email
-                      </th>
-                      <th scope="col" className="px-6 py-3 whitespace-nowrap">
                         User Id
                       </th>
                       <th scope="col" className="px-6 py-3 whitespace-nowrap">
@@ -96,6 +112,12 @@ const Orders = () => {
                       </th>
                       <th scope="col" className="px-6 py-3 whitespace-nowrap">
                         Date
+                      </th>
+                      <th scope="col" className="px-6 py-3 whitespace-nowrap">
+                        Action
+                      </th>
+                      <th scope="col" className="px-6 py-3 whitespace-nowrap">
+                        Invoice
                       </th>
                     </tr>
                   </thead>
@@ -166,11 +188,6 @@ const Orders = () => {
                               <td className="px-6 py-4 font-[500]">
                                 {order?.totalAmt}
                               </td>
-
-                              <td className="px-6 py-4 font-[500]">
-                                {order?.userId?.email}
-                              </td>
-
                               <td className="px-6 py-4 font-[500]">
                                 <span className="text-primary">
                                   {order?.userId?._id}
@@ -189,6 +206,14 @@ const Orders = () => {
                                   className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
                                 >
                                   Track
+                                </button>
+                              </td>
+                              <td className="px-6 py-4 font-[500] whitespace-nowrap">
+                                <button
+                                  // onClick={() => generateInvoice(order)}
+                                  className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
+                                >
+                                  Download
                                 </button>
                               </td>
                             </tr>
@@ -256,7 +281,7 @@ const Orders = () => {
                                                 </div>
                                               </td>
 
-                                              <td className="px-6 py-4 font-[500]">
+                                              <td className="px-6 py-4 mortgaged-[500]">
                                                 <img
                                                   src={item?.image}
                                                   className="w-[40px] h-[40px] object-cover rounded-md"
@@ -307,6 +332,7 @@ const Orders = () => {
                   </tbody>
                 </table>
               </div>
+
               {openModalOrder && (
                 <div className="fixed inset-0 ordmodal flex items-center justify-center bg-black bg-opacity-50">
                   <div className="bg-white rounded-lg shadow-lg w-[90%] md:w-[800px] p-6 relative overflow-y-auto max-h-[90vh]">

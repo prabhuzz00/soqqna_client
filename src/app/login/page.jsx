@@ -218,7 +218,7 @@ const LoginPage = () => {
 
             <a
               className="link cursor-pointer text-[14px] font-[600]"
-              onClick={forgotPassword}
+              // onClick={forgotPassword}
             >
               {t("login.forgot_password")}
             </a>

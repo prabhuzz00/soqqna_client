@@ -26,12 +26,12 @@ const MyAccount = () => {
 
   const [formFields, setFormsFields] = useState({
     name: "",
-    email: "",
+    // email: "",
     phone: "",
   });
 
   const [changePassword, setChangePassword] = useState({
-    email: "",
+    // email: "",
     oldPassword: "",
     newPassword: "",
     confirmPassword: "",
@@ -55,7 +55,7 @@ const MyAccount = () => {
       setTimeout(() => {
         setFormsFields({
           name: context?.userData?.name,
-          email: context?.userData?.email,
+          // email: context?.userData?.email,
           phone: context?.userData?.phone,
         });
       }, 200);
@@ -63,7 +63,7 @@ const MyAccount = () => {
       setPhone(ph);
 
       setChangePassword({
-        email: context?.userData?.email,
+        // email: context?.userData?.email,
       });
     }
   }, [context?.userData]);
@@ -97,10 +97,10 @@ const MyAccount = () => {
       return false;
     }
 
-    if (formFields.email === "") {
-      context.alertBox("error", "Please enter email id");
-      return false;
-    }
+    // if (formFields.email === "") {
+    //   context.alertBox("error", "Please enter email id");
+    //   return false;
+    // }
 
     if (formFields.phone === "") {
       context.alertBox("error", "Please enter phone number");
@@ -197,7 +197,7 @@ const MyAccount = () => {
                   />
                 </div>
 
-                <div className="col">
+                {/* <div className="col">
                   <TextField
                     type="email"
                     label={t("myaccount.email")}
@@ -209,7 +209,7 @@ const MyAccount = () => {
                     disabled={true}
                     onChange={onChangeInput}
                   />
-                </div>
+                </div> */}
 
                 <div className="col">
                   <PhoneInput
