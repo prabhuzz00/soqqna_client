@@ -190,8 +190,8 @@ const Search = () => {
         onChange={onChangeInput}
         onFocus={() => setIsOpenSuggestions(true)}
         onBlur={() => {
-          setIsOpenSuggestions(false)
-          setSuggestions([])
+          setIsOpenSuggestions(false);
+          setSuggestions([]);
         }}
       />
       <Button
@@ -206,35 +206,60 @@ const Search = () => {
       </Button>
       {isOpenSuggestions === true && (
         <div className="absolute top-[50px] left-0 w-full bg-white rounded-md rounded-t-none rounded-b-md shadow-lg z-50 max-h-[200px] overflow-y-auto">
-
-          {
-            !suggestions.length &&
+          {!suggestions.length && (
             <div className="box p-3">
               <h3>Popular Searches</h3>
               <ul className="flex flex-wrap gap-2 mt-2">
-                <li><Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">Watch</Button></li>
-                <li><Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">Shoes</Button></li>
-                <li><Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">kurti set</Button></li>
-                <li><Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">Bangle</Button></li>
-                <li><Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">Mobiles</Button></li>
-                <li><Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">Water bottle</Button></li>
+                <li>
+                  <Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">
+                    Watch
+                  </Button>
+                </li>
+                <li>
+                  <Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">
+                    Shoes
+                  </Button>
+                </li>
+                <li>
+                  <Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">
+                    kurti set
+                  </Button>
+                </li>
+                <li>
+                  <Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">
+                    Bangle
+                  </Button>
+                </li>
+                <li>
+                  <Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">
+                    Mobiles
+                  </Button>
+                </li>
+                <li>
+                  <Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">
+                    Water bottle
+                  </Button>
+                </li>
               </ul>
             </div>
-          }
+          )}
 
-
-          {suggestions.length > 0 && suggestions.map((suggestion, index) => (
-            <div
-              key={index}
-              className="p-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3"
-              onClick={() => handleSuggestionClick(suggestion)}
-            >
-              <div className="img w-[35px] h-[35px] rounded-sm border border-[rgba(0,0,0,0.1)] p-1 bg-white">
-                <img src={suggestion?.img} className="w-full h-full object-cover" />
+          {suggestions.length > 0 &&
+            suggestions.map((suggestion, index) => (
+              <div
+                key={index}
+                className="p-2 hover:bg-gray-100 cursor-pointer flex items-center gap-3"
+                onClick={() => handleSuggestionClick(suggestion)}
+              >
+                <div className="img w-[35px] h-[35px] rounded-sm border border-[rgba(0,0,0,0.1)] p-1 bg-white">
+                  <img
+                    src={suggestion?.img}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <span className="text-[14px]"> {suggestion.name}</span>
               </div>
-              <span className="text-[14px]"> {suggestion.name}</span>
-            </div>
-          ))}
+            ))}
         </div>
       )}
     </div>
