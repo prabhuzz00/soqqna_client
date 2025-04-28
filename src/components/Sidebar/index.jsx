@@ -11,7 +11,7 @@ import "react-range-slider-input/dist/style.css";
 import Rating from "@mui/material/Rating";
 import { MdOutlineFilterAlt } from "react-icons/md";
 import { MyContext } from "@/context/ThemeProvider";
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { postData } from "@/utils/api";
 
 
@@ -35,6 +35,14 @@ export const Sidebar = (props) => {
   const [url, setUrl] = useState('')
   const context = useContext(MyContext);
 
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setUrl(window.location.href)
+    }
+  }, [searchParams])
 
   const handleCheckboxChange = (field, value) => {
 

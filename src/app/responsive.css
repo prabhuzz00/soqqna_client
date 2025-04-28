@@ -47,6 +47,8 @@
 
     .zoomProductSliderThumbs.space .swiper-wrapper{padding-top: 0px !important;}
 
+    header .col1{position: relative; left: 10% !important;}
+
    
 }
 

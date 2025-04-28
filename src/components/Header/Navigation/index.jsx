@@ -13,6 +13,10 @@ import Link from "next/link";
 import CategoryPanel from "./CategoryPanel";
 import MobileNav from "./MobileNav";
 import { useTranslation } from "@/utils/useTranslation";
+import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+import { Collapse } from "react-collapse";
+import MobileMenu from "./MobileMenu";
+
 
 const Navigation = (props) => {
   const [isOpenCatPanel, setIsOpenCatPanel] = useState(false);
@@ -31,12 +35,12 @@ const Navigation = (props) => {
     setCatProd(context?.catData);
   }, [context?.catData]);
 
-  useEffect(() => {
-    setIsOpenCatPanel(props.isOpenCatPanel);
-  }, [props.isOpenCatPanel]);
+  // useEffect(() => {
+  //   setIsOpenCatPanel(props.isOpenCatPanel);
+  // }, [props.isOpenCatPanel]);
 
   const openCategoryPanel = () => {
-    setIsOpenCatPanel(true);
+    setIsOpenCatPanel(!isOpenCatPanel);
   };
 
   return (
@@ -44,7 +48,7 @@ const Navigation = (props) => {
       <nav className="navigation bg-gray-900">
         <div className="container flex items-center justify-start lg:justify-end gap-8">
           {context?.windowWidth > 992 && (
-            <div className="col_1 w-[20%]">
+            <div className="col_1 w-[20%] relative">
               <Button
                 className="!text-gray-300 !font-[600] gap-2 w-full"
                 onClick={openCategoryPanel}
@@ -53,6 +57,90 @@ const Navigation = (props) => {
                 {t("header.shopByCategories")}
                 <LiaAngleDownSolid className="text-[13px] ml-auto font-bold" />
               </Button>
+
+
+              <div className="categoryDropdownMwnu w-full h-auto bg-white absolute 
+              top-[128%] left-0 z-[100] shadow-md">
+                <Collapse isOpened={isOpenCatPanel}>
+                  <ul className="w-full mb-0 p-2">
+                    {catData?.length !== 0 && catData?.filter((cat, idx) => idx < 8)
+                      ?.map((cat, index) => {
+                        return (
+                          <li className="list-none static w-full group" key={index}>
+                            <Link
+                              href={`/products?catId=${cat?._id}`}
+                              className="link transition text-[14px] !font-[500]"
+                            >
+                              <Button className="link transition !font-[500] !text-gray-800 hover:!text-primary !py-2 !w-full !text-left !justify-start">
+                                <img src={cat?.images[0]} alt="image" className="w-[20px] mr-2" />
+                                {cat?.name}
+                                {
+                                  cat?.children?.length !== 0 &&
+                                  <MdOutlineKeyboardArrowRight className="ml-auto" size={18} />
+                                }
+
+                              </Button>
+                            </Link>
+
+                            {cat?.children?.length !== 0 && (
+                              <div className="submenu absolute top-[0%] left-[98%] min-w-[200px] bg-white shadow-md opacity-0 invisible  group-hover:opacity-100 group-hover:visible  h-[100%]">
+                                <ul>
+                                  {cat?.children?.map((subCat, index_) => {
+                                    return (
+                                      <li
+                                        className="list-none w-full relative"
+                                        key={index_}
+                                      >
+                                        <Link
+                                          href={`/products?subCatId=${subCat?._id}`}
+                                          className="w-full"
+                                        >
+                                          <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none !text-gray-800 hover:!text-primary !py-2 ">
+                                            {subCat?.name}
+                                          </Button>
+                                        </Link>
+
+                                        {subCat?.children?.length !== 0 && (
+                                          <div className="submenu absolute top-[0%] left-[100%] min-w-[150px] bg-white shadow-md opacity-0 transition-all">
+                                            <ul>
+                                              {subCat?.children?.map(
+                                                (thirdLavelCat, index__) => {
+                                                  return (
+                                                    <li
+                                                      className="list-none w-full"
+                                                      key={index__}
+                                                    >
+                                                      <Link
+                                                        href={`/products?thirdLavelCatId=${thirdLavelCat?._id}`}
+                                                        className="w-full"
+                                                      >
+                                                        <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none !text-gray-800 hover:!text-primary !py-2 ">
+                                                          {thirdLavelCat?.name}
+                                                        </Button>
+                                                      </Link>
+                                                    </li>
+                                                  );
+                                                }
+                                              )}
+                                            </ul>
+                                          </div>
+                                        )}
+                                      </li>
+                                    );
+                                  })}
+                                </ul>
+                              </div>
+                            )}
+                          </li>
+                        );
+                      })}
+                  </ul>
+                </Collapse>
+              </div>
+
+
+
+
             </div>
           )}
 
@@ -69,8 +157,8 @@ const Navigation = (props) => {
                 </Link>
               </li>
 
-              {catData?.length !== 0 &&
-                catData?.map((cat, index) => {
+              {catData?.length !== 0 && catData?.filter((cat, idx) => idx < 8)
+                ?.map((cat, index) => {
                   return (
                     <li className="list-none relative" key={index}>
                       <Link
@@ -146,17 +234,17 @@ const Navigation = (props) => {
         </div>
       </nav>
 
-      {/* category panel component */}
-      {catData?.length !== 0 && (
-        <CategoryPanel
-          isOpenCatPanel={isOpenCatPanel}
-          setIsOpenCatPanel={setIsOpenCatPanel}
-          propsSetIsOpenCatPanel={props.setIsOpenCatPanel}
-          data={catData}
-        />
-      )}
-
       {context?.windowWidth < 992 && <MobileNav />}
+
+
+      {
+        catData?.length !== 0 &&
+        <>
+          {context?.windowWidth < 992 && <MobileMenu catData={catData} isOpenMobileMenu={props.isOpenMobileMenu} openMobileMenu={props.openMobileMenu}/>}
+        </>
+      }
+
+
     </>
   );
 };

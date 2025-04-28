@@ -222,6 +222,9 @@ nav ul button:hover {
   margin-right: -15px;
 }
 
+footer .MuiFormControlLabel-root *{color: #fff !important;}
+
+
 footer form input::placeholder {
   font-size: 14px;
 }
