@@ -29,6 +29,11 @@ import { signOut } from "next-auth/react";
 import { useTranslation } from "@/utils/useTranslation";
 import { useLanguage } from "@/context/LanguageContext";
 
+import InputLabel from "@mui/material/InputLabel";
+import FormHelperText from "@mui/material/FormHelperText";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
     right: -3,
@@ -43,6 +48,7 @@ const Header = () => {
   const open = Boolean(anchorEl);
 
   const [isOpenCatPanel, setIsOpenCatPanel] = useState(false);
+  const [isOpenMobileMenu, setIsOpenMobileMenu] = useState(false);
 
   const context = useContext(MyContext);
 
@@ -92,6 +98,10 @@ const Header = () => {
         history.push("/");
       }
     });
+  };
+
+  const openMobileMenu = (val) => {
+    setIsOpenMobileMenu(val);
   };
 
   return (
@@ -154,7 +164,7 @@ const Header = () => {
             {context?.windowWidth < 992 && (
               <Button
                 className="!w-[35px] !min-w-[35px] !h-[35px] !rounded-full !text-gray-800"
-                onClick={() => setIsOpenCatPanel(true)}
+                onClick={() => openMobileMenu(true)}
               >
                 <HiOutlineMenu size={22} />
               </Button>
@@ -173,52 +183,51 @@ const Header = () => {
             </div>
 
             <div
-              className={`col2 fixed top-0 left-0 w-full h-full lg:w-[40%] lg:static p-2 lg:p-0 bg-white z-50 ${
+              className={`col2 fixed top-0 left-0 w-full h-full lg:w-[35%] lg:static p-2 lg:p-0 bg-white z-50 ${
                 context?.windowWidth > 992 && "!block"
               } ${context?.openSearchPanel === true ? "block" : "hidden"}`}
             >
               <Search />
             </div>
 
-            <div className="col3 w-[20%] lg:w-[40%] flex items-center pl-7">
-              <ul className="flex items-center justify-end gap-0 lg:gap-3 w-full">
-                <li className="list-none relative">
-                  <select
-                    value={locale}
-                    onChange={(e) => changeLanguage(e.target.value)}
-                    className="appearance-none text-[11px] lg:text-[13px] font-[500] bg-transparent border-0 focus:outline-none pr-6"
-                    style={{
-                      backgroundImage: `url(/flags/${locale}.svg)`,
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "right center",
-                      backgroundSize: "18px",
-                      cursor: "pointer",
-                    }}
-                  >
-                    <option value="en">English</option>
-                    <option value="ar">العربية</option>
-                  </select>
-                </li>
+            <div className="col3 w-[30%] lg:w-[45%] flex items-center pl-3">
+              <ul className="flex items-center justify-end gap-2 lg:gap-3 w-full">
+                {context?.windowWidth > 992 && (
+                  <li className="list-none relative" style={{ zoom: "80%" }}>
+                    <FormControl sx={{ m: 1, minWidth: 120 }}>
+                      <Select
+                        size="small"
+                        value={locale}
+                        onChange={(e) => changeLanguage(e.target.value)}
+                        displayEmpty
+                        inputProps={{ "aria-label": "Without label" }}
+                      >
+                        <MenuItem value={"en"}>English</MenuItem>
+                        <MenuItem value={"ar"}>العربية</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </li>
+                )}
 
                 {context.isLogin === false && context?.windowWidth > 992 ? (
-                  <li className="list-none">
+                  <li className="list-none px-2">
                     <Link
-                      href="https://soqqna-vendor.netlify.app/"
-                      className="link transition text-[15px] font-[500]"
+                      href="/become-vendor"
+                      className="link transition text-[15px] font-[500] px-2"
                     >
                       {t("header.becomeVendor")}
-                    </Link>{" "}
-                    | &nbsp;
+                    </Link>
+
                     <Link
                       href="/login"
-                      className="link transition text-[15px] font-[500]"
+                      className="link transition text-[15px] font-[500] px-2"
                     >
                       {t("header.login")}
-                    </Link>{" "}
-                    | &nbsp;
+                    </Link>
+
                     <Link
                       href="/register"
-                      className="link  transition text-[15px]  font-[500]"
+                      className="link  transition text-[15px]  font-[500] px-2"
                     >
                       {t("header.register")}
                     </Link>
@@ -402,6 +411,8 @@ const Header = () => {
         <Navigation
           isOpenCatPanel={isOpenCatPanel}
           setIsOpenCatPanel={setIsOpenCatPanel}
+          isOpenMobileMenu={isOpenMobileMenu}
+          openMobileMenu={openMobileMenu}
         />
       </header>
 
