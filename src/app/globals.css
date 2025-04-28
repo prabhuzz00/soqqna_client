@@ -491,3 +491,12 @@ table td {
   width: 20px !important;
   height: 20px !important;
 }
+
+.ordmodal {
+  position: fixed; /* or absolute depending on your layout */
+  z-index: 9999; /* make sure it's higher than your header */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}

@@ -32,7 +32,6 @@
 
 //     }, [context?.userData, userData])
 
-
 //     useEffect(() => {
 //         setTotalAmount(
 //             context.cartData?.length !== 0 ?
@@ -47,10 +46,6 @@
 //         //   ?.toLocaleString('en-US', { style: 'currency', currency: 'INR' })
 
 //     }, [context.cartData])
-
-
-
-
 
 //     useEffect(() => {
 
@@ -88,7 +83,6 @@
 //                                 totalAmount: convertedAmount
 //                             }
 
-
 //                             const response = await axios.get(
 //                                 process.env.NEXT_PUBLIC_APP_API_URL + `/api/order/create-order-paypal?userId=${data?.userId}&totalAmount=${data?.totalAmount}`, { headers }
 //                             );
@@ -109,9 +103,6 @@
 //         document.body.appendChild(script);
 //     }, [context?.cartData, context?.userData, selectedAddress]);
 
-
-
-
 //     const onApprovePayment = async (data) => {
 //         const user = context?.userData;
 
@@ -127,7 +118,6 @@
 //                 year: "numeric",
 //             })
 //         };
-
 
 //         // Capture order on the server
 
@@ -150,13 +140,11 @@
 //             })
 //         });
 
-
 //         if (response.data.success) {
 //             context.alertBox("success", "Order completed and saved to database!");
 //         }
 
 //     }
-
 
 //     const editAddress = (id) => {
 //         context?.setOpenAddressPanel(true);
@@ -164,15 +152,12 @@
 //         context?.setAddressId(id);
 //     }
 
-
 //     const handleChange = (e, index) => {
 //         if (e.target.checked) {
 //             setIsChecked(index);
 //             setSelectedAddress(e.target.value)
 //         }
 //     }
-
-
 
 //     const checkout = (e) => {
 //         e.preventDefault();
@@ -206,7 +191,6 @@
 //                         })
 //                     };
 
-
 //                     postData(`/api/order/create`, payLoad).then((res) => {
 //                         context.alertBox("success", res?.message);
 //                         if (res?.error === false) {
@@ -219,7 +203,6 @@
 //                             context.alertBox("error", res?.message);
 //                         }
 //                     });
-
 
 //                 },
 
@@ -236,8 +219,6 @@
 //         }
 
 //     }
-
-
 
 //     const cashOnDelivery = () => {
 
@@ -259,7 +240,6 @@
 //                 })
 //             };
 
-
 //             postData(`/api/order/create`, payLoad).then((res) => {
 //                 context.alertBox("success", res?.message);
 
@@ -277,8 +257,6 @@
 //             context.alertBox("error", "Please add address");
 //             setIsloading(false);
 //         }
-
-
 
 //     }
 
@@ -309,7 +287,6 @@
 
 //                                 <div className="flex flex-col gap-4">
 
-
 //                                     {
 //                                         userData?.address_details?.length !== 0 ? userData?.address_details?.map((address, index) => {
 
@@ -326,7 +303,6 @@
 //                                                             {address?.address_line1 + " " + address?.city + " " + address?.country + " " + address?.state + " " + address?.landmark + ' ' + '+ ' + address?.mobile}
 //                                                         </p>
 
-
 //                                                         <p className="mb-0 font-[500]">{userData?.mobile !== null ? '+' + userData?.mobile : '+' + address?.mobile}</p>
 //                                                     </div>
 
@@ -339,7 +315,6 @@
 //                                         })
 
 //                                             :
-
 
 //                                             <>
 //                                                 <div className="flex items-center mt-5 justify-between flex-col p-5">
@@ -357,7 +332,6 @@
 //                                     }
 
 //                                 </div>
-
 
 //                             </div>
 //                         </div>
@@ -397,8 +371,6 @@
 //                                         })
 //                                     }
 
-
-
 //                                 </div>
 
 //                                 <div className="flex items-center flex-col gap-3 mb-2">
@@ -429,7 +401,6 @@
 // };
 
 // export default Checkout;
-
 
 "use client";
 import React, { useContext, useEffect, useState, useRef } from "react";
@@ -468,11 +439,12 @@ const Checkout = () => {
   }, [context?.userData, userData]);
 
   useEffect(() => {
-    const amount = context.cartData?.length !== 0
-      ? context.cartData
-          ?.map((item) => parseInt(item.price) * item.quantity)
-          .reduce((total, value) => total + value, 0)
-      : 0;
+    const amount =
+      context.cartData?.length !== 0
+        ? context.cartData
+            ?.map((item) => parseInt(item.price) * item.quantity)
+            .reduce((total, value) => total + value, 0)
+        : 0;
     setTotalAmount(amount); // Store as number
   }, [context.cartData]);
 
@@ -560,16 +532,20 @@ const Checkout = () => {
         context.alertBox("success", res?.data?.message);
         generateInvoice(info); // Generate invoice after success
         router.push("/my-orders/success");
-        deleteData(`/api/cart/emptyCart/${context?.userData?._id}`).then((res) => {
-          context?.getCartItems();
-        });
+        deleteData(`/api/cart/emptyCart/${context?.userData?._id}`).then(
+          (res) => {
+            context?.getCartItems();
+          }
+        );
       });
   };
 
   const generateInvoice = async (orderInfo) => {
     // Generate 20-digit barcode
     const timestamp = Date.now().toString(); // 13 digits
-    const randomPart = Math.floor(100000000 + Math.random() * 900000000).toString(); // 9 digits
+    const randomPart = Math.floor(
+      100000000 + Math.random() * 900000000
+    ).toString(); // 9 digits
     const barcode = (timestamp + randomPart).slice(0, 20); // Exactly 20 digits
 
     // Create a temporary div for the invoice content
@@ -580,13 +556,20 @@ const Checkout = () => {
       <h1>Invoice</h1>
       <p><strong>Customer:</strong> ${userData?.name || "N/A"}</p>
       <p><strong>Address:</strong> ${
-        userData?.address_details?.find((addr) => addr._id === selectedAddress)?.address_line1 +
-        ", " +
-        userData?.address_details?.find((addr) => addr._id === selectedAddress)?.city +
-        ", " +
-        userData?.address_details?.find((addr) => addr._id === selectedAddress)?.state +
-        ", " +
-        userData?.address_details?.find((addr) => addr._id === selectedAddress)?.country || "N/A"
+        userData?.address_details?.find((addr) => addr._id === selectedAddress)
+          ?.address_line1 +
+          ", " +
+          userData?.address_details?.find(
+            (addr) => addr._id === selectedAddress
+          )?.city +
+          ", " +
+          userData?.address_details?.find(
+            (addr) => addr._id === selectedAddress
+          )?.state +
+          ", " +
+          userData?.address_details?.find(
+            (addr) => addr._id === selectedAddress
+          )?.country || "N/A"
       }</p>
       <p><strong>Date:</strong> ${orderInfo.date}</p>
       <p><strong>Payment Status:</strong> ${orderInfo.payment_status}</p>
@@ -753,7 +736,6 @@ const Checkout = () => {
                     </Button>
                   )}
                 </div>
-
                 <br />
 
                 <div className="flex flex-col gap-4">
@@ -812,7 +794,9 @@ const Checkout = () => {
                     <>
                       <div className="flex items-center mt-5 justify-between flex-col p-5">
                         <img src="/map.png" width="100" />
-                        <h2 className="text-center">No Addresses found in your account!</h2>
+                        <h2 className="text-center">
+                          No Addresses found in your account!
+                        </h2>
                         <p className="mt-0">Add a delivery address.</p>
                         <Button
                           className="btn-org"
@@ -845,7 +829,10 @@ const Checkout = () => {
                 >
                   {context?.cartData?.length !== 0 &&
                     context?.cartData?.map((item, index) => (
-                      <div className="flex items-center justify-between py-2" key={index}>
+                      <div
+                        className="flex items-center justify-between py-2"
+                        key={index}
+                      >
                         <div className="part1 flex items-center gap-3">
                           <div className="img w-[50px] h-[50px] object-cover overflow-hidden rounded-md group cursor-pointer">
                             <img
@@ -855,17 +842,25 @@ const Checkout = () => {
                             />
                           </div>
                           <div className="info">
-                            <h4 className="text-[14px]" title={item?.productTitle}>
+                            <h4
+                              className="text-[14px]"
+                              title={item?.productTitle}
+                            >
                               {item?.productTitle}
                             </h4>
-                            <span className="text-[13px]">Qty: {item?.quantity}</span>
+                            <span className="text-[13px]">
+                              Qty: {item?.quantity}
+                            </span>
                           </div>
                         </div>
                         <span className="text-[14px] font-[500]">
-                          {(item?.quantity * item?.price).toLocaleString("en-US", {
-                            style: "currency",
-                            currency: "INR",
-                          })}
+                          {(item?.quantity * item?.price).toLocaleString(
+                            "en-US",
+                            {
+                              style: "currency",
+                              currency: "INR",
+                            }
+                          )}
                         </span>
                       </div>
                     ))}
@@ -881,13 +876,20 @@ const Checkout = () => {
                 </div>
 
                 <div className="flex items-center flex-col gap-3 mb-2">
-                  <Button type="submit" className="btn-org btn-lg w-full flex gap-2 items-center">
+                  <Button
+                    type="submit"
+                    className="btn-org btn-lg w-full flex gap-2 items-center"
+                  >
                     <BsFillBagCheckFill className="text-[20px]" /> Checkout
                   </Button>
 
                   <div
                     id="paypal-button-container"
-                    className={`${userData?.address_details?.length === 0 ? "pointer-events-none" : ""}`}
+                    className={`${
+                      userData?.address_details?.length === 0
+                        ? "pointer-events-none"
+                        : ""
+                    }`}
                   ></div>
 
                   <Button

@@ -8,13 +8,12 @@ import { FaAngleUp } from "react-icons/fa6";
 import { fetchDataFromApi } from "@/utils/api";
 import Pagination from "@mui/material/Pagination";
 
-
 const Orders = () => {
   const [isOpenOrderdProduct, setIsOpenOrderdProduct] = useState(null);
   const [orders, setOrders] = useState([]);
 
   const [page, setPage] = useState(1);
-
+  const [openModalOrder, setOpenModalOrder] = useState(null);
   const isShowOrderdProduct = (index) => {
     if (isOpenOrderdProduct === index) {
       setIsOpenOrderdProduct(null);
@@ -105,8 +104,10 @@ const Orders = () => {
                       orders?.data?.map((order, index) => {
                         return (
                           <>
-                          
-                            <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                            <tr
+                              key={index}
+                              className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                            >
                               <td className="px-6 py-4 font-[500]">
                                 <Button
                                   className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-[#f1f1f1]"
@@ -182,6 +183,14 @@ const Orders = () => {
                               <td className="px-6 py-4 font-[500] whitespace-nowrap">
                                 {order?.createdAt?.split("T")[0]}
                               </td>
+                              <td className="px-6 py-4 font-[500] whitespace-nowrap">
+                                <button
+                                  onClick={() => setOpenModalOrder(order)}
+                                  className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
+                                >
+                                  Track
+                                </button>
+                              </td>
                             </tr>
 
                             {isOpenOrderdProduct === index && (
@@ -232,7 +241,10 @@ const Orders = () => {
                                       <tbody>
                                         {order?.products?.map((item, index) => {
                                           return (
-                                            <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                            <tr
+                                              key={index}
+                                              className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                                            >
                                               <td className="px-6 py-4 font-[500]">
                                                 <span className="text-gray-600">
                                                   {item?._id}
@@ -295,6 +307,108 @@ const Orders = () => {
                   </tbody>
                 </table>
               </div>
+              {openModalOrder && (
+                <div className="fixed inset-0 ordmodal flex items-center justify-center bg-black bg-opacity-50">
+                  <div className="bg-white rounded-lg shadow-lg w-[90%] md:w-[800px] p-6 relative overflow-y-auto max-h-[90vh]">
+                    <button
+                      className="absolute top-4 right-4 text-gray-500 hover:text-black"
+                      onClick={() => setOpenModalOrder(null)}
+                    >
+                      Close
+                    </button>
+
+                    {/* Shipment Tracking */}
+                    <h2 className="text-2xl font-bold mb-6">
+                      Shipment Tracking
+                    </h2>
+                    <div className="flex items-center justify-between mb-8 relative">
+                      {openModalOrder?.statusHistory?.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="flex flex-col items-center text-center relative w-full"
+                        >
+                          {/* Line after this status */}
+                          {idx !== openModalOrder.statusHistory.length - 1 && (
+                            <div className="absolute top-5 left-1/2 w-full h-0.5 bg-gray-300 z-0"></div>
+                          )}
+
+                          {/* Status Circle */}
+                          <div className="relative z-10 bg-green-500 text-white rounded-full w-10 h-10 flex items-center justify-center mb-2 mx-auto">
+                            ✓
+                          </div>
+
+                          {/* Status Text */}
+                          <p className="text-sm font-medium capitalize">
+                            {item.status}
+                          </p>
+
+                          {/* Date and Time */}
+                          <p className="text-xs text-gray-500">
+                            {new Date(item.updatedAt).toLocaleDateString()}
+                            <br />
+                            {new Date(item.updatedAt).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Order Details */}
+                    <h2 className="text-2xl font-bold mb-4">Order Details</h2>
+                    <p className="text-gray-600 mb-2">
+                      Order placed{" "}
+                      {new Date(openModalOrder?.createdAt).toLocaleDateString()}{" "}
+                      | Order number {openModalOrder?._id}
+                    </p>
+
+                    <div className="border rounded-md p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* Ship To */}
+                      <div>
+                        <h3 className="font-bold mb-2">Ship to</h3>
+                        <p>{openModalOrder?.delivery_address?.full_name}</p>
+                        <p>{openModalOrder?.delivery_address?.address_line1}</p>
+                        <p>
+                          {openModalOrder?.delivery_address?.city},{" "}
+                          {openModalOrder?.delivery_address?.state}{" "}
+                          {openModalOrder?.delivery_address?.pincode}
+                        </p>
+                        <p>{openModalOrder?.delivery_address?.country}</p>
+                      </div>
+
+                      {/* Payment Method */}
+                      <div>
+                        <h3 className="font-bold mb-2">Payment Methods</h3>
+                        <p>
+                          {openModalOrder?.payment_type || "Cash on Delivery"}
+                        </p>
+                      </div>
+
+                      {/* Order Summary */}
+                      <div>
+                        <h3 className="font-bold mb-2">Order Summary</h3>
+                        <div className="space-y-1">
+                          <p>
+                            Item(s) Subtotal: ₹
+                            {openModalOrder?.subtotal ||
+                              openModalOrder?.totalAmt}
+                          </p>
+                          <p>Shipping: ₹0.00</p>
+                          <p>
+                            Cash/Pay on Delivery Fee: ₹
+                            {openModalOrder?.cod_fee || 0}
+                          </p>
+                          <p>Total: ₹{openModalOrder?.totalAmt}</p>
+                          <p className="font-bold">
+                            Grand Total: ₹{openModalOrder?.totalAmt}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {orders?.totalPages > 1 && (
                 <div className="flex items-center justify-center mt-10">

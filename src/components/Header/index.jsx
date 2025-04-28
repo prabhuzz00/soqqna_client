@@ -203,7 +203,7 @@ const Header = () => {
                 {context.isLogin === false && context?.windowWidth > 992 ? (
                   <li className="list-none">
                     <Link
-                      href="/become-vendor"
+                      href="https://soqqna-vendor.netlify.app/"
                       className="link transition text-[15px] font-[500]"
                     >
                       {t("header.becomeVendor")}

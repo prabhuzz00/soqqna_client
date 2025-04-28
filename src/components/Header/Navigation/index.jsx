@@ -56,7 +56,7 @@ const Navigation = (props) => {
             </div>
           )}
 
-          <div className="col_2 w-full lg:w-[60%]">
+          <div className="col_2 w-full lg:w-[80%]">
             <ul className="flex items-center gap-2 nav">
               <li className="list-none">
                 <Link
@@ -137,12 +137,12 @@ const Navigation = (props) => {
             </ul>
           </div>
 
-          <div className="col_3 w-[20%] hidden lg:block">
+          {/* <div className="col_3 w-[20%] hidden lg:block">
             <p className="text-[14px] !text-gray-300 font-[500] flex items-center gap-3 mb-0 mt-0">
               <GoRocket className="text-[18px]" />
               {t("header.freeDelivery")}
             </p>
-          </div>
+          </div> */}
         </div>
       </nav>
 
