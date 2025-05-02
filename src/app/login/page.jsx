@@ -1,19 +1,19 @@
-"use client";
-import { MyContext } from "@/context/ThemeProvider";
-import React, { useContext, useEffect, useState, useCallback } from "react";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import { IoMdEye } from "react-icons/io";
-import { IoMdEyeOff } from "react-icons/io";
-import { FcGoogle } from "react-icons/fc";
-import Link from "next/link";
-import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
-import CircularProgress from "@mui/material/CircularProgress";
-import { postData } from "@/utils/api";
+'use client';
+import { MyContext } from '@/context/ThemeProvider';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import { IoMdEye } from 'react-icons/io';
+import { IoMdEyeOff } from 'react-icons/io';
+import { FcGoogle } from 'react-icons/fc';
+import Link from 'next/link';
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
+import CircularProgress from '@mui/material/CircularProgress';
+import { patchData, postData } from '@/utils/api';
 
-import { useSession, signIn } from "next-auth/react";
-import { useTranslation } from "@/utils/useTranslation";
+import { useSession, signIn } from 'next-auth/react';
+import { useTranslation } from '@/utils/useTranslation';
 
 const LoginPage = () => {
   const context = useContext(MyContext);
@@ -24,43 +24,43 @@ const LoginPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [formFields, setFormsFields] = useState({
-    phone: "",
-    password: "",
+    phone: '',
+    password: '',
   });
 
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       // Ensure this runs only on client
       window.scrollTo(0, 0);
     }
 
-    const token = Cookies.get("accessToken");
+    const token = Cookies.get('accessToken');
 
-    if (token !== undefined && token !== null && token !== "") {
-      router.push("/");
+    if (token !== undefined && token !== null && token !== '') {
+      router.push('/');
     }
   }, []);
 
   const forgotPassword = () => {
-    if (formFields.phone === "") {
-      context.alertBox("error", t("login.error_phone_required"));
+    if (formFields.phone === '') {
+      context.alertBox('error', t('login.error_phone_required'));
       return false;
     } else {
-      context.alertBox("success", `OTP send to ${formFields.phone}`);
+      context.alertBox('success', `OTP send to ${formFields.phone}`);
 
-      Cookies.set("userphone", formFields.phone);
-      Cookies.set("actionType", "forgot-password");
+      Cookies.set('userphone', formFields.phone);
+      Cookies.set('actionType', 'forgot-password');
 
-      postData("/api/user/forgot-password", {
+      postData('/api/user/forgot-password', {
         phone: formFields.phone,
       }).then((res) => {
         if (res?.error === false) {
-          context.alertBox("success", res?.message);
-          router.push("/verifyAccount");
+          context.alertBox('success', res?.message);
+          router.push('/verifyAccount');
         } else {
-          context.alertBox("error", res?.message);
+          context.alertBox('error', res?.message);
         }
       });
     }
@@ -83,34 +83,34 @@ const LoginPage = () => {
 
     setIsLoading(true);
 
-    if (formFields.phone === "") {
-      context.alertBox("error", t("login.error_phone_required"));
+    if (formFields.phone === '') {
+      context.alertBox('error', t('login.error_phone_required'));
       return false;
     }
 
-    if (formFields.password === "") {
-      context.alertBox("error", t("login.error_password_required"));
+    if (formFields.password === '') {
+      context.alertBox('error', t('login.error_password_required'));
       return false;
     }
 
-    postData("/api/user/login", formFields, { withCredentials: true }).then(
+    postData('/api/user/login', formFields, { withCredentials: true }).then(
       (res) => {
         if (res?.error !== true) {
           setIsLoading(false);
-          context.alertBox("success", res?.message);
+          context.alertBox('success', res?.message);
           setFormsFields({
-            phone: "",
-            password: "",
+            phone: '',
+            password: '',
           });
 
-          Cookies.set("accessToken", res?.data?.accesstoken);
-          Cookies.set("refreshToken", res?.data?.refreshToken);
+          Cookies.set('accessToken', res?.data?.accesstoken);
+          Cookies.set('refreshToken', res?.data?.refreshToken);
 
           context.setIsLogin(true);
 
-          router.push("/");
+          router.push('/');
         } else {
-          context.alertBox("error", res?.message);
+          context.alertBox('error', res?.message);
           setIsLoading(false);
         }
       }
@@ -127,28 +127,28 @@ const LoginPage = () => {
         phone: sessionData.user.phone,
         password: null,
         avatar: sessionData.user.image,
-        phone: "",
+        phone: '',
       };
 
       try {
-        const res = await postData("/api/user/authWithGoogle", fields);
+        const res = await postData('/api/user/authWithGoogle', fields);
 
-        Cookies.set("token", res.token, { expires: 30 });
+        Cookies.set('token', res.token, { expires: 30 });
 
-        Cookies.set("userphone", fields.phone);
-        Cookies.set("accessToken", res?.data?.accesstoken);
-        Cookies.set("refreshToken", res?.data?.refreshToken);
+        Cookies.set('userphone', fields.phone);
+        Cookies.set('accessToken', res?.data?.accesstoken);
+        Cookies.set('refreshToken', res?.data?.refreshToken);
 
         context.setIsLogin(true);
-        context.alertBox("success", t("login.success_login"));
+        context.alertBox('success', t('login.success_login'));
 
         setTimeout(() => {
-          router.push("/");
+          router.push('/');
         }, 2000);
       } catch (error) {
-        console.error("Error posting data to backend:", error);
+        console.error('Error posting data to backend:', error);
 
-        context.alertBox("error", "An error occurred during sign-in.");
+        context.alertBox('error', 'An error occurred during sign-in.');
       } finally {
         setIsProcessing(false);
       }
@@ -157,7 +157,7 @@ const LoginPage = () => {
   );
 
   useEffect(() => {
-    if (status === "authenticated" && session && !isProcessing) {
+    if (status === 'authenticated' && session && !isProcessing) {
       handleAuthenticatedSession(session);
     }
   }, [status, session, handleAuthenticatedSession, isProcessing]);
@@ -168,78 +168,78 @@ const LoginPage = () => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            console.log("Location permission granted:", position.coords);
+            console.log('Location permission granted:', position.coords);
             // You can store or use the location data here if needed
             // e.g., context.setLocation(position.coords);
 
             // Send location data to the backend
-            postData("/api/user/location", {
+            patchData('/api/user/location', {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             })
               .then((response) => {
                 if (response?.error) {
-                  console.error("Error sending location:", response.message);
-                  context.alertBox("error", "Failed to save location.");
+                  console.error('Error sending location:', response.message);
+                  context.alertBox('error', 'Failed to save location.');
                 } else {
-                  console.log("Location saved successfully.");
+                  console.log('Location saved successfully.');
                   // Optionally, provide success feedback to the user
                 }
               })
               .catch((error) => {
-                console.error("Error sending location:", error);
-                context.alertBox("error", "Failed to save location.");
+                console.error('Error sending location:', error);
+                context.alertBox('error', 'Failed to save location.');
               });
           },
           (error) => {
-            console.error("Error getting location:", error);
+            console.error('Error getting location:', error);
             // Handle permission denial or other errors
             if (error.code === error.PERMISSION_DENIED) {
-              context.alertBox("info", t("login.location_permission_denied"));
+              context.alertBox('info', t('login.location_permission_denied'));
             } else {
-              context.alertBox("error", t("login.location_error"));
+              context.alertBox('error', t('login.location_error'));
             }
           }
         );
       } else {
-        console.log("Geolocation is not supported by this browser.");
-        context.alertBox("warning", t("login.geolocation_not_supported"));
+        console.log('Geolocation is not supported by this browser.');
+        context.alertBox('warning', t('login.geolocation_not_supported'));
       }
     }
   }, [context.isLogin, context, t]); // Add dependencies
 
   const authWithGoogle = () => {
-    signIn("google");
+    signIn('google');
   };
 
   return (
-    <section className="section py-5 sm:py-10">
+    <section className="py-5 section sm:py-10">
       <div className="container">
         <div className="card shadow-md w-full sm:w-[400px] m-auto rounded-md bg-white p-5 px-10">
           <h3 className="text-center text-[18px] text-black">
-            {t("login.title")}
+            {t('login.title')}
           </h3>
 
           <form className="w-full mt-5" onSubmit={handleSubmit}>
-            <div className="form-group w-full mb-5">
+            <div className="w-full mb-5 form-group">
               <TextField
                 type="phone"
                 id="phone"
                 name="phone"
                 value={formFields.phone}
                 disabled={isLoading === true ? true : false}
-                label={t("login.phone_label")}
+                label={t('login.phone_label')}
                 variant="outlined"
                 className="w-full"
                 onChange={onChangeInput}
               />
             </div>
 
-            <div className="form-group w-full mb-5 relative">
+            <div className="relative w-full mb-5 form-group">
               <TextField
-                type={isPasswordShow === false ? "password" : "text"}
+                type={isPasswordShow === false ? 'password' : 'text'}
                 id="password"
-                label={t("login.password_label")}
+                label={t('login.password_label')}
                 variant="outlined"
                 className="w-full"
                 name="password"
@@ -265,31 +265,31 @@ const LoginPage = () => {
               className="link cursor-pointer text-[14px] font-[600]"
               // onClick={forgotPassword}
             >
-              {t("login.forgot_password")}
+              {t('login.forgot_password')}
             </a>
 
             <div className="flex items-center w-full mt-3 mb-3">
               <Button
                 type="submit"
                 disabled={!valideValue}
-                className="btn-org btn-lg w-full flex gap-3"
+                className="flex w-full gap-3 btn-org btn-lg"
               >
                 {isLoading === true ? (
                   <CircularProgress color="inherit" />
                 ) : (
-                  t("login.login_button")
+                  t('login.login_button')
                 )}
               </Button>
             </div>
 
             <p className="text-center">
-              {t("login.not_registered")}{" "}
+              {t('login.not_registered')}{' '}
               <Link
                 className="link text-[14px] font-[600] text-primary"
                 href="/register"
               >
-                {" "}
-                {t("login.sign_up")}
+                {' '}
+                {t('login.sign_up')}
               </Link>
             </p>
 
