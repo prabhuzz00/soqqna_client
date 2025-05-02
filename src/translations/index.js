@@ -55,6 +55,9 @@ export const translations = {
       success_otp_sent: "OTP sent to {phone}",
       success_login: "Login Successfully.",
       error_signin_failed: "An error occurred during sign-in.",
+      location_permission_denied: "Location permission denied. Please enable it in your browser settings if you want to use location features.",
+      location_error: "An error occurred while trying to get your location.",
+      geolocation_not_supported: "Geolocation is not supported by this browser.",
     },
     addvendor: {
       becomeVendor: "Become a Vendor",
@@ -174,6 +177,9 @@ export const translations = {
       success_otp_sent: "تم إرسال رمز التحقق إلى {phone}",
       success_login: "تم تسجيل الدخول بنجاح.",
       error_signin_failed: "حدث خطأ أثناء تسجيل الدخول.",
+      location_permission_denied: "تم رفض إذن الموقع. يرجى تمكينه في إعدادات المتصفح إذا كنت ترغب في استخدام ميزات الموقع.",
+      location_error: "حدث خطأ أثناء محاولة الحصول على موقعك.",
+      geolocation_not_supported: "الموقع الجغرافي غير مدعوم من قبل هذا المتصفح.",
     },
     addvendor: {
       becomeVendor: "كن بائعاً",

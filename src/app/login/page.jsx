@@ -16,6 +16,9 @@ import { useSession, signIn } from "next-auth/react";
 import { useTranslation } from "@/utils/useTranslation";
 
 const LoginPage = () => {
+  const context = useContext(MyContext);
+  const router = useRouter();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordShow, setIsPasswordShow] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -24,10 +27,6 @@ const LoginPage = () => {
     phone: "",
     password: "",
   });
-
-  const context = useContext(MyContext);
-  const router = useRouter();
-  const { t } = useTranslation();
 
   const { data: session, status } = useSession();
 
@@ -162,6 +161,52 @@ const LoginPage = () => {
       handleAuthenticatedSession(session);
     }
   }, [status, session, handleAuthenticatedSession, isProcessing]);
+
+  // Effect to request location permission on successful login
+  useEffect(() => {
+    if (context.isLogin) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            console.log("Location permission granted:", position.coords);
+            // You can store or use the location data here if needed
+            // e.g., context.setLocation(position.coords);
+
+            // Send location data to the backend
+            postData("/api/user/location", {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            })
+              .then((response) => {
+                if (response?.error) {
+                  console.error("Error sending location:", response.message);
+                  context.alertBox("error", "Failed to save location.");
+                } else {
+                  console.log("Location saved successfully.");
+                  // Optionally, provide success feedback to the user
+                }
+              })
+              .catch((error) => {
+                console.error("Error sending location:", error);
+                context.alertBox("error", "Failed to save location.");
+              });
+          },
+          (error) => {
+            console.error("Error getting location:", error);
+            // Handle permission denial or other errors
+            if (error.code === error.PERMISSION_DENIED) {
+              context.alertBox("info", t("login.location_permission_denied"));
+            } else {
+              context.alertBox("error", t("login.location_error"));
+            }
+          }
+        );
+      } else {
+        console.log("Geolocation is not supported by this browser.");
+        context.alertBox("warning", t("login.geolocation_not_supported"));
+      }
+    }
+  }, [context.isLogin, context, t]); // Add dependencies
 
   const authWithGoogle = () => {
     signIn("google");
