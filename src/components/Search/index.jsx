@@ -1,5 +1,6 @@
 'use client';
 import React, { useContext, useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import '../Search/style.css';
 import Button from '@mui/material/Button';
 import { IoSearch } from 'react-icons/io5';
@@ -17,7 +18,15 @@ const Search = () => {
 
   const context = useContext(MyContext);
   const router = useRouter();
+  const pathname = usePathname();
 
+  useEffect(() => {
+    if (!pathname.includes('/search')) {
+      setSearchQuery('');
+      setSuggestions([]);
+    }
+  }, [pathname]);
+  
   const { t } = useTranslation();
   useEffect(() => {
     setSearchQuery(''); 
@@ -48,7 +57,6 @@ const Search = () => {
             query: searchQuery,
           };
           const res = await postData(`/api/product/search/get`, obj);
-          console.log('API Response:', res); 
           const suggestionList =
             res?.products?.map((item) => ({
               name: item.name,
@@ -91,15 +99,17 @@ const Search = () => {
     search(category); 
   };
   
-  const search = (queryToSearch = searchQuery) => { 
+  const search = async (queryToSearch = searchQuery) => { 
     if (queryToSearch !== '') { 
       setIsLoading(true);
       const obj = {
         page: 1,
         limit: 3,
-        query: queryToSearch, 
+        query: queryToSearch
       };
-      postData(`/api/product/search/get`, obj).then((res) => {
+      console.log('Search query:', obj);
+      console.log(queryToSearch,"adas");
+      await postData(`/api/product/search/get`, obj).then((res) => {
         context?.setSearchData(res);
         router.refresh();
         setIsLoading(false);
@@ -137,10 +147,10 @@ const Search = () => {
             setSuggestions([]);
           }, 200); 
         }}
-      />
+      />                  
       <Button
         className="!absolute top-[8px] right-[5px] z-50 !w-[37px] !min-w-[37px] h-[37px] !rounded-full !text-black"
-        onClick={search}
+        onClick={() => search()}
       >
         {isLoading ? (
           <CircularProgress size={20} />
