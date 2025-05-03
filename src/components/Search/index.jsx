@@ -29,7 +29,14 @@ const Search = () => {
   const onChangeInput = (e) => {
     setSearchQuery(e.target.value);
   };
-
+  const popularCategories = [
+    'apple',
+    'xyz',
+    'kurti set',
+    'bangle',
+    'mobiles',
+    'water bottle',
+  ];
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (searchQuery.length > 0) {
@@ -71,46 +78,6 @@ const Search = () => {
       }
     };
 
-    // const fetchSuggestions = async () => {
-    //   if (searchQuery.length > 0) {
-    //   setIsLoading(true);
-    //   try {
-    //     const obj = {
-    //     page: 1,
-    //     limit: 5,
-    //     query: searchQuery,
-    //     };
-    //     const res = await postData(`/api/product/search/get`, obj);
-    //     console.log('API Response:', res); 
-    //     const suggestionList =
-    //     res?.products?.map((item) => ({
-    //       name: item.name,
-    //       img: item?.images[0],
-    //       id: item._id || item.id,
-    //     })) ||
-    //     res?.data?.map((item) => ({
-    //       name: item.name,
-    //       img: item?.images[0],
-    //       id: item._id || item.id,
-    //     })) ||
-    //     res?.results?.map((item) => ({
-    //       name: item.name,
-    //       img: item?.images[0],
-    //       id: item._id || item.id,
-    //     })) ||
-    //     [];
-    //     setSuggestions(suggestionList);
-    //   } catch (error) {
-    //     console.error('Error fetching suggestions:', error);
-    //     setSuggestions([]);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    //   } else {
-    //   setSuggestions([]);
-    //   }
-    // };
-
     const debounce = setTimeout(() => {
       fetchSuggestions();
     }, 300);
@@ -118,21 +85,26 @@ const Search = () => {
     return () => clearTimeout(debounce);
   }, [searchQuery]);
 
-  const search = () => {
-    if (searchQuery !== '') {
+  const handleCategoryClick = (category) => {
+    setSearchQuery(category);
+    setSuggestions([]); 
+    search(category); 
+  };
+  
+  const search = (queryToSearch = searchQuery) => { 
+    if (queryToSearch !== '') { 
       setIsLoading(true);
       const obj = {
         page: 1,
         limit: 3,
-        query: searchQuery,
+        query: queryToSearch, 
       };
       postData(`/api/product/search/get`, obj).then((res) => {
         context?.setSearchData(res);
-        setTimeout(() => {
-          setIsLoading(false);
-          context?.setOpenSearchPanel(false);
-          router.push('/search');
-        }, 1000);
+        router.refresh();
+        setIsLoading(false);
+        context?.setOpenSearchPanel(false);
+        router.push('/search');
       });
     }
   };
@@ -141,7 +113,7 @@ const Search = () => {
     if (suggestion.id) {
       setSearchQuery(suggestion.name);
       setSuggestions([]);
-      router.push(`/product/${suggestion.id}`); // Adjust route as needed
+      router.push(`/product/${suggestion.id}`); 
     } else {
       console.warn('No product ID available for:', suggestion.name);
       setSearchQuery(suggestion.name);
@@ -182,36 +154,16 @@ const Search = () => {
             <div className="p-3 box">
               <h3>Popular Searches</h3>
               <ul className="flex flex-wrap gap-2 mt-2">
-                <li>
-                  <Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">
-                    Watch
-                  </Button>
-                </li>
-                <li>
-                  <Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">
-                    Shoes
-                  </Button>
-                </li>
-                <li>
-                  <Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">
-                    kurti set
-                  </Button>
-                </li>
-                <li>
-                  <Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">
-                    Bangle
-                  </Button>
-                </li>
-                <li>
-                  <Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">
-                    Mobiles
-                  </Button>
-                </li>
-                <li>
-                  <Button className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300">
-                    Water bottle
-                  </Button>
-                </li>
+                {popularCategories.map((cat) => (
+                  <li key={cat}>
+                    <Button
+                      className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300"
+                      onClick={() => handleCategoryClick(cat)}
+                    >
+                      {cat}
+                    </Button>
+                  </li>
+                ))}
               </ul>
             </div>
           )}
@@ -227,6 +179,7 @@ const Search = () => {
                   <img
                     src={suggestion?.img}
                     className="object-cover w-full h-full"
+                    alt={suggestion.name}
                   />
                 </div>
                 <span className="text-[14px]"> {suggestion.name}</span>

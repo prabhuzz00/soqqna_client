@@ -35,6 +35,21 @@ const SearchPage = () => {
     }
   }, []);
 
+  // Effect to update productsData when context.searchData changes
+  useEffect(() => {
+    if (context?.searchData) {
+      setProductsData(context.searchData);
+      setPage(1);
+      if (context.searchData.totalPages) {
+        setTotalPages(context.searchData.totalPages);
+      } else if (context.searchData.meta?.totalPages) { 
+         setTotalPages(context.searchData.meta.totalPages);
+      } else {
+         setTotalPages(context.searchData.totalPages || 1);
+      }
+    }
+  }, [context?.searchData]); 
+
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
