@@ -169,52 +169,6 @@ const LoginPage = () => {
     }
   }, [status, session, handleAuthenticatedSession, isProcessing]);
 
-  // Effect to request location permission on successful login
-  useEffect(() => {
-    if (context.isLogin) {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            console.log('Location permission granted:', position.coords);
-            // You can store or use the location data here if needed
-            // e.g., context.setLocation(position.coords);
-
-            // Send location data to the backend
-            patchData('/api/user/location', {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-            })
-              .then((response) => {
-                if (response?.error) {
-                  console.error('Error sending location:', response.message);
-                  context.alertBox('error', 'Failed to save location.');
-                } else {
-                  console.log('Location saved successfully.');
-                  // Optionally, provide success feedback to the user
-                }
-              })
-              .catch((error) => {
-                console.error('Error sending location:', error);
-                context.alertBox('error', 'Failed to save location.');
-              });
-          },
-          (error) => {
-            console.error('Error getting location:', error);
-            // Handle permission denial or other errors
-            if (error.code === error.PERMISSION_DENIED) {
-              context.alertBox('info', t('login.location_permission_denied'));
-            } else {
-              context.alertBox('error', t('login.location_error'));
-            }
-          }
-        );
-      } else {
-        console.log('Geolocation is not supported by this browser.');
-        context.alertBox('warning', t('login.geolocation_not_supported'));
-      }
-    }
-  }, [context.isLogin, context, t]); // Add dependencies
-
   const authWithGoogle = () => {
     signIn('google');
   };
@@ -230,12 +184,12 @@ const LoginPage = () => {
           <form className="w-full mt-5" onSubmit={handleSubmit}>
             <div className="w-full mb-5 form-group">
               <TextField
-                type="text" // Use text type to allow both email and phone number input
+                type="text" 
                 id="identifier"
                 name="identifier"
                 value={formFields.identifier}
                 disabled={isLoading === true ? true : false}
-                label={t('login.identifier_label')} // Need to add this translation key
+                label={t('login.identifier_label')} 
                 variant="outlined"
                 className="w-full"
                 onChange={onChangeInput}

@@ -23,7 +23,7 @@ import Search from "../Search";
 import { MyContext } from "@/context/ThemeProvider";
 import Image from "next/image";
 import { LuGitCompare } from "react-icons/lu";
-import { fetchDataFromApi } from "@/utils/api";
+import { fetchDataFromApi, patchData } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useTranslation } from "@/utils/useTranslation";
@@ -49,10 +49,17 @@ const Header = () => {
 
   const [isOpenCatPanel, setIsOpenCatPanel] = useState(false);
   const [isOpenMobileMenu, setIsOpenMobileMenu] = useState(false);
-
+  const history = useRouter();
   const context = useContext(MyContext);
 
-  const history = useRouter();
+  useEffect(() => {
+    if (context?.isLogin) {
+      console.log("User is logged in.");
+      allowLocation();
+    }
+  }, [context?.isLogin]);
+
+
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -67,6 +74,7 @@ const Header = () => {
   useEffect(() => {
     fetchDataFromApi("/api/logo").then((res) => {
       Cookies.set("logo", res?.logo[0]?.logo);
+
     });
 
     setTimeout(() => {
@@ -102,6 +110,41 @@ const Header = () => {
 
   const openMobileMenu = (val) => {
     setIsOpenMobileMenu(val);
+  };
+  const allowLocation = () => {
+    console.log("Allow location access to get the current location.");
+    if (!navigator.geolocation) {
+      console.error('Geolocation is not supported by your browser.');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        patchData('/api/user/location', {
+          latitude: latitude,
+          longitude: longitude,
+        })
+        console.log('User location:', latitude, longitude);
+        // You can now use latitude and longitude as needed
+      },
+      (error) => {
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            console.error('User denied the request for Geolocation.');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            console.error('Location information is unavailable.');
+            break;
+          case error.TIMEOUT:
+            console.error('The request to get user location timed out.');
+            break;
+          default:
+            console.error('An unknown error occurred.');
+            break;
+        }
+      }
+    );
   };
 
   return (
@@ -183,9 +226,8 @@ const Header = () => {
             </div>
 
             <div
-              className={`col2 fixed top-0 left-0 w-full h-full lg:w-[35%] lg:static p-2 lg:p-0 bg-white z-50 ${
-                context?.windowWidth > 992 && "!block"
-              } ${context?.openSearchPanel === true ? "block" : "hidden"}`}
+              className={`col2 fixed top-0 left-0 w-full h-full lg:w-[35%] lg:static p-2 lg:p-0 bg-white z-50 ${context?.windowWidth > 992 && "!block"
+                } ${context?.openSearchPanel === true ? "block" : "hidden"}`}
             >
               <Search />
             </div>
