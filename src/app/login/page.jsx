@@ -24,7 +24,7 @@ const LoginPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [formFields, setFormsFields] = useState({
-    phone: '',
+    identifier: '',
     password: '',
   });
 
@@ -44,20 +44,21 @@ const LoginPage = () => {
   }, []);
 
   const forgotPassword = () => {
-    if (formFields.phone === '') {
-      context.alertBox('error', t('login.error_phone_required'));
+    if (formFields.identifier === '') {
+      context.alertBox('error', t('login.error_identifier_required'));
       return false;
     } else {
-      context.alertBox('success', `OTP send to ${formFields.phone}`);
+      const isEmail = formFields.identifier.includes('@');
+      const payload = isEmail ? { email: formFields.identifier } : { phone: formFields.identifier };
 
-      Cookies.set('userphone', formFields.phone);
-      Cookies.set('actionType', 'forgot-password');
+      context.alertBox('success', `OTP send to ${formFields.identifier}`);
 
-      postData('/api/user/forgot-password', {
-        phone: formFields.phone,
-      }).then((res) => {
+      // Assuming backend can handle either email or phone for forgot password
+      postData('/api/user/forgot-password', payload).then((res) => {
         if (res?.error === false) {
           context.alertBox('success', res?.message);
+          Cookies.set('userphone', formFields.identifier); 
+          Cookies.set('actionType', 'forgot-password');
           router.push('/verifyAccount');
         } else {
           context.alertBox('error', res?.message);
@@ -83,8 +84,8 @@ const LoginPage = () => {
 
     setIsLoading(true);
 
-    if (formFields.phone === '') {
-      context.alertBox('error', t('login.error_phone_required'));
+    if (formFields.identifier === '') {
+      context.alertBox('error', t('login.error_identifier_required'));
       return false;
     }
 
@@ -93,13 +94,19 @@ const LoginPage = () => {
       return false;
     }
 
-    postData('/api/user/login', formFields, { withCredentials: true }).then(
+    const isEmail = formFields.identifier.includes('@');
+    const payload = {
+      password: formFields.password,
+      ...(isEmail ? { email: formFields.identifier } : { phone: formFields.identifier }),
+    };
+
+    postData('/api/user/login', payload, { withCredentials: true }).then(
       (res) => {
         if (res?.error !== true) {
           setIsLoading(false);
           context.alertBox('success', res?.message);
           setFormsFields({
-            phone: '',
+            identifier: '',
             password: '',
           });
 
@@ -223,12 +230,12 @@ const LoginPage = () => {
           <form className="w-full mt-5" onSubmit={handleSubmit}>
             <div className="w-full mb-5 form-group">
               <TextField
-                type="phone"
-                id="phone"
-                name="phone"
-                value={formFields.phone}
+                type="text" // Use text type to allow both email and phone number input
+                id="identifier"
+                name="identifier"
+                value={formFields.identifier}
                 disabled={isLoading === true ? true : false}
-                label={t('login.phone_label')}
+                label={t('login.identifier_label')} // Need to add this translation key
                 variant="outlined"
                 className="w-full"
                 onChange={onChangeInput}
