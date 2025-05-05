@@ -44,7 +44,7 @@ export const translations = {
     },
     login: {
       title: "Login to your account",
-      phone_label: "Phone Number",
+      phone_label: "Phone Number or Email",
       password_label: "Password",
       forgot_password: "Forgot Password?",
       login_button: "Login",
@@ -168,7 +168,7 @@ export const translations = {
     },
     login: {
       title: "تسجيل الدخول إلى حسابك",
-      phone_label: "رقم الهاتف",
+      phone_label: "رقم الهاتف أو البريد الإلكتروني",
       password_label: "كلمة المرور",
       forgot_password: "هل نسيت كلمة المرور؟",
       login_button: "تسجيل الدخول",
