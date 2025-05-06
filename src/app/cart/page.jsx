@@ -1,5 +1,5 @@
 "use client"
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import Button from "@mui/material/Button";
 import { BsFillBagCheckFill } from "react-icons/bs";
 import CartItems from "./cartItems";
@@ -19,29 +19,27 @@ const CartPage = () => {
             window.scrollTo(0, 0)
         }
 
-        fetchDataFromApi("/api/product/productSize/get").then((res) => {
-            if (res?.error === false) {
-                setProductSizeData(res?.data)
+        Promise.all([
+            fetchDataFromApi("/api/product/productSize/get"),
+            fetchDataFromApi("/api/product/productRAMS/get"),
+            fetchDataFromApi("/api/product/productWeight/get")
+        ]).then(([sizeRes, ramsRes, weightRes]) => {
+            if (sizeRes?.error === false) {
+                setProductSizeData(sizeRes?.data);
             }
-        })
-
-        fetchDataFromApi("/api/product/productRAMS/get").then((res) => {
-            if (res?.error === false) {
-                setProductRamsData(res?.data)
+            if (ramsRes?.error === false) {
+                setProductRamsData(ramsRes?.data);
             }
-        })
-
-        fetchDataFromApi("/api/product/productWeight/get").then((res) => {
-            if (res?.error === false) {
-                setProductWeightData(res?.data)
+            if (weightRes?.error === false) {
+                setProductWeightData(weightRes?.data);
             }
-        })
+        });
     }, []);
 
 
 
 
-    const selectedSize = (item) => {
+    const selectedSize = React.useCallback((item) => {
         if (item?.size !== "") {
             return item?.size;
         }
@@ -54,7 +52,7 @@ const CartPage = () => {
             return item?.ram;
         }
 
-    }
+    }, []);
 
 
     return (
@@ -106,10 +104,12 @@ const CartPage = () => {
                             <span className="text-[14px] font-[500]">Subtotal</span>
                             <span className="text-primary font-bold">
                                 {
-                                    (context.cartData?.length !== 0 ?
-                                        context.cartData?.map(item => parseInt(item.price) * item.quantity)
-                                            .reduce((total, value) => total + value, 0) : 0)
-                                        ?.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+                                    useMemo(() => {
+                                        return (context.cartData?.length !== 0 ?
+                                            context.cartData?.map(item => parseInt(item.price) * item.quantity)
+                                                .reduce((total, value) => total + value, 0) : 0)
+                                            ?.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+                                    }, [context.cartData])
                                 }
                             </span>
                         </p>

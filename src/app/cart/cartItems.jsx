@@ -7,7 +7,7 @@ import Rating from "@mui/material/Rating";
 import { IoCloseSharp } from "react-icons/io5";
 import { MyContext } from "@/context/ThemeProvider";
 import Image from "next/image";
-import { editData } from "@/utils/api";
+import { editData, deleteData ,fetchDataFromApi} from "@/utils/api";
 
 const CartItems = (props) => {
 
@@ -203,7 +203,7 @@ const CartItems = (props) => {
                 <div className="relative">
                   <span
                     className="flex items-center justify-center bg-[#f1f1f1] text-[11px]
-       font-[600] py-1 px-2 rounded-md cursor-pointer"
+                    font-[600] py-1 px-2 rounded-md cursor-pointer"
                     onClick={handleClickSize}
                   >
                     Size: {selectedSize} <GoTriangleDown />
@@ -217,6 +217,7 @@ const CartItems = (props) => {
                     MenuListProps={{
                       "aria-labelledby": "basic-button",
                     }}
+                    {...( !openSize ? { inert: "true" } : {})}
                   >
                     {
                       props?.productSizeData?.map((item, index) => {
@@ -259,6 +260,7 @@ const CartItems = (props) => {
                     MenuListProps={{
                       "aria-labelledby": "basic-button",
                     }}
+                    {...( !openSize ? { inert: "true" } : {})}
                   >
                     {
                       props?.productRamsData?.map((item, index) => {
@@ -303,6 +305,7 @@ const CartItems = (props) => {
                     MenuListProps={{
                       "aria-labelledby": "basic-button",
                     }}
+                    inert={!openSize}
                   >
                     {
                       props?.productWeightData?.map((item, index) => {
@@ -341,6 +344,7 @@ const CartItems = (props) => {
               MenuListProps={{
                 "aria-labelledby": "basic-button",
               }}
+              {...( !openQty ? { inert: "true" } : {})}
             >
 
 

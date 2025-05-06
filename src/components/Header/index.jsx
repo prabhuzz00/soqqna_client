@@ -125,7 +125,6 @@ const Header = () => {
           latitude: latitude,
           longitude: longitude,
         })
-        console.log('User location:', latitude, longitude);
         // You can now use latitude and longitude as needed
       },
       (error) => {
