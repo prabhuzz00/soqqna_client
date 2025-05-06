@@ -2,8 +2,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
-import ProductItem from "@/components/ProductItem";
-import ProductItemListView from "@/components/ProductItemListView";
+import ProductItem from "@/components/ProductItem/index";
+import ProductItemListView from "@/components/ProductItemListView/index";
 import Button from "@mui/material/Button";
 import { IoGridSharp } from "react-icons/io5";
 import { LuMenu } from "react-icons/lu";

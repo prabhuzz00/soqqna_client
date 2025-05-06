@@ -387,4 +387,7 @@ const ProductItem = (props) => {
   );
 };
 
-export default ProductItem;
+
+const MemoizedProductItem = React.memo(ProductItem);
+
+export default MemoizedProductItem;
