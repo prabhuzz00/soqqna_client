@@ -35,7 +35,6 @@ const ProductPage = async ({ params }) => {
   });
 
   const reviewsCount = await getReviews();
-  console.log('🚀 ~ :34 ~ ProductPage ~ reviewsCount:', reviewsCount);
 
   const productDetail = await getProductDetail();
 
