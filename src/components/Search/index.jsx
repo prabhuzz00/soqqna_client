@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { postData } from '@/utils/api';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useTranslation } from '@/utils/useTranslation';
+import Image from 'next/image';
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -76,7 +77,6 @@ const Search = () => {
             [];
           setSuggestions(suggestionList);
         } catch (error) {
-          console.error('Error fetching suggestions:', error);
           setSuggestions([]);
         } finally {
           setIsLoading(false);
@@ -107,8 +107,6 @@ const Search = () => {
         limit: 3,
         query: queryToSearch
       };
-      console.log('Search query:', obj);
-      console.log(queryToSearch,"adas");
       await postData(`/api/product/search/get`, obj).then((res) => {
         context?.setSearchData(res);
         router.refresh();
@@ -125,7 +123,6 @@ const Search = () => {
       setSuggestions([]);
       router.push(`/product/${suggestion.id}`); 
     } else {
-      console.warn('No product ID available for:', suggestion.name);
       setSearchQuery(suggestion.name);
       setSuggestions([]);
       search();
@@ -145,9 +142,9 @@ const Search = () => {
           setTimeout(() => {
             setIsOpenSuggestions(false);
             setSuggestions([]);
-          }, 200); 
+          }, 200);
         }}
-      />                  
+      />
       <Button
         className="!absolute top-[8px] right-[5px] z-50 !w-[37px] !min-w-[37px] h-[37px] !rounded-full !text-black"
         onClick={() => search()}
@@ -185,14 +182,15 @@ const Search = () => {
                 className="flex items-center gap-3 p-2 cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSuggestionClick(suggestion)}
               >
-                <div className="img w-[35px] h-[35px] rounded-sm border border-[rgba(0,0,0,0.1)] p-1 bg-white">
-                  <img
+                <div className="img w-[35px] h-[35px] rounded-sm border border-[rgba(0,0,0,0.1)] p-1 bg-white relative">
+                  <Image
                     src={suggestion?.img}
-                    className="object-cover w-full h-full"
                     alt={suggestion.name}
+                    fill
+                    className="object-cover"
                   />
                 </div>
-                <span className="text-[14px]"> {suggestion.name}</span>
+                <span className="text-[14px]">{suggestion.name}</span>
               </div>
             ))}
         </div>
