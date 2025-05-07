@@ -287,7 +287,6 @@ const Header = () => {
                   <>
                     {isClient && clientWindowWidth !== undefined && clientWindowWidth > 992 && (
                       <li>
-                    <li>
                       <Button
                         className="!text-[#000] myAccountWrap flex items-center gap-3 cursor-pointer"
                         onClick={handleClick}
@@ -309,7 +308,6 @@ const Header = () => {
                           </div>
                         )}
                       </Button>
-                    </li>
 
                         <Menu
                           anchorEl={anchorEl}
