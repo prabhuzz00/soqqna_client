@@ -8,10 +8,7 @@ import FormLabel from '@mui/material/FormLabel';
 import { MyContext } from '@/context/ThemeProvider';
 import TextField from '@mui/material/TextField';
 import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css'; // Ensure styles are imported
-// import { PhoneInput } from 'react-international-phone';
-// import 'react-international-phone/style.css';
-// import 'react-international-phone/style.css';
+import 'react-phone-input-2/lib/style.css'; 
 import { Button } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { editData, fetchDataFromApi, postData } from '@/utils/api';
@@ -42,8 +39,36 @@ const AddAddress = () => {
                 ...prevState,
                 userId: context?.userData?._id
             }))
-
         }
+
+        const cachedAddress = localStorage.getItem('userLocation');
+        setTimeout(() => {
+            if (cachedAddress) {
+              let parsedAddress;
+              try {
+                parsedAddress = JSON.parse(cachedAddress);
+              } catch (err) {
+                const parts = cachedAddress.split(',');
+                parsedAddress = {
+                  address_line1: parts[0] ? parts[0].trim() : '',
+                  city: parts[1] ? parts[1].trim() : '',
+                  state: parts[2] ? parts[2].trim() : '',
+                  pincode: parts[3] ? parts[3].trim() : '',
+                  country: parts[4] ? parts[4].trim() : ''
+                };
+              }
+              if (parsedAddress) {
+                setFormsFields((prevState) => ({
+                  ...prevState,
+                  address_line1: parsedAddress.address_line1 || '',
+                  city: parsedAddress.city || '',
+                  state: parsedAddress.state || '',
+                  pincode: parsedAddress.pincode || '',
+                  country: parsedAddress.country || ''
+                }));
+              }
+            }
+        }, 100);
 
     }, [context?.userData]);
 
@@ -134,6 +159,8 @@ const AddAddress = () => {
             postData(`/api/address/add`, formFields, { withCredentials: true }).then((res) => {
                 console.log(res)
                 if (res?.error !== true) {
+                    // Save cached address from response to localStorage
+                    localStorage.setItem('cachedAddress', JSON.stringify(res?.address));
 
                     context.alertBox("success", res?.message);
                     setTimeout(() => {
@@ -174,6 +201,8 @@ const AddAddress = () => {
         if (context?.addressMode  === "edit") {
             setIsLoading(true);
             editData(`/api/address/${context?.addressId}`, formFields, { withCredentials: true }).then((res) => {
+                // Save cached address from response to localStorage
+                localStorage.setItem('cachedAddress', JSON.stringify(res?.address));
 
                 fetchDataFromApi(`/api/address/get?userId=${context?.userData?._id}`).then((res) => {
                     setTimeout(() => {
