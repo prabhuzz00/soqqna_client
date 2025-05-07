@@ -30,12 +30,19 @@ const ThemeProvider = ({ children }) => {
   const [isFilterBtnShow, setisFilterBtnShow] = useState(false);
 
   const [openSearchPanel, setOpenSearchPanel] = useState(false);
+  const [userLocation, setUserLocation] = useState("Select Location"); // State for user location
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       // Ensure this runs only on client
       // Function to update width
       const updateWidth = () => setWindowWidth(window.innerWidth);
+
+      // Load initial location from local storage
+      const cachedLocation = localStorage.getItem("userLocation");
+      if (cachedLocation) {
+        setUserLocation(cachedLocation);
+      }
 
       setWindowWidth(window.innerWidth); // Set initial width
       window.addEventListener("resize", updateWidth); // Listen for resize events
@@ -237,6 +244,8 @@ const ThemeProvider = ({ children }) => {
     isFilterBtnShow,
     setOpenSearchPanel,
     openSearchPanel,
+    userLocation, // Include userLocation in context values
+    setUserLocation, // Include setUserLocation in context values
   };
 
   return (

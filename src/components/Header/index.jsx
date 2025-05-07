@@ -1,6 +1,8 @@
 "use client";
 import React, { useContext, useState, useEffect } from "react";
 import Badge from "@mui/material/Badge";
+import { useSession } from "next-auth/react";
+import { MyContext } from "@/context/ThemeProvider"; // Import MyContext
 import { styled } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import { MdOutlineShoppingCart } from "react-icons/md";
@@ -20,7 +22,6 @@ import { LuMapPin } from "react-icons/lu";
 import { HiOutlineMenu } from "react-icons/hi";
 import Link from "next/link";
 import Search from "../Search";
-import { MyContext } from "@/context/ThemeProvider";
 import { fetchDataFromApi, patchData } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -46,7 +47,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const [location, setlocation] = useState(false);
+  const [locationModalOpen, setLocationModalOpen] = useState(false);
   const [isOpenCatPanel, setIsOpenCatPanel] = useState(false);
   const [isOpenMobileMenu, setIsOpenMobileMenu] = useState(false);
   const history = useRouter();
@@ -54,11 +55,16 @@ const Header = () => {
   const [isClient, setIsClient] = useState(false);
   const [clientWindowWidth, setClientWindowWidth] = useState(undefined);
   const [logoSrc, setLogoSrc] = useState("/sooqna.svg");
+  const { data: session } = useSession(); // Get session for authenticated user
+  const { userLocation } = useContext(MyContext); // Get userLocation from context
 
   useEffect(() => {
     setIsClient(true);
     setClientWindowWidth(context?.windowWidth);
   }, [context?.windowWidth]);
+
+  // Remove the useEffect that was reading from localStorage directly
+  // The userLocation will now come from the context
 
   useEffect(() => {
     if (isClient && context?.isLogin) {
@@ -216,7 +222,7 @@ const Header = () => {
               </Button>
             )}
 
-            <div className="w-1/3 lg:w-1/4">
+            <div className="">
               <Link href="/">
                 <Image
                   src={logoSrc}
@@ -228,33 +234,36 @@ const Header = () => {
                 />
               </Link>
             </div>
-            <div className="col1 w-[30%] lg:w-[20%] flex items-center justify-start lg:justify-center">
-            <button onClick={() => setlocation(!location)} className="flex flex-row  gap-4 justify-center relative">
-              <span>Your Location</span> <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-5 h-5 text-gray-700 mt-1"
-              >
-                <path d="M6 9l6 6 6-6" />
-              </svg>
-        
-             
-            </button>
-            {location === true ? <LocationModal openkey={location} setOpenkey={setlocation}/> : null}
-              </div>
+            <div className="col1 w-full lg:w-[20%] flex items-center justify-center">
+              <button
+  onClick={() => setLocationModalOpen(!locationModalOpen)}
+  className="
+    flex items-center space-x-1
+    text-sm font-medium text-gray-700
+    hover:text-primary
+    transition-colors duration-150
+    px-2 py-1
+  "
+>
+  <LuMapPin className="text-lg" />
+  <span className="truncate max-w-[120px]">
+    {userLocation || "Select Location"}
+  </span>
+</button>
+{locationModalOpen && (
+  <LocationModal
+    openkey={locationModalOpen}
+    setOpenkey={setLocationModalOpen}
+  />
+)}
+
+            </div>
             <div
               className={`col2 fixed top-0 left-0 w-full h-full lg:w-[35%] lg:static p-2 lg:p-0 bg-white z-50 ${isClient && clientWindowWidth !== undefined && clientWindowWidth > 992 && "!block"
                 } ${context?.openSearchPanel === true ? "block" : "hidden"}`}
             >
               <Search />
             </div>
-          
-             
             <div className="col3 w-[30%] lg:w-[45%] flex items-center pl-3">
               <ul className="flex items-center justify-end gap-2 lg:gap-3 w-full">
                 {isClient && clientWindowWidth !== undefined && clientWindowWidth > 992 && (

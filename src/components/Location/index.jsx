@@ -1,121 +1,111 @@
 "use client";
-import { useEffect, useState } from "react";
+
+import { useEffect, useState, useContext } from "react";
 import { useSession } from "next-auth/react";
+import { MyContext } from "@/context/ThemeProvider";
 
 export default function LocationModal({ openkey, setOpenkey }) {
-  const [fullAddress, setFullAddress] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
   const { data: session } = useSession();
-
-  useEffect(() => {
-    // Load address from local storage if user is not authenticated
-    if (!session?.user?.id) {
-      const cachedAddress = localStorage.getItem("userLocation");
-      if (cachedAddress) {
-        setFullAddress(cachedAddress);
-        console.log("Cached address loaded from local storage:", cachedAddress);
-      }
-    }
-  }, [session]);
+  const { setUserLocation } = useContext(MyContext);
 
   if (!openkey) return null;
 
   const handleDetect = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const { latitude, longitude } = position.coords;
-
-        const apiKey = "AIzaSyDZAL1JS9LDHvpykfoc0FY5nITc7aSuYlE"; 
-        const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`;
-
-        try {
-          const geoResponse = await fetch(geocodingUrl);
-          const geoData = await geoResponse.json();
-
-          if (geoData.results && geoData.results.length > 0) {
-            const detectedAddress = geoData.results[0].formatted_address;
-            setFullAddress(detectedAddress);
-
-            if (session?.user?.id) {
-              // Save the detected address using the API if authenticated
-              await saveAddress(detectedAddress, session.user.id);
-            } else {
-              // Store in local storage if not authenticated
-              localStorage.setItem("userLocation", detectedAddress);
-              console.log("Address cached in local storage.");
-            }
-          } else {
-            console.error("No geocoding results found.");
-            const detectedAddress = `Lat: ${latitude}, Lon: ${longitude}`;
-            setFullAddress(detectedAddress); // Fallback to coordinates
-             if (session?.user?.id) {
-              await saveAddress(detectedAddress, session.user.id);
-            } else {
-              localStorage.setItem("userLocation", detectedAddress);
-            }
-          }
-        } catch (geoError) {
-          console.error("Error during reverse geocoding:", geoError);
-           const detectedAddress = `Lat: ${latitude}, Lon: ${longitude}`;
-           setFullAddress(detectedAddress); // Fallback to coordinates
-            if (session?.user?.id) {
-              await saveAddress(detectedAddress, session.user.id);
-            } else {
-              localStorage.setItem("userLocation", detectedAddress);
-            }
+    if (!navigator.geolocation) {
+      console.error("Geolocation not supported");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const { latitude, longitude } = pos.coords;
+      const fallback = `Lat: ${latitude}, Lon: ${longitude}`;
+      try {
+        const geoRes = await fetch(
+          `/api/geocode?lat=${latitude}&lng=${longitude}`
+        );
+        const geoData = await geoRes.json();
+        const address =
+          geoData.results?.[0]?.formatted_address || fallback;
+        setUserLocation(address);
+        if (session?.user?.id) {
+          await saveAddress(address, session.user.id);
+        } else {
+          localStorage.setItem("userLocation", address);
         }
+      } catch {
+        setUserLocation(fallback);
+        if (!session?.user?.id) {
+          localStorage.setItem("userLocation", fallback);
+        }
+      }
+      setOpenkey(false);
+    });
+  };
 
-        setOpenkey(false);
-      }, (error) => {
-        console.error("Error detecting location:", error);
-        // Handle errors, e.g., show a message to the user
-      });
-    } else {
-      console.error("Geolocation is not supported by this browser.");
-      // Handle case where geolocation is not supported
+  const handleInputChange = async (e) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+
+    if (value.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `/api/autocomplete?input=${encodeURIComponent(value)}`
+      );
+      const data = await res.json();
+      setSuggestions(data.predictions || []);
+    } catch (err) {
+      console.error("Error fetching suggestions:", err);
     }
   };
 
-  const handleManualSearch = async () => {
-    if (searchQuery.trim()) {
-      const enteredAddress = searchQuery.trim();
-      setFullAddress(enteredAddress);
+  const handleSelectSuggestion = async (s) => {
+    setSearchQuery(s.description);
+    setSuggestions([]);
+
+    try {
+      const geoRes = await fetch(
+        `/api/geocode?place_id=${s.place_id}`
+      );
+      const geoData = await geoRes.json();
+      const address =
+        geoData.results?.[0]?.formatted_address || s.description;
+      setUserLocation(address);
 
       if (session?.user?.id) {
-        // Save the manually entered address using the API if authenticated
-        await saveAddress(enteredAddress, session.user.id);
+        await saveAddress(address, session.user.id);
       } else {
-        // Store in local storage if not authenticated
-        localStorage.setItem("userLocation", enteredAddress);
-        console.log("Address cached in local storage.");
+        localStorage.setItem("userLocation", address);
       }
-
-      setOpenkey(false);
+    } catch (err) {
+      console.error("Geocode by place_id error:", err);
     }
+
+    setOpenkey(false);
+  };
+
+  const handleManualSearch = () => {
+    if (!searchQuery.trim()) return;
+
+    // fallback to geocode address text
+    handleSelectSuggestion({ description: searchQuery.trim(), place_id: "" });
   };
 
   const saveAddress = async (address, userId) => {
     try {
-      const response = await fetch("/api/user/address", {
+      const res = await fetch("/api/user/address", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, address }),
       });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log("Address saved successfully:", data.message);
-        // Optionally show a success message to the user
-      } else {
-        console.error("Error saving address:", data.message);
-        // Optionally show an error message to the user
-      }
-    } catch (error) {
-      console.error("Error saving address:", error);
-      // Optionally show an error message to the user
+      if (!res.ok) throw new Error(await res.text());
+      console.log("Saved");
+    } catch (err) {
+      console.error("Save address failed:", err);
     }
   };
 
@@ -133,9 +123,8 @@ export default function LocationModal({ openkey, setOpenkey }) {
         </button>
       </div>
       <p className="text-sm text-gray-600 mb-4">
-        Please provide your delivery location to see categories near by.
+        Please provide your delivery location to see categories nearby.
       </p>
-
       <div className="flex gap-2 items-center">
         <button
           onClick={handleDetect}
@@ -146,18 +135,26 @@ export default function LocationModal({ openkey, setOpenkey }) {
         <span className="text-gray-400 text-sm">OR</span>
         <input
           type="text"
-          placeholder="Search Box"
+          placeholder="Search city or address..."
           className="border rounded-md px-2 py-2 flex-1 text-sm"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={handleInputChange}
           onKeyDown={(e) => e.key === "Enter" && handleManualSearch()}
         />
       </div>
 
-      {fullAddress && (
-        <div className="mt-4 text-sm text-gray-700">
-          <strong>Detected Location:</strong> {fullAddress}
-        </div>
+      {suggestions.length > 0 && (
+        <ul className="border rounded-md mt-2 max-h-40 overflow-y-auto">
+          {suggestions.map((s) => (
+            <li
+              key={s.place_id}
+              className="p-2 text-sm cursor-pointer hover:bg-gray-100"
+              onClick={() => handleSelectSuggestion(s)}
+            >
+              {s.description}
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );
