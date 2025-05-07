@@ -11,7 +11,7 @@ const ThemeProvider = ({ children }) => {
     open: false,
     item: {},
   });
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
   const [userData, setUserData] = useState(null);
   const [catData, setCatData] = useState([]);
   const [cartData, setCartData] = useState([]);

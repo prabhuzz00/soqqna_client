@@ -15,7 +15,7 @@ const HomeSlider = (props) => {
     <div className="homeSlider pb-3 pt-3 lg:pb-5 lg:pt-5 relative z-[99]">
       <div className="container">
         <Swiper
-          loop={true}
+          loop={props?.data?.length > 1 ? true : false}
           spaceBetween={10}
           navigation={context?.windowWidth < 992 ? false : true}
           modules={[Navigation, Autoplay]}

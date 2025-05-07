@@ -21,8 +21,6 @@ import { HiOutlineMenu } from "react-icons/hi";
 import Link from "next/link";
 import Search from "../Search";
 import { MyContext } from "@/context/ThemeProvider";
-import Image from "next/image";
-import { LuGitCompare } from "react-icons/lu";
 import { fetchDataFromApi, patchData } from "@/utils/api";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -51,13 +49,19 @@ const Header = () => {
   const [isOpenMobileMenu, setIsOpenMobileMenu] = useState(false);
   const history = useRouter();
   const context = useContext(MyContext);
+  const [isClient, setIsClient] = useState(false);
+  const [clientWindowWidth, setClientWindowWidth] = useState(undefined);
 
   useEffect(() => {
-    if (context?.isLogin) {
-      console.log("User is logged in.");
+    setIsClient(true);
+    setClientWindowWidth(context?.windowWidth);
+  }, [context?.windowWidth]);
+
+  useEffect(() => {
+    if (isClient && context?.isLogin) {
       allowLocation();
     }
-  }, [context?.isLogin]);
+  }, [isClient, context?.isLogin]);
 
 
 
@@ -77,16 +81,14 @@ const Header = () => {
 
     });
 
-    setTimeout(() => {
-      const token = Cookies.get("accessToken");
+    const token = Cookies.get("accessToken");
 
-      if (token !== undefined && token !== null && token !== "") {
-        //const url = window.location.href
-        //history.push(history.pathname)
-      } else {
-        // history.push("/login")
-      }
-    }, [1000]);
+    if (token !== undefined && token !== null && token !== "") {
+      //const url = window.location.href
+      //history.push(history.pathname)
+    } else {
+      // history.push("/login")
+    }
   }, [context?.isLogin]);
 
   const logout = () => {
@@ -203,7 +205,7 @@ const Header = () => {
 
         <div className="header py-2 lg:py-4 border-b-[1px] border-gray-250">
           <div className="container flex items-center justify-between">
-            {context?.windowWidth < 992 && (
+            {isClient && clientWindowWidth !== undefined && clientWindowWidth < 992 && (
               <Button
                 className="!w-[35px] !min-w-[35px] !h-[35px] !rounded-full !text-gray-800"
                 onClick={() => openMobileMenu(true)}
@@ -213,19 +215,19 @@ const Header = () => {
             )}
 
             <div className="col1 w-[30%] lg:w-[25%]">
-              {Cookies.get("logo") !== undefined && (
+              <span>
                 <Link href={"/"}>
                   <img
-                    src={"/sooqna.svg"}
+                    src={Cookies.get("logo") !== undefined ? Cookies.get("logo") : "/sooqna.svg"}
                     className="max-w-[140px] lg:max-w-[120px]"
                     alt="logo"
                   />
                 </Link>
-              )}
+              </span>
             </div>
 
             <div
-              className={`col2 fixed top-0 left-0 w-full h-full lg:w-[35%] lg:static p-2 lg:p-0 bg-white z-50 ${context?.windowWidth > 992 && "!block"
+              className={`col2 fixed top-0 left-0 w-full h-full lg:w-[35%] lg:static p-2 lg:p-0 bg-white z-50 ${isClient && clientWindowWidth !== undefined && clientWindowWidth > 992 && "!block"
                 } ${context?.openSearchPanel === true ? "block" : "hidden"}`}
             >
               <Search />
@@ -233,7 +235,7 @@ const Header = () => {
 
             <div className="col3 w-[30%] lg:w-[45%] flex items-center pl-3">
               <ul className="flex items-center justify-end gap-2 lg:gap-3 w-full">
-                {context?.windowWidth > 992 && (
+                {isClient && clientWindowWidth !== undefined && clientWindowWidth > 992 && (
                   <li className="list-none relative" style={{ zoom: "80%" }}>
                     <FormControl sx={{ m: 1, minWidth: 120 }}>
                       <Select
@@ -250,55 +252,62 @@ const Header = () => {
                   </li>
                 )}
 
-                {context.isLogin === false && context?.windowWidth > 992 ? (
+                {context.isLogin === false && isClient && clientWindowWidth !== undefined && clientWindowWidth > 992 ? (
                   <li className="list-none px-2">
-                    <Link
-                      href="https://soqqna-vendor.netlify.app/"
-                      className="link transition text-[15px] font-[500] px-2"
-                    >
-                      {t("header.becomeVendor")}
-                    </Link>
+                    <span>
+                      <Link
+                        href="https://soqqna-vendor.netlify.app/"
+                        className="link transition text-[15px] font-[500] px-2"
+                      >
+                        {t("header.becomeVendor")}
+                      </Link>
+                    </span>
 
-                    <Link
-                      href="/login"
-                      className="link transition text-[15px] font-[500] px-2"
-                    >
-                      {t("header.login")}
-                    </Link>
+                    <span>
+                      <Link
+                        href="/login"
+                        className="link transition text-[15px] font-[500] px-2"
+                      >
+                        {t("header.login")}
+                      </Link>
+                    </span>
 
-                    <Link
-                      href="/register"
-                      className="link  transition text-[15px]  font-[500] px-2"
-                    >
-                      {t("header.register")}
-                    </Link>
+                    <span>
+                      <Link
+                        href="/register"
+                        className="link  transition text-[15px]  font-[500] px-2"
+                      >
+                        {t("header.register")}
+                      </Link>
+                    </span>
                   </li>
                 ) : (
                   <>
-                    {context?.windowWidth > 992 && (
+                    {isClient && clientWindowWidth !== undefined && clientWindowWidth > 992 && (
                       <li>
-                        <Button
-                          className="!text-[#000] myAccountWrap flex items-center gap-3 cursor-pointer"
-                          onClick={handleClick}
-                        >
-                          <Button className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-gray-200">
-                            <FaRegUser className="text-[17px] text-[rgba(0,0,0,0.7)]" />
-                          </Button>
+                    <li>
+                      <Button
+                        className="!text-[#000] myAccountWrap flex items-center gap-3 cursor-pointer"
+                        onClick={handleClick}
+                      >
+                        <div className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-gray-200 flex items-center justify-center">
+                          <FaRegUser className="text-[17px] text-[rgba(0,0,0,0.7)]" />
+                        </div>
 
-                          {context?.windowWidth > 992 && (
-                            <div className="info flex flex-col">
-                              <h4 className="leading-3 text-[14px] text-[rgba(0,0,0,0.6)] font-[500] mb-0 capitalize text-center justify-center">
+                        {isClient && clientWindowWidth !== undefined && clientWindowWidth > 992 && (
+                          <div className="info flex flex-col">
+                            <h4 className="leading-3 text-[14px] text-[rgba(0,0,0,0.6)] font-[500] mb-0 capitalize text-center justify-center">
                                 Welcome
-                                <br />
-                                <br />
+                                <br /><br />
                                 {context?.userData?.name}
                               </h4>
-                              {/* <span className="text-[13px] text-[rgba(0,0,0,0.6)]  font-[400] capitalize text-left justify-start">
-                                {context?.userData?.email}
-                              </span> */}
-                            </div>
-                          )}
-                        </Button>
+                            {/* <span className="text-[13px] text-[rgba(0,0,0,0.6)]  font-[400] capitalize text-left justify-start">
+                              {context?.userData?.email}
+                            </span> */}
+                          </div>
+                        )}
+                      </Button>
+                    </li>
 
                         <Menu
                           anchorEl={anchorEl}
@@ -344,6 +353,7 @@ const Header = () => {
                             vertical: "bottom",
                           }}
                         >
+                          <span>
                           <Link href="/my-account" className="w-full block">
                             <MenuItem
                               onClick={handleClose}
@@ -355,6 +365,8 @@ const Header = () => {
                               </span>
                             </MenuItem>
                           </Link>
+                          </span>
+                          <span>
                           <Link
                             href="/my-account/address"
                             className="w-full block"
@@ -369,6 +381,8 @@ const Header = () => {
                               </span>
                             </MenuItem>
                           </Link>
+                          </span>
+                          <span>
                           <Link href="/my-orders" className="w-full block">
                             <MenuItem
                               onClick={handleClose}
@@ -380,6 +394,8 @@ const Header = () => {
                               </span>
                             </MenuItem>
                           </Link>
+                          </span>
+                          <span>
                           <Link href="/my-list" className="w-full block">
                             <MenuItem
                               onClick={handleClose}
@@ -391,6 +407,7 @@ const Header = () => {
                               </span>
                             </MenuItem>
                           </Link>
+                          </span>
 
                           <MenuItem
                             onClick={logout}
@@ -407,9 +424,10 @@ const Header = () => {
                   </>
                 )}
 
-                {context?.windowWidth > 992 && (
+                {isClient && clientWindowWidth !== undefined && clientWindowWidth > 992 && (
                   <li>
                     <Tooltip title={t("header.wishlist")}>
+                      <span>
                       <Link href="/my-list">
                         <IconButton aria-label="cart">
                           <StyledBadge
@@ -424,6 +442,7 @@ const Header = () => {
                           </StyledBadge>
                         </IconButton>
                       </Link>
+                      </span>
                     </Tooltip>
                   </li>
                 )}
