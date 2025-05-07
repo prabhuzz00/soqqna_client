@@ -36,6 +36,7 @@ const HomeSlider = (props) => {
                       src={item?.images[0]}
                       alt="Banner slide"
                       className="!w-full !h-auto"
+                      priority 
                     />
                   </div>
                 </SwiperSlide>
