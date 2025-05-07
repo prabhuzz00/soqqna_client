@@ -122,39 +122,6 @@ const Header = () => {
   const openMobileMenu = (val) => {
     setIsOpenMobileMenu(val);
   };
-  const allowLocation = () => {
-    console.log("Allow location access to get the current location.");
-    if (!navigator.geolocation) {
-      console.error('Geolocation is not supported by your browser.');
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        patchData('/api/user/location', {
-          latitude: latitude,
-          longitude: longitude,
-        })
-      },
-      (error) => {
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            console.error('User denied the request for Geolocation.');
-            break;
-          case error.POSITION_UNAVAILABLE:
-            console.error('Location information is unavailable.');
-            break;
-          case error.TIMEOUT:
-            console.error('The request to get user location timed out.');
-            break;
-          default:
-            console.error('An unknown error occurred.');
-            break;
-        }
-      }
-    );
-  };
 
   return (
     <>
@@ -236,26 +203,26 @@ const Header = () => {
             </div>
             <div className="col1 w-full lg:w-[20%] flex items-center justify-center">
               <button
-  onClick={() => setLocationModalOpen(!locationModalOpen)}
-  className="
-    flex items-center space-x-1
-    text-sm font-medium text-gray-700
-    hover:text-primary
-    transition-colors duration-150
-    px-2 py-1
-  "
->
-  <LuMapPin className="text-lg" />
-  <span className="truncate max-w-[120px]">
-    {userLocation || "Select Location"}
-  </span>
-</button>
-{locationModalOpen && (
-  <LocationModal
-    openkey={locationModalOpen}
-    setOpenkey={setLocationModalOpen}
-  />
-)}
+                onClick={() => setLocationModalOpen(!locationModalOpen)}
+                className="
+                      flex items-center space-x-1
+                      text-sm font-medium text-gray-700
+                      hover:text-primary
+                      transition-colors duration-150
+                      px-2 py-1
+                    "
+              >
+                <LuMapPin className="text-lg" />
+                <span className="truncate max-w-[120px]">
+                  {userLocation || "Select Location"}
+                </span>
+              </button>
+              {locationModalOpen && (
+                <LocationModal
+                  openkey={locationModalOpen}
+                  setOpenkey={setLocationModalOpen}
+                />
+              )}
 
             </div>
             <div
@@ -284,7 +251,7 @@ const Header = () => {
                 )}
 
                 {context.isLogin === false && isClient && clientWindowWidth !== undefined && clientWindowWidth > 992 ? (
-                  <li className="list-none px-2">
+                  <li className="list-none px-1">
                     <span>
                       <Link
                         href="https://soqqna-vendor.netlify.app/"
