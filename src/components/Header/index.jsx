@@ -32,6 +32,7 @@ import FormHelperText from "@mui/material/FormHelperText";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Image from "next/image";
+import LocationModal from "../Location";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -45,14 +46,14 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 const Header = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-
+  const [location, setlocation] = useState(false);
   const [isOpenCatPanel, setIsOpenCatPanel] = useState(false);
   const [isOpenMobileMenu, setIsOpenMobileMenu] = useState(false);
   const history = useRouter();
   const context = useContext(MyContext);
   const [isClient, setIsClient] = useState(false);
   const [clientWindowWidth, setClientWindowWidth] = useState(undefined);
-  const [logoSrc, setLogoSrc] = useState("/sooqna.svg"); 
+  const [logoSrc, setLogoSrc] = useState("/sooqna.svg");
 
   useEffect(() => {
     setIsClient(true);
@@ -215,26 +216,45 @@ const Header = () => {
               </Button>
             )}
 
-                  <div className="w-1/3 lg:w-1/4">
-                    <Link href="/">
-                      <Image
-                      src={logoSrc} 
-                      alt="logo"
-                      className="max-w-[140px] lg:max-w-[120px]"
-                      width={140}
-                      height={60}
-                      priority
-                      />
-                    </Link>
-                  </div>
-
+            <div className="w-1/3 lg:w-1/4">
+              <Link href="/">
+                <Image
+                  src={logoSrc}
+                  alt="logo"
+                  className="max-w-[140px] lg:max-w-[120px]"
+                  width={140}
+                  height={60}
+                  priority
+                />
+              </Link>
+            </div>
+            <div className="col1 w-[30%] lg:w-[20%] flex items-center justify-start lg:justify-center">
+            <button onClick={() => setlocation(!location)} className="flex flex-row  gap-4 justify-center relative">
+              <span>Your Location</span> <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-5 h-5 text-gray-700 mt-1"
+              >
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+        
+             
+            </button>
+            {location === true ? <LocationModal openkey={location} setOpenkey={setlocation}/> : null}
+              </div>
             <div
               className={`col2 fixed top-0 left-0 w-full h-full lg:w-[35%] lg:static p-2 lg:p-0 bg-white z-50 ${isClient && clientWindowWidth !== undefined && clientWindowWidth > 992 && "!block"
                 } ${context?.openSearchPanel === true ? "block" : "hidden"}`}
             >
               <Search />
             </div>
-
+          
+             
             <div className="col3 w-[30%] lg:w-[45%] flex items-center pl-3">
               <ul className="flex items-center justify-end gap-2 lg:gap-3 w-full">
                 {isClient && clientWindowWidth !== undefined && clientWindowWidth > 992 && (
@@ -287,27 +307,27 @@ const Header = () => {
                   <>
                     {isClient && clientWindowWidth !== undefined && clientWindowWidth > 992 && (
                       <li>
-                      <Button
-                        className="!text-[#000] myAccountWrap flex items-center gap-3 cursor-pointer"
-                        onClick={handleClick}
-                      >
-                        <div className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-gray-200 flex items-center justify-center">
-                          <FaRegUser className="text-[17px] text-[rgba(0,0,0,0.7)]" />
-                        </div>
+                        <Button
+                          className="!text-[#000] myAccountWrap flex items-center gap-3 cursor-pointer"
+                          onClick={handleClick}
+                        >
+                          <div className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-gray-200 flex items-center justify-center">
+                            <FaRegUser className="text-[17px] text-[rgba(0,0,0,0.7)]" />
+                          </div>
 
-                        {isClient && clientWindowWidth !== undefined && clientWindowWidth > 992 && (
-                          <div className="info flex flex-col">
-                            <h4 className="leading-3 text-[14px] text-[rgba(0,0,0,0.6)] font-[500] mb-0 capitalize text-center justify-center">
+                          {isClient && clientWindowWidth !== undefined && clientWindowWidth > 992 && (
+                            <div className="info flex flex-col">
+                              <h4 className="leading-3 text-[14px] text-[rgba(0,0,0,0.6)] font-[500] mb-0 capitalize text-center justify-center">
                                 Welcome
                                 <br /><br />
                                 {context?.userData?.name}
                               </h4>
-                            {/* <span className="text-[13px] text-[rgba(0,0,0,0.6)]  font-[400] capitalize text-left justify-start">
+                              {/* <span className="text-[13px] text-[rgba(0,0,0,0.6)]  font-[400] capitalize text-left justify-start">
                               {context?.userData?.email}
                             </span> */}
-                          </div>
-                        )}
-                      </Button>
+                            </div>
+                          )}
+                        </Button>
 
                         <Menu
                           anchorEl={anchorEl}
@@ -354,59 +374,59 @@ const Header = () => {
                           }}
                         >
                           <span>
-                          <Link href="/my-account" className="w-full block">
-                            <MenuItem
-                              onClick={handleClose}
-                              className="flex gap-2 ! !py-2"
-                            >
-                              <FaRegUser className="text-[18px]" />{" "}
-                              <span className="text-[14px]">
-                                {t("header.myAccount")}
-                              </span>
-                            </MenuItem>
-                          </Link>
+                            <Link href="/my-account" className="w-full block">
+                              <MenuItem
+                                onClick={handleClose}
+                                className="flex gap-2 ! !py-2"
+                              >
+                                <FaRegUser className="text-[18px]" />{" "}
+                                <span className="text-[14px]">
+                                  {t("header.myAccount")}
+                                </span>
+                              </MenuItem>
+                            </Link>
                           </span>
                           <span>
-                          <Link
-                            href="/my-account/address"
-                            className="w-full block"
-                          >
-                            <MenuItem
-                              onClick={handleClose}
-                              className="flex gap-2 ! !py-2"
+                            <Link
+                              href="/my-account/address"
+                              className="w-full block"
                             >
-                              <LuMapPin className="text-[18px]" />{" "}
-                              <span className="text-[14px]">
-                                {t("account.address")}
-                              </span>
-                            </MenuItem>
-                          </Link>
+                              <MenuItem
+                                onClick={handleClose}
+                                className="flex gap-2 ! !py-2"
+                              >
+                                <LuMapPin className="text-[18px]" />{" "}
+                                <span className="text-[14px]">
+                                  {t("account.address")}
+                                </span>
+                              </MenuItem>
+                            </Link>
                           </span>
                           <span>
-                          <Link href="/my-orders" className="w-full block">
-                            <MenuItem
-                              onClick={handleClose}
-                              className="flex gap-2 ! !py-2"
-                            >
-                              <IoBagCheckOutline className="text-[18px]" />{" "}
-                              <span className="text-[14px]">
-                                {t("account.orders")}
-                              </span>
-                            </MenuItem>
-                          </Link>
+                            <Link href="/my-orders" className="w-full block">
+                              <MenuItem
+                                onClick={handleClose}
+                                className="flex gap-2 ! !py-2"
+                              >
+                                <IoBagCheckOutline className="text-[18px]" />{" "}
+                                <span className="text-[14px]">
+                                  {t("account.orders")}
+                                </span>
+                              </MenuItem>
+                            </Link>
                           </span>
                           <span>
-                          <Link href="/my-list" className="w-full block">
-                            <MenuItem
-                              onClick={handleClose}
-                              className="flex gap-2 ! !py-2"
-                            >
-                              <IoMdHeartEmpty className="text-[18px]" />{" "}
-                              <span className="text-[14px]">
-                                {t("account.myList")}
-                              </span>
-                            </MenuItem>
-                          </Link>
+                            <Link href="/my-list" className="w-full block">
+                              <MenuItem
+                                onClick={handleClose}
+                                className="flex gap-2 ! !py-2"
+                              >
+                                <IoMdHeartEmpty className="text-[18px]" />{" "}
+                                <span className="text-[14px]">
+                                  {t("account.myList")}
+                                </span>
+                              </MenuItem>
+                            </Link>
                           </span>
 
                           <MenuItem
@@ -428,20 +448,20 @@ const Header = () => {
                   <li>
                     <Tooltip title={t("header.wishlist")}>
                       <span>
-                      <Link href="/my-list">
-                        <IconButton aria-label="cart">
-                          <StyledBadge
-                            badgeContent={
-                              context?.myListData?.length !== 0
-                                ? context?.myListData?.length
-                                : 0
-                            }
-                            color="secondary"
-                          >
-                            <FaRegHeart />
-                          </StyledBadge>
-                        </IconButton>
-                      </Link>
+                        <Link href="/my-list">
+                          <IconButton aria-label="cart">
+                            <StyledBadge
+                              badgeContent={
+                                context?.myListData?.length !== 0
+                                  ? context?.myListData?.length
+                                  : 0
+                              }
+                              color="secondary"
+                            >
+                              <FaRegHeart />
+                            </StyledBadge>
+                          </IconButton>
+                        </Link>
                       </span>
                     </Tooltip>
                   </li>
