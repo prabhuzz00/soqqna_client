@@ -1,5 +1,6 @@
 "use client";
 import React, { useContext, useState, useEffect } from "react";
+import Image from "next/image";
 import Badge from "@mui/material/Badge";
 import { styled } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
@@ -45,7 +46,7 @@ const Header = () => {
   const [clientWindowWidth, setClientWindowWidth] = useState();
   const [isOpenCatPanel, setIsOpenCatPanel] = useState(false);
   const [isOpenMobileMenu, setIsOpenMobileMenu] = useState(false);
-  const [logoSrc, setLogoSrc] = useState("/sooqna.svg"); // Add state for logo source
+  const [logoSrc, setLogoSrc] = useState("/sooqna.svg"); 
   const history = useRouter();
   const context = useContext(MyContext);
   const { locale, changeLanguage } = useLanguage();
@@ -57,18 +58,16 @@ const Header = () => {
   }, [context?.windowWidth]);
 
   useEffect(() => {
-    // Fetch logo and set cookie
     fetchDataFromApi("/api/logo").then((res) => {
       Cookies.set("logo", res?.logo[0]?.logo);
     });
 
-    // Read logo from cookie on client mount
     const logoFromCookie = Cookies.get("logo");
     if (logoFromCookie) {
       setLogoSrc(logoFromCookie);
     }
 
-  }, [context?.isLogin]); // Added context?.isLogin as dependency
+  }, [context?.isLogin]); 
 
   useEffect(() => {
     if (isClient && context?.isLogin) {
@@ -144,19 +143,20 @@ const Header = () => {
                 <HiOutlineMenu size={22} />
               </Button>
             )}
+                  <div className="w-1/3 lg:w-1/4">
+                    <Link href="/">
+                      <Image
+                      src={logoSrc} 
+                      alt="logo"
+                      className="max-w-[140px] lg:max-w-[120px]"
+                      width={140}
+                      height={60}
+                      priority
+                      />
+                    </Link>
+                  </div>
 
-            {/* logo */}
-            <div className="w-1/3 lg:w-1/4">
-              <Link href="/">
-                <img
-                  src={logoSrc} // Use the state variable for src
-                  alt="logo"
-                  className="max-w-[140px] lg:max-w-[120px]"
-                />
-              </Link>
-            </div>
-
-            {/* search panel */}
+                  {/* search panel */}
             <div
               className={`fixed inset-0 lg:static lg:w-[35%] p-2 lg:p-0 bg-white z-50 ${
                 context.openSearchPanel ? "block" : "hidden"
@@ -217,7 +217,8 @@ const Header = () => {
                         </div>
                         <div className="flex flex-col text-center">
                           <h4 className="text-sm font-medium text-gray-600 leading-none">
-                            {t("header.welcome")}<br />
+                            Welcome
+                            <br />
                             {context.userData?.name}
                           </h4>
                         </div>
