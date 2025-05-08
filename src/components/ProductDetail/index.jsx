@@ -14,7 +14,7 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
   const [relatedProductData, setRelatedProductData] = useState(relatedProducts);
 
   const reviewSec = useRef();
-
+ console.log('productData', productData);
   useEffect(() => {
     setProductData(product);
     setRelatedProductData(relatedProducts);
