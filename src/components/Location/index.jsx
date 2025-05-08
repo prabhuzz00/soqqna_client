@@ -110,7 +110,7 @@ export default function LocationModal({ openkey, setOpenkey }) {
   };
 
   return (
-    <div className="absolute top-[56px] mt-2 left-3 z-50 bg-white border shadow-md rounded-md w-[500px] p-4">
+    <div className="absolute md:top-[58px] mt-2 lg:top-[78px] -sm:left-[330px] top-[40px] md:left-0 z-50 bg-white border shadow-md rounded-md sm:w-[500px]  p-4  w-[330px] -left-[200px] sm:-left-[230px]">
       <div className="flex justify-between items-start mb-2">
         <h2 className="text-md font-semibold">
           Welcome to <span className="text-primary">Sooqna</span>
@@ -125,14 +125,14 @@ export default function LocationModal({ openkey, setOpenkey }) {
       <p className="text-sm text-gray-600 mb-4">
         Please provide your delivery location to see categories nearby.
       </p>
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2  flex-col sm:flex-row items-stretch sm:items-center">
         <button
           onClick={handleDetect}
           className="bg-primary text-white px-3 py-2 rounded-md text-sm font-medium"
         >
           Detect My Location
         </button>
-        <span className="text-gray-400 text-sm">OR</span>
+        <span className="text-gray-400 text-sm text-center sm:text-left">OR</span>
         <input
           type="text"
           placeholder="Search city or address..."
