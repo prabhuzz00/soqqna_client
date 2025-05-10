@@ -16,7 +16,7 @@ import { useTranslation } from "@/utils/useTranslation";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { Collapse } from "react-collapse";
 import MobileMenu from "./MobileMenu";
-
+import { useLanguage } from "@/context/LanguageContext";
 
 const Navigation = (props) => {
   const [isOpenCatPanel, setIsOpenCatPanel] = useState(false);
@@ -24,6 +24,7 @@ const Navigation = (props) => {
   const [MyCatProdData, setCatProd] = useState([]);
 
   const context = useContext(MyContext);
+  const { locale } = useLanguage();
 
   const { t } = useTranslation();
 
@@ -58,89 +59,100 @@ const Navigation = (props) => {
                 <LiaAngleDownSolid className="text-[13px] ml-auto font-bold" />
               </Button>
 
-
-              <div className="categoryDropdownMwnu w-full h-auto bg-white absolute 
-              top-[128%] left-0 z-[100] shadow-md">
+              <div
+                className="categoryDropdownMwnu w-full h-auto bg-white absolute 
+              top-[128%] left-0 z-[100] shadow-md"
+              >
                 <Collapse isOpened={isOpenCatPanel}>
                   <ul className="w-full mb-0 p-2">
-                    {catData?.length !== 0 && catData?.filter((cat, idx) => idx < 8)
-                      ?.map((cat, index) => {
-                        return (
-                          <li className="list-none static w-full group" key={index}>
-                            <Link
-                              href={`/products?catId=${cat?._id}`}
-                              className="link transition text-[14px] !font-[500]"
+                    {catData?.length !== 0 &&
+                      catData
+                        ?.filter((cat, idx) => idx < 8)
+                        ?.map((cat, index) => {
+                          return (
+                            <li
+                              className="list-none static w-full group"
+                              key={index}
                             >
-                              <Button className="link transition !font-[500] !text-gray-800 hover:!text-primary !py-2 !w-full !text-left !justify-start">
-                                <img src={cat?.images[0]} alt="image" className="w-[20px] mr-2" />
-                                {cat?.name}
-                                {
-                                  cat?.children?.length !== 0 &&
-                                  <MdOutlineKeyboardArrowRight className="ml-auto" size={18} />
-                                }
+                              <Link
+                                href={`/products?catId=${cat?._id}`}
+                                className="link transition text-[14px] !font-[500]"
+                              >
+                                <Button className="link transition !font-[500] !text-gray-800 hover:!text-primary !py-2 !w-full !text-left !justify-start">
+                                  <img
+                                    src={cat?.images[0]}
+                                    alt="image"
+                                    className="w-[20px] mr-2"
+                                  />
+                                  {locale === "ar" ? cat?.arName : cat?.name}
+                                  {cat?.children?.length !== 0 && (
+                                    <MdOutlineKeyboardArrowRight
+                                      className="ml-auto"
+                                      size={18}
+                                    />
+                                  )}
+                                </Button>
+                              </Link>
 
-                              </Button>
-                            </Link>
-
-                            {cat?.children?.length !== 0 && (
-                              <div className="submenu absolute top-[0%] left-[98%] min-w-[200px] bg-white shadow-md opacity-0 invisible  group-hover:opacity-100 group-hover:visible  h-[100%]">
-                                <ul>
-                                  {cat?.children?.map((subCat, index_) => {
-                                    return (
-                                      <li
-                                        className="list-none w-full relative"
-                                        key={index_}
-                                      >
-                                        <Link
-                                          href={`/products?subCatId=${subCat?._id}`}
-                                          className="w-full"
+                              {cat?.children?.length !== 0 && (
+                                <div className="submenu absolute top-[0%] left-[98%] min-w-[200px] bg-white shadow-md opacity-0 invisible  group-hover:opacity-100 group-hover:visible  h-[100%]">
+                                  <ul>
+                                    {cat?.children?.map((subCat, index_) => {
+                                      return (
+                                        <li
+                                          className="list-none w-full relative"
+                                          key={index_}
                                         >
-                                          <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none !text-gray-800 hover:!text-primary !py-2 ">
-                                            {subCat?.name}
-                                          </Button>
-                                        </Link>
+                                          <Link
+                                            href={`/products?subCatId=${subCat?._id}`}
+                                            className="w-full"
+                                          >
+                                            <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none !text-gray-800 hover:!text-primary !py-2 ">
+                                              {locale === "ar"
+                                                ? subCat?.arName
+                                                : subCat?.name}
+                                            </Button>
+                                          </Link>
 
-                                        {subCat?.children?.length !== 0 && (
-                                          <div className="submenu absolute top-[0%] left-[100%] min-w-[150px] bg-white shadow-md opacity-0 transition-all">
-                                            <ul>
-                                              {subCat?.children?.map(
-                                                (thirdLavelCat, index__) => {
-                                                  return (
-                                                    <li
-                                                      className="list-none w-full"
-                                                      key={index__}
-                                                    >
-                                                      <Link
-                                                        href={`/products?thirdLavelCatId=${thirdLavelCat?._id}`}
-                                                        className="w-full"
+                                          {subCat?.children?.length !== 0 && (
+                                            <div className="submenu absolute top-[0%] left-[100%] min-w-[150px] bg-white shadow-md opacity-0 transition-all">
+                                              <ul>
+                                                {subCat?.children?.map(
+                                                  (thirdLavelCat, index__) => {
+                                                    return (
+                                                      <li
+                                                        className="list-none w-full"
+                                                        key={index__}
                                                       >
-                                                        <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none !text-gray-800 hover:!text-primary !py-2 ">
-                                                          {thirdLavelCat?.name}
-                                                        </Button>
-                                                      </Link>
-                                                    </li>
-                                                  );
-                                                }
-                                              )}
-                                            </ul>
-                                          </div>
-                                        )}
-                                      </li>
-                                    );
-                                  })}
-                                </ul>
-                              </div>
-                            )}
-                          </li>
-                        );
-                      })}
+                                                        <Link
+                                                          href={`/products?thirdLavelCatId=${thirdLavelCat?._id}`}
+                                                          className="w-full"
+                                                        >
+                                                          <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none !text-gray-800 hover:!text-primary !py-2 ">
+                                                            {locale === "ar"
+                                                              ? thirdLavelCat?.arName
+                                                              : thirdLavelCat?.name}
+                                                          </Button>
+                                                        </Link>
+                                                      </li>
+                                                    );
+                                                  }
+                                                )}
+                                              </ul>
+                                            </div>
+                                          )}
+                                        </li>
+                                      );
+                                    })}
+                                  </ul>
+                                </div>
+                              )}
+                            </li>
+                          );
+                        })}
                   </ul>
                 </Collapse>
               </div>
-
-
-
-
             </div>
           )}
 
@@ -157,71 +169,77 @@ const Navigation = (props) => {
                 </Link>
               </li>
 
-              {catData?.length !== 0 && catData?.filter((cat, idx) => idx < 8)
-                ?.map((cat, index) => {
-                  return (
-                    <li className="list-none relative" key={index}>
-                      <Link
-                        href={`/products?catId=${cat?._id}`}
-                        className="link transition text-[14px] !font-[500]"
-                      >
-                        <Button className="link transition !font-[500] !text-gray-300 hover:!text-primary !py-4">
-                          {cat?.name}
-                        </Button>
-                      </Link>
+              {catData?.length !== 0 &&
+                catData
+                  ?.filter((cat, idx) => idx < 8)
+                  ?.map((cat, index) => {
+                    return (
+                      <li className="list-none relative" key={index}>
+                        <Link
+                          href={`/products?catId=${cat?._id}`}
+                          className="link transition text-[14px] !font-[500]"
+                        >
+                          <Button className="link transition !font-[500] !text-gray-300 hover:!text-primary !py-4">
+                            {locale === "ar" ? cat?.arName : cat?.name}
+                          </Button>
+                        </Link>
 
-                      {cat?.children?.length !== 0 && (
-                        <div className="submenu absolute top-[120%] left-[0%] min-w-[150px] bg-white shadow-md opacity-0 transition-all">
-                          <ul>
-                            {cat?.children?.map((subCat, index_) => {
-                              return (
-                                <li
-                                  className="list-none w-full relative"
-                                  key={index_}
-                                >
-                                  <Link
-                                    href={`/products?subCatId=${subCat?._id}`}
-                                    className="w-full"
+                        {cat?.children?.length !== 0 && (
+                          <div className="submenu absolute top-[120%] left-[0%] min-w-[150px] bg-white shadow-md opacity-0 transition-all">
+                            <ul>
+                              {cat?.children?.map((subCat, index_) => {
+                                return (
+                                  <li
+                                    className="list-none w-full relative"
+                                    key={index_}
                                   >
-                                    <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none">
-                                      {subCat?.name}
-                                    </Button>
-                                  </Link>
+                                    <Link
+                                      href={`/products?subCatId=${subCat?._id}`}
+                                      className="w-full"
+                                    >
+                                      <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none">
+                                        {locale === "ar"
+                                          ? subCat?.arName
+                                          : subCat?.name}
+                                      </Button>
+                                    </Link>
 
-                                  {subCat?.children?.length !== 0 && (
-                                    <div className="submenu absolute top-[0%] left-[100%] min-w-[150px] bg-white shadow-md opacity-0 transition-all">
-                                      <ul>
-                                        {subCat?.children?.map(
-                                          (thirdLavelCat, index__) => {
-                                            return (
-                                              <li
-                                                className="list-none w-full"
-                                                key={index__}
-                                              >
-                                                <Link
-                                                  href={`/products?thirdLavelCatId=${thirdLavelCat?._id}`}
-                                                  className="w-full"
+                                    {subCat?.children?.length !== 0 && (
+                                      <div className="submenu absolute top-[0%] left-[100%] min-w-[150px] bg-white shadow-md opacity-0 transition-all">
+                                        <ul>
+                                          {subCat?.children?.map(
+                                            (thirdLavelCat, index__) => {
+                                              return (
+                                                <li
+                                                  className="list-none w-full"
+                                                  key={index__}
                                                 >
-                                                  <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none">
-                                                    {thirdLavelCat?.name}
-                                                  </Button>
-                                                </Link>
-                                              </li>
-                                            );
-                                          }
-                                        )}
-                                      </ul>
-                                    </div>
-                                  )}
-                                </li>
-                              );
-                            })}
-                          </ul>
-                        </div>
-                      )}
-                    </li>
-                  );
-                })}
+                                                  <Link
+                                                    href={`/products?thirdLavelCatId=${thirdLavelCat?._id}`}
+                                                    className="w-full"
+                                                  >
+                                                    <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none">
+                                                      {locale === "ar"
+                                                        ? thirdLavelCat?.arName
+                                                        : thirdLavelCat?.name}
+                                                    </Button>
+                                                  </Link>
+                                                </li>
+                                              );
+                                            }
+                                          )}
+                                        </ul>
+                                      </div>
+                                    )}
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        )}
+                      </li>
+                    );
+                  })}
             </ul>
           </div>
 
@@ -236,15 +254,17 @@ const Navigation = (props) => {
 
       {context?.windowWidth < 992 && <MobileNav />}
 
-
-      {
-        catData?.length !== 0 &&
+      {catData?.length !== 0 && (
         <>
-          {context?.windowWidth < 992 && <MobileMenu catData={catData} isOpenMobileMenu={props.isOpenMobileMenu} openMobileMenu={props.openMobileMenu}/>}
+          {context?.windowWidth < 992 && (
+            <MobileMenu
+              catData={catData}
+              isOpenMobileMenu={props.isOpenMobileMenu}
+              openMobileMenu={props.openMobileMenu}
+            />
+          )}
         </>
-      }
-
-
+      )}
     </>
   );
 };
