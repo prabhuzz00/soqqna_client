@@ -2,8 +2,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Sidebar } from "@/components/Sidebar";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
-import ProductItem from "@/components/ProductItem";
-import ProductItemListView from "@/components/ProductItemListView";
+import ProductItem from "@/components/ProductItem/index";
+import ProductItemListView from "@/components/ProductItemListView/index";
 import Button from "@mui/material/Button";
 import { IoGridSharp } from "react-icons/io5";
 import { LuMenu } from "react-icons/lu";
@@ -34,6 +34,21 @@ const SearchPage = () => {
       window.scrollTo(0, 0);
     }
   }, []);
+
+  // Effect to update productsData when context.searchData changes
+  useEffect(() => {
+    if (context?.searchData) {
+      setProductsData(context.searchData);
+      setPage(1);
+      if (context.searchData.totalPages) {
+        setTotalPages(context.searchData.totalPages);
+      } else if (context.searchData.meta?.totalPages) { 
+         setTotalPages(context.searchData.meta.totalPages);
+      } else {
+         setTotalPages(context.searchData.totalPages || 1);
+      }
+    }
+  }, [context?.searchData]); 
 
   const open = Boolean(anchorEl);
   const handleClick = (event) => {

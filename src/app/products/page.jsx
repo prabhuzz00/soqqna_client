@@ -20,6 +20,8 @@ const ProductPage = () => {
 
   const [productsData, setProductsData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState("");
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -33,6 +35,21 @@ const ProductPage = () => {
       window.scrollTo(0, 0);
     }
   }, []);
+
+  const handleTagInputChange = (e) => {
+    setTagInput(e.target.value);
+  };
+
+  const handleAddTag = (e) => {
+    if (e.key === "Enter" && tagInput.trim() !== "") {
+      setTags([...tags, tagInput.trim()]);
+      setTagInput("");
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove) => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
+  };
 
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -84,6 +101,31 @@ const ProductPage = () => {
             )}
 
             <div className="rightContent w-full lg:w-[80%] py-3">
+              {/* Tags Input */}
+              <div className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Add tags..."
+                  value={tagInput}
+                  onChange={handleTagInputChange}
+                  onKeyPress={handleAddTag}
+                  className="border p-2 rounded-md w-full"
+                />
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {tags.map((tag, index) => (
+                    <span key={index} className="bg-gray-200 px-2 py-1 rounded-md flex items-center">
+                      {tag}
+                      <button
+                        onClick={() => handleRemoveTag(tag)}
+                        className="ml-1 text-red-500"
+                      >
+                        &times;
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
               <div className="bg-[#f1f1f1] p-2 w-full mb-4 rounded-md flex items-center justify-between sticky top-[53px] z-[99]">
                 <div className="col1 flex items-center itemViewActions">
                   <Button

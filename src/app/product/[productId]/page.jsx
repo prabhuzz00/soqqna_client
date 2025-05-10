@@ -1,154 +1,50 @@
-"use client"
-import React, { useEffect, useRef, useState } from "react";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import Link from "next/link";
-import { ProductZoom } from "@/components/ProductZoom";
-import { ProductDetailsComponent } from "@/components/ProductDetails";
-import { Reviews } from "./reviews";
-import ProductsSlider from "@/components/ProductsSlider";
-import CircularProgress from '@mui/material/CircularProgress';
-import { fetchDataFromApi } from "@/utils/api";
+import { fetchDataFromApi } from '@/utils/api';
+import ProductOverview from '@/components/ProductDetail';
+import { cache } from 'react';
 
-const ProductPage = ({ params }) => {
-  const [activeTab, setActiveTab] = useState(0);
-  const [productData, setProductData] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-  const [reviewsCount, setReviewsCount] = useState(0);
-  const [relatedProductData, setRelatedProductData] = useState([]);
+const ProductPage = async ({ params }) => {
+  const id = params.productId;
 
-  const  id  = params.productId
-
-  const reviewSec = useRef();
-
-  useEffect(() => {
-    fetchDataFromApi(`/api/user/getReviews?productId=${id}`).then((res) => {
-      if (res?.error === false) {
-        setReviewsCount(res.reviews.length)
-      }
-    })
-
-  }, [reviewsCount])
-
-  useEffect(() => {
-    setIsLoading(true);
-    fetchDataFromApi(`/api/product/${id}`).then((res) => {
-      if (res?.error === false) {
-        setProductData(res?.product);
-
-        fetchDataFromApi(`/api/product/getAllProductsBySubCatId/${res?.product?.subCatId}`).then((res) => {
-          if (res?.error === false) {
-            const filteredData = res?.products?.filter((item) => item._id !== id);
-            setRelatedProductData(filteredData)
-          }
-        })
-
-        setTimeout(() => {
-          setIsLoading(false);
-        }, 700);
-      }
-    })
-
-    if (typeof window !== "undefined") {
-      window.scrollTo(0, 0)
+  // Server Action
+  async function getReviews() {
+    'use server';
+    const res = await fetchDataFromApi(`/api/user/getReviews?productId=${id}`);
+    if (res?.error === false) {
+      return res.reviews.length;
     }
-  }, [id])
-
-
-  const gotoReviews = () => {
-    window.scrollTo({
-      top: reviewSec?.current.offsetTop - 170,
-      behavior: 'smooth',
-    })
-
-    setActiveTab(1)
-
+    return 0;
   }
 
+  const getProductDetail = cache(async function getProductDetail() {
+    'use server';
+    const res = await fetchDataFromApi(`/api/product/${id}`);
+    if (res?.error === true) {
+      return null;
+    }
+    const subCategory = await fetchDataFromApi(
+      `/api/product/getAllProductsBySubCatId/${res?.product?.subCatId}`
+    );
+    if (subCategory?.error === true) {
+      return null;
+    }
+    const filteredData = res?.products?.filter((item) => item._id !== id);
+    return {
+      product: res?.product,
+      relatedProducts: filteredData ? filteredData : [],
+    };
+  });
+
+  const reviewsCount = await getReviews();
+
+  const productDetail = await getProductDetail();
 
   return (
-    <>
-     
-      <section className="bg-white py-5">
-        {
-          isLoading === true ?
-            <div className="flex items-center justify-center min-h-[300px]">
-              <CircularProgress />
-            </div>
+    <ProductOverview
+      product={productDetail.product}
+      relatedProducts={productDetail.relatedProducts}
+      reviewsCount={reviewsCount}
+    />
+  );
+};
 
-
-            :
-
-
-            <>
-              <div className="container flex gap-8 flex-col lg:flex-row items-start lg:items-center">
-                <div className="productZoomContainer w-full lg:w-[40%]">
-                  <ProductZoom images={productData?.images} />
-                </div>
-
-                <div className="productContent w-full lg:w-[60%] pr-2 pl-2 lg:pr-10 lg:pl-10">
-                  <ProductDetailsComponent item={productData} reviewsCount={reviewsCount} gotoReviews={gotoReviews} />
-                </div>
-              </div>
-
-              <div className="container pt-10">
-                <div className="flex items-center gap-8 mb-5">
-                  <span
-                    className={`link text-[17px] cursor-pointer font-[500] ${activeTab === 0 && "text-primary"
-                      }`}
-                    onClick={() => setActiveTab(0)}
-                  >
-                    Description
-                  </span>
-
-
-                  <span
-                    className={`link text-[17px] cursor-pointer font-[500] ${activeTab === 1 && "text-primary"
-                      }`}
-                    onClick={() => setActiveTab(1)}
-                    ref={reviewSec}
-                  >
-                    Reviews ({reviewsCount})
-                  </span>
-                </div>
-
-                {activeTab === 0 && (
-                  <div className="shadow-md w-full py-5 px-8 rounded-md text-[14px]">
-                    {
-                      productData?.description
-                    }
-                  </div>
-                )}
-
-
-                {activeTab === 1 && (
-                  <div className="w-full sm:w-[80%] py-0  rounded-md">
-                    {
-                      productData?.length !== 0 && <Reviews productId={productData?._id} setReviewsCount={setReviewsCount} />
-                    }
-
-                  </div>
-                )}
-              </div>
-
-              {
-                relatedProductData?.length !== 0 &&
-                <div className="container pt-8">
-                  <h2 className="text-[20px] font-[600] pb-0">Related Products</h2>
-                  <ProductsSlider items={6} data={relatedProductData} />
-                </div>
-              }
-
-
-            </>
-
-        }
-
-
-
-
-      </section>
-    </>
-  )
-}
-
-export default ProductPage
+export default ProductPage;

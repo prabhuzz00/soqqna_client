@@ -379,4 +379,6 @@ const ProductItem = (props) => {
   );
 };
 
-export default ProductItem;
+const MemoizedProductItemListView = React.memo(ProductItem);
+
+export default MemoizedProductItemListView;

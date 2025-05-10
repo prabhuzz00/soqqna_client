@@ -23,6 +23,7 @@ const Register = () => {
 
   const [formFields, setFormFields] = useState({
     name: "",
+    email: "",
     phone: "",
     password: "",
   });
@@ -34,7 +35,6 @@ const Register = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // Ensure this runs only on client
       window.scrollTo(0, 0);
     }
   }, []);
@@ -61,6 +61,11 @@ const Register = () => {
       return false;
     }
 
+    if (formFields.email === "") {
+      context.alertBox("error", "Please enter email address");
+      return false;
+    }
+
     if (formFields.phone === "") {
       context.alertBox("error", "Please enter phone number");
       return false;
@@ -78,6 +83,7 @@ const Register = () => {
         Cookies.set("userphone", formFields.phone);
         setFormFields({
           name: "",
+          email: "",
           phone: "",
           password: "",
         });
@@ -156,6 +162,20 @@ const Register = () => {
                 value={formFields.name}
                 disabled={isLoading === true ? true : false}
                 label="Full Name"
+                variant="outlined"
+                className="w-full"
+                onChange={onChangeInput}
+              />
+            </div>
+
+            <div className="form-group w-full mb-5">
+              <TextField
+                type="email"
+                id="email"
+                name="email"
+                label="Email"
+                value={formFields.email}
+                disabled={isLoading === true ? true : false}
                 variant="outlined"
                 className="w-full"
                 onChange={onChangeInput}
