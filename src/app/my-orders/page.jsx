@@ -1,17 +1,20 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AccountSidebar from "@/components/AccountSidebar";
 import { Button } from "@mui/material";
 import { FaAngleDown, FaAngleUp } from "react-icons/fa6";
 import Badge from "@/components/Badge";
-import { downloadFile, fetchDataFromApi } from "@/utils/api";
+import { fetchDataFromApi } from "@/utils/api";
 import Pagination from "@mui/material/Pagination";
+import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 
 const Orders = () => {
   const [isOpenOrderdProduct, setIsOpenOrderdProduct] = useState(null);
   const [orders, setOrders] = useState([]);
   const [page, setPage] = useState(1);
   const [openModalOrder, setOpenModalOrder] = useState(null);
+  const [currentOrder, setCurrentOrder] = useState(null);
 
   const isShowOrderdProduct = (index) => {
     if (isOpenOrderdProduct === index) {
@@ -37,11 +40,23 @@ const Orders = () => {
     );
   }, [page]);
 
-  const handleInvoiceDownload = (orderId) => {
-    const filename = `invoice-${orderId}.pdf`;
-    downloadFile(`/api/order/invoice/${orderId}`, filename);
-  };
+  // const generateInvoice = async (order) => {
+  //   setCurrentOrder(order); // Set the current order
+  //   setTimeout(async () => {
+  //     // Give React time to render
+  //     const invoiceContent = document.getElementById("invoice-content");
+  //     const canvas = await html2canvas(invoiceContent);
+  //     const imgData = canvas.toDataURL("image/png");
 
+  //     const pdf = new jsPDF("p", "mm", "a4");
+  //     const imgProps = pdf.getImageProperties(imgData);
+  //     const pdfWidth = pdf.internal.pageSize.getWidth();
+  //     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+  //     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+  //     pdf.save(`invoice_${currentOrder?._id}.pdf`);
+  //   }, 100); // wait 100ms so `currentOrder` invoice is ready
+  // };
   return (
     <section className="py-5 lg:py-10 w-full">
       <div className="container flex flex-col lg:flex-row gap-5">
@@ -195,9 +210,7 @@ const Orders = () => {
                               </td>
                               <td className="px-6 py-4 font-[500] whitespace-nowrap">
                                 <button
-                                  onClick={() =>
-                                    handleInvoiceDownload(order._id)
-                                  }
+                                  // onClick={() => generateInvoice(order)}
                                   className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
                                 >
                                   Download

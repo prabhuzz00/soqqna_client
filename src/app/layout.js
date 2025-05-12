@@ -7,8 +7,8 @@ import Footer from "@/components/Footer";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
 
 export const metadata = {
-  title: "Sooqna Shopping Platform",
-  description: "Sooqna App",
+  title: "Ecommerce App Next Js",
+  description: "Ecommerce App",
 };
 
 export default function RootLayout({ children }) {
@@ -24,11 +24,11 @@ export default function RootLayout({ children }) {
             </LanguageProvider>
           </ThemeProvider>
         </AuthProvider>
-        <script
-          src={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places&v=beta&callback=initMap`}
-          async
-          defer
-        ></script>
+      <script
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places&v=beta&callback=initMap`}
+        async
+        defer
+      ></script>
       </body>
     </html>
   );
