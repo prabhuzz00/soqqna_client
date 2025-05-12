@@ -1,12 +1,10 @@
-"use client";
-import React, { useEffect, useRef, useState } from "react";
-import { ProductZoom } from "@/components/ProductZoom";
-import { ProductDetailsComponent } from "@/components/ProductDetails";
-import { Reviews } from "../../app/product/[productId]/reviews";
-import ProductsSlider from "@/components/ProductsSlider";
-import CircularProgress from "@mui/material/CircularProgress";
-import { useLanguage } from "@/context/LanguageContext";
-import { useTranslation } from "@/utils/useTranslation";
+'use client';
+import React, { useEffect, useRef, useState } from 'react';
+import { ProductZoom } from '@/components/ProductZoom';
+import { ProductDetailsComponent } from '@/components/ProductDetails';
+import { Reviews } from '../../app/product/[productId]/reviews';
+import ProductsSlider from '@/components/ProductsSlider';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
   const [activeTab, setActiveTab] = useState(0);
@@ -15,15 +13,13 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
   const [reviewsCount, setReviewsCount] = useState(reviewsCountProp ?? 0);
   const [relatedProductData, setRelatedProductData] = useState(relatedProducts);
 
-  const { locale } = useLanguage();
-  const { t } = useTranslation();
   const reviewSec = useRef();
-  console.log("productData", productData);
+ console.log('productData', productData);
   useEffect(() => {
     setProductData(product);
     setRelatedProductData(relatedProducts);
 
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       window.scrollTo(0, 0);
     }
   }, [product, relatedProducts]);
@@ -31,7 +27,7 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
   const gotoReviews = () => {
     window.scrollTo({
       top: reviewSec?.current.offsetTop - 170,
-      behavior: "smooth",
+      behavior: 'smooth',
     });
 
     setActiveTab(1);
@@ -64,7 +60,7 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
               <div className="flex items-center gap-8 mb-5">
                 <span
                   className={`link text-[17px] cursor-pointer font-[500] ${
-                    activeTab === 0 && "text-primary"
+                    activeTab === 0 && 'text-primary'
                   }`}
                   onClick={() => setActiveTab(0)}
                 >
@@ -73,7 +69,7 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
 
                 <span
                   className={`link text-[17px] cursor-pointer font-[500] ${
-                    activeTab === 1 && "text-primary"
+                    activeTab === 1 && 'text-primary'
                   }`}
                   onClick={() => setActiveTab(1)}
                   ref={reviewSec}
@@ -84,9 +80,7 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
 
               {activeTab === 0 && (
                 <div className="shadow-md w-full py-5 px-8 rounded-md text-[14px]">
-                  {locale === "ar"
-                    ? productData.arbDescription
-                    : productData.description}
+                  {productData?.description}
                 </div>
               )}
 

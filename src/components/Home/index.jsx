@@ -21,7 +21,6 @@ import { Navigation, FreeMode } from "swiper/modules";
 import BlogItem from "@/components/BlogItem";
 import HomeBannerV2 from "@/components/HomeSliderV2";
 import { useTranslation } from "@/utils/useTranslation";
-import { useLanguage } from "@/context/LanguageContext";
 
 export default function Home() {
   const [value, setValue] = useState(0);
@@ -38,7 +37,6 @@ export default function Home() {
   const [error, setError] = useState(null);
 
   const context = useContext(MyContext);
-  const { locale } = useLanguage();
   const { t } = useTranslation();
 
   // Move useMemo calls before any early returns
@@ -176,7 +174,7 @@ export default function Home() {
               >
                 {context?.catData?.map((cat, index) => (
                   <Tab
-                    label={locale === "ar" ? cat?.arName : cat?.name}
+                    label={cat?.name}
                     className="!font-[600]"
                     key={index}
                     onClick={() => filterByCatId(cat?._id)}
