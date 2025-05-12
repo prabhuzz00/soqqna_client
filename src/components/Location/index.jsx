@@ -17,31 +17,56 @@ export default function LocationModal({ openkey, setOpenkey }) {
       console.error("Geolocation not supported");
       return;
     }
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const { latitude, longitude } = pos.coords;
-      const fallback = `Lat: ${latitude}, Lon: ${longitude}`;
-      try {
-        const geoRes = await fetch(
-          `/api/geocode?lat=${latitude}&lng=${longitude}`
-        );
-        const geoData = await geoRes.json();
-        const address =
-          geoData.results?.[0]?.formatted_address || fallback;
-        setUserLocation(address);
-        if (session?.user?.id) {
-          await saveAddress(address, session.user.id);
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        const fallback = `Lat: ${latitude}, Lon: ${longitude}`;
+
+        try {
+          const geoRes = await fetch(
+            `/api/geocode?lat=${latitude}&lng=${longitude}`
+          );
+          const geoData = await geoRes.json();
+          const address =
+            geoData.results?.[0]?.formatted_address || fallback;
+          setUserLocation(address);
+          if (session?.user?.id) {
+            await saveAddress(address, session.user.id);
+          } else {
+            localStorage.setItem("userLocation", address);
+          }
+        } catch {
+          setUserLocation(fallback);
+          if (!session?.user?.id) {
+            localStorage.setItem("userLocation", fallback);
+          }
+        }
+
+        setOpenkey(false);
+      },
+      (err) => {
+        console.error("Geolocation error:", err);
+        let msg = "";
+        if (err.code === err.PERMISSION_DENIED) {
+          msg = "Please allow location access in your browser settings.";
+        } else if (err.code === err.POSITION_UNAVAILABLE) {
+          msg = "Unable to determine your location.";
+        } else if (err.code === err.TIMEOUT) {
+          msg = "Location request timed out. Try again.";
         } else {
-          localStorage.setItem("userLocation", address);
+          msg = "An unknown error occurred.";
         }
-      } catch {
-        setUserLocation(fallback);
-        if (!session?.user?.id) {
-          localStorage.setItem("userLocation", fallback);
-        }
+        alert(msg);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0,
       }
-      setOpenkey(false);
-    });
+    );
   };
+
 
   const handleInputChange = async (e) => {
     const value = e.target.value;

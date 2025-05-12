@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
           </ThemeProvider>
         </AuthProvider>
       <script
-        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places&v=beta&callback=initMap`}
+        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places&v=beta`}
         async
         defer
       ></script>
@@ -33,9 +33,3 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
-
-// Define initMap function globally if needed by the Google Maps API loader
-// This can be an empty function for now if you don't have a specific init logic
-// window.initMap = function() {
-//   console.log("Google Maps API loaded.");
-// };

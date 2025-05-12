@@ -66,11 +66,11 @@ const Header = () => {
   // Remove the useEffect that was reading from localStorage directly
   // The userLocation will now come from the context
 
-  useEffect(() => {
-    if (isClient && context?.isLogin) {
-      allowLocation();
-    }
-  }, [isClient, context?.isLogin]);
+  // useEffect(() => {
+  //   if (isClient && context?.isLogin) {
+  //     allowLocation();
+  //   }
+  // }, [isClient, context?.isLogin]);
 
 
 
