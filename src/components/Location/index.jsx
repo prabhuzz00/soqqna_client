@@ -25,8 +25,7 @@ export default function LocationModal({ openkey, setOpenkey }) {
           `/api/geocode?lat=${latitude}&lng=${longitude}`
         );
         const geoData = await geoRes.json();
-        const address =
-          geoData.results?.[0]?.formatted_address || fallback;
+        const address = geoData.results?.[0]?.formatted_address || fallback;
         setUserLocation(address);
         if (session?.user?.id) {
           await saveAddress(address, session.user.id);
@@ -68,12 +67,9 @@ export default function LocationModal({ openkey, setOpenkey }) {
     setSuggestions([]);
 
     try {
-      const geoRes = await fetch(
-        `/api/geocode?place_id=${s.place_id}`
-      );
+      const geoRes = await fetch(`/api/geocode?place_id=${s.place_id}`);
       const geoData = await geoRes.json();
-      const address =
-        geoData.results?.[0]?.formatted_address || s.description;
+      const address = geoData.results?.[0]?.formatted_address || s.description;
       setUserLocation(address);
 
       if (session?.user?.id) {
@@ -113,7 +109,7 @@ export default function LocationModal({ openkey, setOpenkey }) {
     <div className="absolute md:top-[58px] mt-2 lg:top-[78px] -sm:left-[330px] top-[40px] md:left-0 z-50 bg-white border shadow-md rounded-md sm:w-[500px]  p-4  w-[330px] -left-[200px] sm:-left-[230px]">
       <div className="flex justify-between items-start mb-2">
         <h2 className="text-md font-semibold">
-          Welcome to <span className="text-primary">Sooqna</span>
+          Welcome to <span className="text-primary">Soouqna</span>
         </h2>
         <button
           onClick={() => setOpenkey(false)}
@@ -132,7 +128,9 @@ export default function LocationModal({ openkey, setOpenkey }) {
         >
           Detect My Location
         </button>
-        <span className="text-gray-400 text-sm text-center sm:text-left">OR</span>
+        <span className="text-gray-400 text-sm text-center sm:text-left">
+          OR
+        </span>
         <input
           type="text"
           placeholder="Search city or address..."

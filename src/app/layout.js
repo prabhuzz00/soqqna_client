@@ -7,8 +7,8 @@ import Footer from "@/components/Footer";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
 
 export const metadata = {
-  title: "Sooqna Shopping Platform",
-  description: "Sooqna App",
+  title: "Soouqna Shopping Platform",
+  description: "Soouqna App",
 };
 
 export default function RootLayout({ children }) {

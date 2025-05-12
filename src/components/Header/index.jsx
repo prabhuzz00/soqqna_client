@@ -261,7 +261,7 @@ const Header = () => {
                   <li className="list-none px-1">
                     <span>
                       <Link
-                        href="https://soqqna-vendor.netlify.app/"
+                        href="https://seller.soouqna.com/"
                         className="link transition text-[15px] font-[500] px-2"
                       >
                         {t("header.becomeVendor")}

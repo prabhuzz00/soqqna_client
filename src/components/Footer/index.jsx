@@ -73,14 +73,14 @@ const Footer = () => {
 
           <div className="footer flex px-3 lg:px-0 flex-col lg:flex-row py-8">
             <div className="part1 w-full lg:w-[25%] border-r border-[rgba(0,0,0,0.1)]">
-              <h2 className="text-[18px] font-[600] mb-4">
+              {/* <h2 className="text-[18px] font-[600] mb-4">
                 {t("footer.contactUs")}
               </h2>
               <p className="text-[13px] font-[400] pb-4">
                 {t("footer.classyShop")}
                 <br />
                 {t("footer.address")}
-              </p>
+              </p> */}
 
               <Link
                 className="link text-[13px]"
