@@ -1,19 +1,19 @@
-'use client';
-import React, { useContext, useState, useEffect, useRef } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import '../Search/style.css';
-import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import { Slide } from '@mui/material';
-import { IoSearch, IoImageOutline } from 'react-icons/io5';
-import { MyContext } from '@/context/ThemeProvider';
-import { useTranslation } from '@/utils/useTranslation';
-import Image from 'next/image';
-import { postData } from '@/utils/api';
+"use client";
+import React, { useContext, useState, useEffect, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import "../Search/style.css";
+import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import { Slide } from "@mui/material";
+import { IoSearch, IoImageOutline } from "react-icons/io5";
+import { MyContext } from "@/context/ThemeProvider";
+import { useTranslation } from "@/utils/useTranslation";
+import Image from "next/image";
+import { postData } from "@/utils/api";
 
 // Slide-up transition for the dialog
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -21,26 +21,26 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const Search = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isLoading, setIsLoading]     = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [isOpenSuggestions, setIsOpenSuggestions] = useState(false);
 
   // Image-search state
-  const [imageFile, setImageFile]     = useState(null);
-  const [previewUrl, setPreviewUrl]   = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
   const [showConfirmImageSearch, setShowConfirmImageSearch] = useState(false);
   const fileInputRef = useRef(null);
 
-  const context  = useContext(MyContext);
-  const router   = useRouter();
+  const context = useContext(MyContext);
+  const router = useRouter();
   const pathname = usePathname();
-  const { t }    = useTranslation();
+  const { t } = useTranslation();
 
   // Reset on navigation
   useEffect(() => {
-    if (!pathname.includes('/search')) {
-      setSearchQuery('');
+    if (!pathname.includes("/search")) {
+      setSearchQuery("");
       setSuggestions([]);
       cancelImageSearch();
     }
@@ -48,7 +48,7 @@ const Search = () => {
 
   // Also clear when panel toggles
   useEffect(() => {
-    setSearchQuery('');
+    setSearchQuery("");
   }, [context?.setOpenSearchPanel]);
 
   // Text-input suggestions
@@ -63,21 +63,22 @@ const Search = () => {
         const obj = { page: 1, limit: 5, query: searchQuery };
         const res = await postData(`/api/product/search/get`, obj);
         const list =
-          res?.products?.map(item => ({
+          res?.products?.map((item) => ({
             name: item.name,
             img: item.images[0],
             id: item._id || item.id,
           })) ||
-          res?.data?.map(item => ({
+          res?.data?.map((item) => ({
             name: item.name,
             img: item.images[0],
             id: item._id || item.id,
           })) ||
-          res?.results?.map(item => ({
+          res?.results?.map((item) => ({
             name: item.name,
             img: item.images[0],
             id: item._id || item.id,
-          })) || [];
+          })) ||
+          [];
         setSuggestions(list);
       } catch {
         setSuggestions([]);
@@ -99,11 +100,11 @@ const Search = () => {
     context.setSearchData(res);
     setIsLoading(false);
     context.setOpenSearchPanel(false);
-    router.push('/search');
+    router.push("/search");
   };
 
   // Suggestion click
-  const handleSuggestionClick = suggestion => {
+  const handleSuggestionClick = (suggestion) => {
     if (suggestion.id) {
       setSearchQuery(suggestion.name);
       setSuggestions([]);
@@ -116,8 +117,15 @@ const Search = () => {
   };
 
   // Category clicks (old)
-  const popularCategories = ['apple','xyz','kurti set','bangle','mobiles','water bottle'];
-  const handleCategoryClick = cat => {
+  const popularCategories = [
+    "apple",
+    "xyz",
+    "kurti set",
+    "bangle",
+    "mobiles",
+    "water bottle",
+  ];
+  const handleCategoryClick = (cat) => {
     setSearchQuery(cat);
     setSuggestions([]);
     search(cat);
@@ -126,13 +134,13 @@ const Search = () => {
   // ─── Image Search Handlers ─────────────────────
   const onImageIconClick = () => fileInputRef.current?.click();
 
-  const onFileChange = e => {
+  const onFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setImageFile(file);
     setPreviewUrl(URL.createObjectURL(file));
     setShowConfirmImageSearch(true);
-    setSearchQuery('');
+    setSearchQuery("");
     setSuggestions([]);
   };
 
@@ -142,19 +150,22 @@ const Search = () => {
     if (!imageFile) return;
     setIsLoading(true);
     const form = new FormData();
-    form.append('image', imageFile);
-    const res = await fetch('/api/search/image', { method: 'POST', body: form });
+    form.append("image", imageFile);
+    const res = await fetch("/api/search/image", {
+      method: "POST",
+      body: form,
+    });
     const data = await res.json();
     context.setSearchData(data.products || []);
     setIsLoading(false);
     context.setOpenSearchPanel(false);
-    router.push('/search');
+    router.push("/search");
   };
 
   const cancelImageSearch = () => {
     setShowConfirmImageSearch(false);
     setImageFile(null);
-    setPreviewUrl('');
+    setPreviewUrl("");
   };
   // ────────────────────────────────────────────────
 
@@ -163,10 +174,10 @@ const Search = () => {
       {/* Text Input */}
       <input
         type="text"
-        placeholder={t('header.searchPlaceholder')}
+        placeholder={t("header.searchPlaceholder")}
         className="flex-1 h-[35px] focus:outline-none bg-inherit p-2 text-[15px]"
         value={searchQuery}
-        onChange={e => setSearchQuery(e.target.value)}
+        onChange={(e) => setSearchQuery(e.target.value)}
         onFocus={() => setIsOpenSuggestions(true)}
         onBlur={() => setTimeout(() => setIsOpenSuggestions(false), 200)}
         disabled={!!imageFile}
@@ -182,13 +193,13 @@ const Search = () => {
       />
 
       {/* Image Search Icon */}
-      <Button
+      {/* <Button
         className="!ml-2 !min-w-[37px] h-[37px] !rounded-full"
         onClick={onImageIconClick}
         disabled={isLoading}
       >
         <IoImageOutline size={20} className="text-gray-500" />
-      </Button>
+      </Button> */}
 
       {/* Text Search Button */}
       <Button
@@ -210,40 +221,51 @@ const Search = () => {
         keepMounted
         onClose={cancelImageSearch}
         PaperProps={{
-          sx: { borderRadius: 3, p: 2, maxWidth: 360, width: '90%', mx: 'auto' }
+          sx: {
+            borderRadius: 3,
+            p: 2,
+            maxWidth: 360,
+            width: "90%",
+            mx: "auto",
+          },
         }}
         BackdropProps={{
-          sx: { backdropFilter: 'blur(4px)', backgroundColor: 'rgba(0,0,0,0.3)' }
+          sx: {
+            backdropFilter: "blur(4px)",
+            backgroundColor: "rgba(0,0,0,0.3)",
+          },
         }}
       >
-        <DialogTitle sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+        <DialogTitle sx={{ fontWeight: "bold", textAlign: "center" }}>
           Confirm Image Search
         </DialogTitle>
-        <DialogContent sx={{ display: 'flex', justifyContent: 'center', py: 1 }}>
-          <div style={{ width: 120, height: 120, position: 'relative' }}>
+        <DialogContent
+          sx={{ display: "flex", justifyContent: "center", py: 1 }}
+        >
+          <div style={{ width: 120, height: 120, position: "relative" }}>
             <Image
               src={previewUrl}
               alt="preview"
               fill
-              style={{ borderRadius: 8, objectFit: 'cover' }}
+              style={{ borderRadius: 8, objectFit: "cover" }}
             />
           </div>
         </DialogContent>
-        <DialogActions sx={{ justifyContent: 'center', pb: 2, pt: 1 }}>
+        <DialogActions sx={{ justifyContent: "center", pb: 2, pt: 1 }}>
           <Button
             variant="outlined"
             onClick={cancelImageSearch}
-            sx={{ textTransform: 'none', mr: 1 }}
+            sx={{ textTransform: "none", mr: 1 }}
           >
             Cancel
           </Button>
           <Button
             variant="contained"
             onClick={confirmImageSearch}
-            sx={{ textTransform: 'none' }}
+            sx={{ textTransform: "none" }}
             disabled={isLoading}
           >
-            {isLoading ? <CircularProgress size={20} /> : 'Search'}
+            {isLoading ? <CircularProgress size={20} /> : "Search"}
           </Button>
         </DialogActions>
       </Dialog>
@@ -253,7 +275,7 @@ const Search = () => {
         <div className="absolute top-[50px] left-0 w-full bg-white rounded-b-md shadow-lg z-50 p-3">
           <h3>Popular Searches</h3>
           <ul className="flex flex-wrap gap-2 mt-2">
-            {popularCategories.map(cat => (
+            {popularCategories.map((cat) => (
               <li key={cat}>
                 <Button
                   className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300"

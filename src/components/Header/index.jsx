@@ -238,17 +238,58 @@ const Header = () => {
                 {isClient &&
                   clientWindowWidth !== undefined &&
                   clientWindowWidth > 992 && (
+                    // <li className="list-none relative" style={{ zoom: "80%" }}>
+                    //   <FormControl sx={{ m: 1, minWidth: 120 }}>
+                    //     <Select
+                    //       size="small"
+                    //       value={locale}
+                    //       onChange={(e) => changeLanguage(e.target.value)}
+                    //       displayEmpty
+                    //       inputProps={{ "aria-label": "Without label" }}
+                    //     >
+                    //       <MenuItem value={"en"}>English</MenuItem>
+                    //       <MenuItem value={"ar"}>العربية</MenuItem>
+                    //     </Select>
+                    //   </FormControl>
+                    // </li>
                     <li className="list-none relative" style={{ zoom: "80%" }}>
-                      <FormControl sx={{ m: 1, minWidth: 120 }}>
+                      <FormControl sx={{ m: 1, minWidth: 35 }}>
                         <Select
-                          size="small"
                           value={locale}
                           onChange={(e) => changeLanguage(e.target.value)}
-                          displayEmpty
-                          inputProps={{ "aria-label": "Without label" }}
+                          disableUnderline
+                          variant="standard"
+                          IconComponent={() => null} // Remove dropdown arrow
+                          sx={{
+                            padding: 0,
+                            minWidth: 35,
+                            backgroundColor: "transparent",
+                            "& .MuiSelect-select": {
+                              // padding: "4px",
+                              display: "flex",
+                              alignItems: "center",
+                            },
+                            "& fieldset": {
+                              border: "none",
+                            },
+                          }}
                         >
-                          <MenuItem value={"en"}>English</MenuItem>
-                          <MenuItem value={"ar"}>العربية</MenuItem>
+                          <MenuItem value="en">
+                            <Image
+                              src="/flags/en.png"
+                              alt="English"
+                              width={35}
+                              height={35}
+                            />
+                          </MenuItem>
+                          <MenuItem value="ar">
+                            <Image
+                              src="/flags/ar.png"
+                              alt="Arabic"
+                              width={35}
+                              height={35}
+                            />
+                          </MenuItem>
                         </Select>
                       </FormControl>
                     </li>

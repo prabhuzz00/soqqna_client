@@ -10,9 +10,11 @@ import Pagination from "@mui/material/Pagination";
 import { IoGridSharp } from "react-icons/io5";
 import ProductItem from "@/components/ProductItem";
 import ProductItemListView from "@/components/ProductItemListView";
-import { postData } from "@/utils/api";
+import { fetchDataFromApi, postData } from "@/utils/api";
 import ProductLoadingGrid from "@/components/ProductLoading/productLoadingGrid";
 import { Suspense } from "react";
+import Breadcrumb from "@/components/Breadcrumb";
+import { useSearchParams } from "next/navigation";
 
 const ProductPage = () => {
   const [itemView, setItemView] = useState("grid");
@@ -29,6 +31,59 @@ const ProductPage = () => {
   const [selectedSortVal, setSelectedSortVal] = useState("Name, A to Z");
 
   const context = useContext(MyContext);
+
+  const searchParams = useSearchParams();
+  const subCatId = searchParams.get("subCatId");
+  const catId = searchParams.get("catId");
+
+  const [categoryName, setCategoryName] = useState("Products");
+  const [subCategoryName, setSubCategoryName] = useState("");
+  const [parentCatId, setParentCatId] = useState(null);
+
+  useEffect(() => {
+    const fetchCategoryData = async () => {
+      if (subCatId) {
+        const subCatRes = await fetchDataFromApi(`/api/category/${subCatId}`);
+        const subCat = subCatRes?.category;
+
+        if (subCat?.name) {
+          setSubCategoryName(subCat.name);
+
+          if (subCat?.parentId) {
+            setParentCatId(subCat.parentId); // ✅ store parent ID
+            const parentRes = await fetchDataFromApi(
+              `/api/category/${subCat.parentId}`
+            );
+            const parentCat = parentRes?.category;
+
+            if (parentCat?.name) {
+              setCategoryName(parentCat.name);
+            } else {
+              setCategoryName("Products");
+            }
+          } else {
+            setParentCatId(catId); // ✅ treat this as the main category
+            setCategoryName("Products");
+          }
+        }
+      } else if (catId) {
+        setSubCategoryName(""); // ✅ Clear previous subcategory
+        const catRes = await fetchDataFromApi(`/api/category/${catId}`);
+        const cat = catRes?.category;
+
+        if (cat?.name) {
+          setCategoryName(cat.name);
+        } else {
+          setCategoryName("Products");
+        }
+      } else {
+        setCategoryName("Products");
+        setSubCategoryName(""); // ✅ Clear both if neither is present
+      }
+    };
+
+    fetchCategoryData();
+  }, [subCatId, catId]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -74,6 +129,26 @@ const ProductPage = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <section className=" pb-0">
+        <Breadcrumb
+          paths={[
+            ...(categoryName && categoryName !== "Products"
+              ? [
+                  {
+                    label: categoryName,
+                    href: `/products?catId=${parentCatId}`,
+                  },
+                ]
+              : []),
+            ...(subCategoryName
+              ? [
+                  {
+                    label: subCategoryName,
+                    href: `/products?subCatId=${subCatId}`,
+                  },
+                ]
+              : []),
+          ]}
+        />
         <div className="bg-white p-2">
           <div className="container flex gap-3">
             <div
