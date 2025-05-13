@@ -130,11 +130,11 @@ const Footer = () => {
                       {t("footer.contactUs")}
                     </Link>
                   </li>
-                  <li className="list-none text-[14px] w-full mb-2">
+                  {/* <li className="list-none text-[14px] w-full mb-2">
                     <Link href="/" className="link">
                       {t("footer.sitemap")}
                     </Link>
-                  </li>
+                  </li> */}
                   <li className="list-none text-[14px] w-full mb-2">
                     <Link href="/" className="link">
                       {t("footer.stores")}
@@ -255,7 +255,7 @@ const Footer = () => {
             </li>
           </ul>
 
-          <p className="text-[13px] text-center mb-0">© 2025 - SOQQNA</p>
+          <p className="text-[13px] text-center mb-0">© 2025 - SOOUQNA</p>
 
           <div className="flex items-center gap-1">
             <img src="/carte_bleue.png" alt="image" />
