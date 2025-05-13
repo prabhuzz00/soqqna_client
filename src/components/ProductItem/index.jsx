@@ -278,18 +278,18 @@ const ProductItem = (props) => {
         </span>
 
         <div className="actions absolute top-[-20px] right-[5px] z-50 flex items-center gap-2 flex-col w-[50px] transition-all duration-300 group-hover:top-[15px] opacity-0 group-hover:opacity-100">
-          <Button
+          {/* <Button
             className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white  text-black hover:!bg-primary hover:text-white group"
             onClick={() =>
               context.handleOpenProductDetailsModal(true, props?.item)
             }
           >
             <MdZoomOutMap className="text-[18px] !text-black group-hover:text-white hover:!text-white" />
-          </Button>
+          </Button> */}
 
-          <Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white  text-black hover:!bg-primary hover:text-white group">
+          {/* <Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white  text-black hover:!bg-primary hover:text-white group">
             <IoGitCompareOutline className="text-[18px] !text-black group-hover:text-white hover:!text-white" />
-          </Button>
+          </Button> */}
 
           <Button
             className={`!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white  text-black hover:!bg-primary hover:text-white group`}
@@ -386,7 +386,6 @@ const ProductItem = (props) => {
     </div>
   );
 };
-
 
 const MemoizedProductItem = React.memo(ProductItem);
 

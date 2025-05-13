@@ -48,7 +48,7 @@ const ProductPage = () => {
   };
 
   const handleRemoveTag = (tagToRemove) => {
-    setTags(tags.filter(tag => tag !== tagToRemove));
+    setTags(tags.filter((tag) => tag !== tagToRemove));
   };
 
   const open = Boolean(anchorEl);
@@ -103,17 +103,20 @@ const ProductPage = () => {
             <div className="rightContent w-full lg:w-[80%] py-3">
               {/* Tags Input */}
               <div className="mb-4">
-                <input
+                {/* <input
                   type="text"
                   placeholder="Add tags..."
                   value={tagInput}
                   onChange={handleTagInputChange}
                   onKeyPress={handleAddTag}
                   className="border p-2 rounded-md w-full"
-                />
+                /> */}
                 <div className="mt-2 flex flex-wrap gap-2">
                   {tags.map((tag, index) => (
-                    <span key={index} className="bg-gray-200 px-2 py-1 rounded-md flex items-center">
+                    <span
+                      key={index}
+                      className="bg-gray-200 px-2 py-1 rounded-md flex items-center"
+                    >
                       {tag}
                       <button
                         onClick={() => handleRemoveTag(tag)}

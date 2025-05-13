@@ -106,7 +106,7 @@ export default function LocationModal({ openkey, setOpenkey }) {
   };
 
   return (
-    <div className="absolute md:top-[58px] mt-2 lg:top-[78px] -sm:left-[330px] top-[40px] md:left-0 z-50 bg-white border shadow-md rounded-md sm:w-[500px]  p-4  w-[330px] -left-[200px] sm:-left-[230px]">
+    <div className="absolute ml-[40px] md:top-[58px] mt-2 lg:top-[78px] -sm:left-[330px] top-[40px] md:left-0 z-50 bg-white border shadow-md rounded-md sm:w-[500px]  p-4  w-[330px] -left-[200px] sm:-left-[230px]">
       <div className="flex justify-between items-start mb-2">
         <h2 className="text-md font-semibold">
           Welcome to <span className="text-primary">Soouqna</span>
