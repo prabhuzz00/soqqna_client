@@ -105,8 +105,8 @@ export default function RefundPolicyPage() {
                 </ul>
                 <p className="mt-4 text-muted-foreground">
                   Please note that certain items are not eligible for return due
-                  to hygiene and safety reasons. See the "Exceptions and
-                  Non-Returnable Items" section for more details.
+                  to hygiene and safety reasons. See the &quot;Exceptions and
+                  Non-Returnable Items&quot; section for more details.
                 </p>
               </section>
 
@@ -189,8 +189,8 @@ export default function RefundPolicyPage() {
                 </ul>
                 <p className="mt-4 text-muted-foreground">
                   You will receive an email notification when your refund has
-                  been processed. Please see the "Refund Timeline" section for
-                  information on when to expect your refund.
+                  been processed. Please see the &quot;Refund Timeline&quot;
+                  section for information on when to expect your refund.
                 </p>
               </section>
 
@@ -231,8 +231,9 @@ export default function RefundPolicyPage() {
                     certificates.
                   </li>
                   <li>
-                    <strong>Clearance Items:</strong> Products marked as "Final
-                    Sale," "Clearance," or "As Is."
+                    <strong>Clearance Items:</strong> Products marked as
+                    &quot;Final Sale,&quot; &quot;Clearance,&quot; or &quot;As
+                    Is.&quot;
                   </li>
                 </ul>
                 <p className="mt-4 text-muted-foreground">
@@ -372,8 +373,8 @@ export default function RefundPolicyPage() {
                     shipping method that provides proof of delivery.
                   </li>
                   <li>
-                    Please mark the package as "Returned Merchandise" to avoid
-                    additional customs charges.
+                    Please mark the package as &quot;Returned Merchandise&quot;
+                    to avoid additional customs charges.
                   </li>
                 </ul>
                 <p className="mt-4 text-muted-foreground">
@@ -393,15 +394,15 @@ export default function RefundPolicyPage() {
                 </p>
                 <ul className="ml-6 list-disc space-y-2 text-muted-foreground">
                   <li>
-                    <strong>Customer's Responsibility:</strong> In most cases,
-                    the customer is responsible for return shipping costs. We
-                    recommend using a trackable shipping method to ensure the
-                    package reaches our returns department.
+                    <strong>Customer&apos;s Responsibility:</strong> In most
+                    cases, the customer is responsible for return shipping
+                    costs. We recommend using a trackable shipping method to
+                    ensure the package reaches our returns department.
                   </li>
                   <li>
-                    <strong>SOOUQNA's Responsibility:</strong> We will cover
-                    return shipping costs if the return is due to our error
-                    (wrong item shipped, defective product, etc.). In such
+                    <strong>SOOUQNA&apos;s Responsibility:</strong> We will
+                    cover return shipping costs if the return is due to our
+                    error (wrong item shipped, defective product, etc.). In such
                     cases, we will provide a prepaid return shipping label.
                   </li>
                 </ul>
@@ -445,7 +446,7 @@ export default function RefundPolicyPage() {
                   </li>
                 </ul>
                 <p className="mt-4 text-muted-foreground">
-                  If you haven't received your refund within the expected
+                  If you haven&apos;t received your refund within the expected
                   timeframe, please check your bank account or credit card
                   statement first, then contact our customer service team for
                   assistance.

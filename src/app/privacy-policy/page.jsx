@@ -14,7 +14,7 @@ export default function PrivacyPolicyPage() {
     { id: "cookies", title: "Cookies and Tracking Technologies" },
     { id: "data-security", title: "Data Security" },
     { id: "your-rights", title: "Your Rights and Choices" },
-    { id: "childrens-privacy", title: "Children's Privacy" },
+    { id: "childrens-privacy", title: "Children&apos;s Privacy" },
     { id: "international-transfers", title: "International Data Transfers" },
     { id: "policy-changes", title: "Changes to This Privacy Policy" },
     { id: "gdpr", title: "GDPR Compliance" },
@@ -65,11 +65,11 @@ export default function PrivacyPolicyPage() {
               <section id="introduction" className="scroll-mt-20">
                 <h2 className="mb-4 text-2xl font-bold">Introduction</h2>
                 <p className="mb-4 text-muted-foreground">
-                  SOOUQNA ("we," "our," or "us") is committed to protecting your
-                  privacy. This Privacy Policy explains how we collect, use,
-                  disclose, and safeguard your information when you visit our
-                  website, mobile application, and use our services
-                  (collectively, the "Platform").
+                  SOOUQNA (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;)
+                  is committed to protecting your privacy. This Privacy Policy
+                  explains how we collect, use, disclose, and safeguard your
+                  information when you visit our website, mobile application,
+                  and use our services (collectively, the &quot;Platform&quot;).
                 </p>
                 <p className="text-muted-foreground">
                   Please read this Privacy Policy carefully. By accessing or
@@ -250,9 +250,9 @@ export default function PrivacyPolicyPage() {
                   We use cookies, web beacons, pixels, and similar tracking
                   technologies to collect information about your browsing
                   activities on our Platform. These technologies help us analyze
-                  trends, administer the website, track users' movements around
-                  the site, and gather demographic information about our user
-                  base as a whole.
+                  trends, administer the website, track users&apos; movements
+                  around the site, and gather demographic information about our
+                  user base as a whole.
                 </p>
                 <h3 className="mb-2 text-xl font-semibold">
                   Types of Cookies We Use
@@ -349,23 +349,25 @@ export default function PrivacyPolicyPage() {
                 </ul>
                 <p className="mt-4 text-muted-foreground">
                   To exercise these rights, please contact us using the
-                  information provided in the "Contact Information" section
-                  below.
+                  information provided in the &quot;Contact Information&quot;
+                  section below.
                 </p>
                 <h3 className="mb-2 mt-6 text-xl font-semibold">
                   Marketing Communications
                 </h3>
                 <p className="text-muted-foreground">
                   You can opt out of receiving marketing communications from us
-                  by clicking the "unsubscribe" link in our emails, updating
-                  your communication preferences in your account settings, or
-                  contacting us directly.
+                  by clicking the &quot;unsubscribe&quot; link in our emails,
+                  updating your communication preferences in your account
+                  settings, or contacting us directly.
                 </p>
               </section>
 
               {/* Children's Privacy */}
               <section id="childrens-privacy" className="scroll-mt-20">
-                <h2 className="mb-4 text-2xl font-bold">Children's Privacy</h2>
+                <h2 className="mb-4 text-2xl font-bold">
+                  Children&apos;s Privacy
+                </h2>
                 <p className="text-muted-foreground">
                   Our Platform is not intended for children under the age of 13
                   (or 16 in certain jurisdictions). We do not knowingly collect
@@ -408,12 +410,13 @@ export default function PrivacyPolicyPage() {
                 <p className="text-muted-foreground">
                   We may update our Privacy Policy from time to time. We will
                   notify you of any changes by posting the new Privacy Policy on
-                  this page and updating the "Last Updated" date at the top. You
-                  are advised to review this Privacy Policy periodically for any
-                  changes. Changes to this Privacy Policy are effective when
-                  they are posted on this page. For significant changes, we will
-                  provide a more prominent notice, which may include email
-                  notification of Privacy Policy changes.
+                  this page and updating the &quot;Last Updated&quot; date at
+                  the top. You are advised to review this Privacy Policy
+                  periodically for any changes. Changes to this Privacy Policy
+                  are effective when they are posted on this page. For
+                  significant changes, we will provide a more prominent notice,
+                  which may include email notification of Privacy Policy
+                  changes.
                 </p>
               </section>
 
@@ -459,8 +462,8 @@ export default function PrivacyPolicyPage() {
                   responsible for overseeing questions regarding this Privacy
                   Policy. If you have any questions about this Privacy Policy,
                   including any requests to exercise your legal rights, please
-                  contact our DPO using the details provided in the "Contact
-                  Information" section.
+                  contact our DPO using the details provided in the
+                  &quot;Contact Information&quot; section.
                 </p>
               </section>
 
@@ -512,7 +515,8 @@ export default function PrivacyPolicyPage() {
                 </ul>
                 <p className="mt-4 text-muted-foreground">
                   To exercise these rights, please contact us using the
-                  information provided in the "Contact Information" section.
+                  information provided in the &quot;Contact Information&quot;
+                  section.
                 </p>
               </section>
 

@@ -16,7 +16,7 @@ const ContactPage = () => {
           Contact Us
         </h1>
         <p className="mx-auto max-w-3xl text-lg text-muted-foreground md:text-xl">
-          We're here to help! Reach out to our team with any questions,
+          We&apos;re here to help! Reach out to our team with any questions,
           feedback, or support needs.
         </p>
       </section>
@@ -124,7 +124,7 @@ const ContactPage = () => {
             {
               question: "How can I track my order?",
               answer:
-                "Once your order ships, you'll receive a tracking number via email. You can use this number to track your package on our website or through the carrier's tracking system.",
+                "Once your order ships, you&apos;ll receive a tracking number via email. You can use this number to track your package on our website or through the carrier&apos;s tracking system.",
             },
             {
               question: "What is your return policy?",

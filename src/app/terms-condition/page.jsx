@@ -71,9 +71,9 @@ export default function TermsPage() {
                 <p className="text-muted-foreground">
                   Welcome to SOOUQNA. These Terms and Conditions govern your use
                   of the SOOUQNA website, mobile application, and services
-                  (collectively, the "Platform"). By accessing or using our
-                  Platform, you agree to be bound by these Terms and Conditions.
-                  Please read them carefully.
+                  (collectively, the &quot;Platform&quot;). By accessing or
+                  using our Platform, you agree to be bound by these Terms and
+                  Conditions. Please read them carefully.
                 </p>
               </section>
 
