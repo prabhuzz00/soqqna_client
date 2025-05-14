@@ -32,58 +32,58 @@ const ProductPage = () => {
 
   const context = useContext(MyContext);
 
-  const searchParams = useSearchParams();
-  const subCatId = searchParams.get("subCatId");
-  const catId = searchParams.get("catId");
+  // const searchParams = useSearchParams();
+  // const subCatId = searchParams.get("subCatId");
+  // const catId = searchParams.get("catId");
 
-  const [categoryName, setCategoryName] = useState("Products");
-  const [subCategoryName, setSubCategoryName] = useState("");
-  const [parentCatId, setParentCatId] = useState(null);
+  // const [categoryName, setCategoryName] = useState("Products");
+  // const [subCategoryName, setSubCategoryName] = useState("");
+  // const [parentCatId, setParentCatId] = useState(null);
 
-  useEffect(() => {
-    const fetchCategoryData = async () => {
-      if (subCatId) {
-        const subCatRes = await fetchDataFromApi(`/api/category/${subCatId}`);
-        const subCat = subCatRes?.category;
+  // useEffect(() => {
+  //   const fetchCategoryData = async () => {
+  //     if (subCatId) {
+  //       const subCatRes = await fetchDataFromApi(`/api/category/${subCatId}`);
+  //       const subCat = subCatRes?.category;
 
-        if (subCat?.name) {
-          setSubCategoryName(subCat.name);
+  //       if (subCat?.name) {
+  //         setSubCategoryName(subCat.name);
 
-          if (subCat?.parentId) {
-            setParentCatId(subCat.parentId); // ✅ store parent ID
-            const parentRes = await fetchDataFromApi(
-              `/api/category/${subCat.parentId}`
-            );
-            const parentCat = parentRes?.category;
+  //         if (subCat?.parentId) {
+  //           setParentCatId(subCat.parentId); // ✅ store parent ID
+  //           const parentRes = await fetchDataFromApi(
+  //             `/api/category/${subCat.parentId}`
+  //           );
+  //           const parentCat = parentRes?.category;
 
-            if (parentCat?.name) {
-              setCategoryName(parentCat.name);
-            } else {
-              setCategoryName("Products");
-            }
-          } else {
-            setParentCatId(catId); // ✅ treat this as the main category
-            setCategoryName("Products");
-          }
-        }
-      } else if (catId) {
-        setSubCategoryName(""); // ✅ Clear previous subcategory
-        const catRes = await fetchDataFromApi(`/api/category/${catId}`);
-        const cat = catRes?.category;
+  //           if (parentCat?.name) {
+  //             setCategoryName(parentCat.name);
+  //           } else {
+  //             setCategoryName("Products");
+  //           }
+  //         } else {
+  //           setParentCatId(catId); // ✅ treat this as the main category
+  //           setCategoryName("Products");
+  //         }
+  //       }
+  //     } else if (catId) {
+  //       setSubCategoryName(""); // ✅ Clear previous subcategory
+  //       const catRes = await fetchDataFromApi(`/api/category/${catId}`);
+  //       const cat = catRes?.category;
 
-        if (cat?.name) {
-          setCategoryName(cat.name);
-        } else {
-          setCategoryName("Products");
-        }
-      } else {
-        setCategoryName("Products");
-        setSubCategoryName(""); // ✅ Clear both if neither is present
-      }
-    };
+  //       if (cat?.name) {
+  //         setCategoryName(cat.name);
+  //       } else {
+  //         setCategoryName("Products");
+  //       }
+  //     } else {
+  //       setCategoryName("Products");
+  //       setSubCategoryName(""); // ✅ Clear both if neither is present
+  //     }
+  //   };
 
-    fetchCategoryData();
-  }, [subCatId, catId]);
+  //   fetchCategoryData();
+  // }, [subCatId, catId]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -129,7 +129,7 @@ const ProductPage = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <section className=" pb-0">
-        <Breadcrumb
+        {/* <Breadcrumb
           paths={[
             ...(categoryName && categoryName !== "Products"
               ? [
@@ -148,7 +148,7 @@ const ProductPage = () => {
                 ]
               : []),
           ]}
-        />
+        /> */}
         <div className="bg-white p-2">
           <div className="container flex gap-3">
             <div
