@@ -15,6 +15,7 @@ import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 import Cookies from "js-cookie";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -146,121 +147,132 @@ const Register = () => {
   };
 
   return (
-    <section className="section py-5 sm:py-10">
-      <div className="container">
-        <div className="card shadow-md w-full sm:w-[400px] m-auto rounded-md bg-white p-5 px-10">
-          <h3 className="text-center text-[18px] text-black">
-            Register with a new account
-          </h3>
+    <>
+      <Breadcrumb
+        paths={[
+          {
+            label: "Register",
+            href: `/`,
+          },
+        ]}
+      />
 
-          <form className="w-full mt-5" onSubmit={handleSubmit}>
-            <div className="form-group w-full mb-5">
-              <TextField
-                type="text"
-                id="name"
-                name="name"
-                value={formFields.name}
-                disabled={isLoading === true ? true : false}
-                label="Full Name"
-                variant="outlined"
-                className="w-full"
-                onChange={onChangeInput}
-              />
-            </div>
+      <section className="section py-5 sm:py-10">
+        <div className="container">
+          <div className="card shadow-md w-full sm:w-[400px] m-auto rounded-md bg-white p-5 px-10">
+            <h3 className="text-center text-[18px] text-black">
+              Register with a new account
+            </h3>
 
-            <div className="form-group w-full mb-5">
-              <TextField
-                type="email"
-                id="email"
-                name="email"
-                label="Email"
-                value={formFields.email}
-                disabled={isLoading === true ? true : false}
-                variant="outlined"
-                className="w-full"
-                onChange={onChangeInput}
-              />
-            </div>
+            <form className="w-full mt-5" onSubmit={handleSubmit}>
+              <div className="form-group w-full mb-5">
+                <TextField
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formFields.name}
+                  disabled={isLoading === true ? true : false}
+                  label="Full Name"
+                  variant="outlined"
+                  className="w-full"
+                  onChange={onChangeInput}
+                />
+              </div>
 
-            <div className="form-group w-full mb-5">
-              <TextField
-                type="number"
-                id="phone"
-                name="phone"
-                label="Phone"
-                value={formFields.phone}
-                disabled={isLoading === true ? true : false}
-                variant="outlined"
-                className="w-full"
-                onChange={onChangeInput}
-              />
-            </div>
+              <div className="form-group w-full mb-5">
+                <TextField
+                  type="email"
+                  id="email"
+                  name="email"
+                  label="Email"
+                  value={formFields.email}
+                  disabled={isLoading === true ? true : false}
+                  variant="outlined"
+                  className="w-full"
+                  onChange={onChangeInput}
+                />
+              </div>
 
-            <div className="form-group w-full mb-5 relative">
-              <TextField
-                type={isPasswordShow === false ? "password" : "text"}
-                id="password"
-                name="password"
-                label="Password"
-                variant="outlined"
-                className="w-full"
-                value={formFields.password}
-                disabled={isLoading === true ? true : false}
-                onChange={onChangeInput}
-              />
-              <Button
-                className="!absolute top-[10px] right-[10px] z-50 !w-[35px] !h-[35px] !min-w-[35px] !rounded-full !text-black"
-                onClick={() => {
-                  setIsPasswordShow(!isPasswordShow);
-                }}
-              >
-                {isPasswordShow === false ? (
-                  <IoMdEye className="text-[20px] opacity-75" />
-                ) : (
-                  <IoMdEyeOff className="text-[20px] opacity-75" />
-                )}
-              </Button>
-            </div>
+              <div className="form-group w-full mb-5">
+                <TextField
+                  type="number"
+                  id="phone"
+                  name="phone"
+                  label="Phone"
+                  value={formFields.phone}
+                  disabled={isLoading === true ? true : false}
+                  variant="outlined"
+                  className="w-full"
+                  onChange={onChangeInput}
+                />
+              </div>
 
-            <div className="flex items-center w-full mt-3 mb-3">
-              <Button
-                type="submit"
-                disabled={!valideValue}
-                className="btn-org btn-lg w-full flex gap-3"
-              >
-                {isLoading === true ? (
-                  <CircularProgress color="inherit" />
-                ) : (
-                  "Register"
-                )}
-              </Button>
-            </div>
+              <div className="form-group w-full mb-5 relative">
+                <TextField
+                  type={isPasswordShow === false ? "password" : "text"}
+                  id="password"
+                  name="password"
+                  label="Password"
+                  variant="outlined"
+                  className="w-full"
+                  value={formFields.password}
+                  disabled={isLoading === true ? true : false}
+                  onChange={onChangeInput}
+                />
+                <Button
+                  className="!absolute top-[10px] right-[10px] z-50 !w-[35px] !h-[35px] !min-w-[35px] !rounded-full !text-black"
+                  onClick={() => {
+                    setIsPasswordShow(!isPasswordShow);
+                  }}
+                >
+                  {isPasswordShow === false ? (
+                    <IoMdEye className="text-[20px] opacity-75" />
+                  ) : (
+                    <IoMdEyeOff className="text-[20px] opacity-75" />
+                  )}
+                </Button>
+              </div>
 
-            <p className="text-center">
-              Already have an account?{" "}
-              <Link
-                className="link text-[14px] font-[600] text-primary"
-                href="/login"
-              >
-                {" "}
-                Login
-              </Link>
-            </p>
+              <div className="flex items-center w-full mt-3 mb-3">
+                <Button
+                  type="submit"
+                  disabled={!valideValue}
+                  className="btn-org btn-lg w-full flex gap-3"
+                >
+                  {isLoading === true ? (
+                    <CircularProgress color="inherit" />
+                  ) : (
+                    "Register"
+                  )}
+                </Button>
+              </div>
 
-            {/* <p className="text-center font-[500]">
+              <p className="text-center">
+                Already have an account?{" "}
+                <Link
+                  className="link text-[14px] font-[600] text-primary"
+                  href="/login"
+                >
+                  {" "}
+                  Login
+                </Link>
+              </p>
+
+              {/* <p className="text-center font-[500]">
               Or continue with social account
             </p> */}
 
-            {/* <Button
+              {/* <Button
               className="flex gap-3 w-full !bg-[#f1f1f1] btn-lg !text-black"
               onClick={authWithGoogle}
             >
               <FcGoogle className="text-[20px]" /> Sign Up with Google
             </Button> */}
-          </form>
+            </form>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 

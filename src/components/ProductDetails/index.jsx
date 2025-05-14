@@ -13,6 +13,7 @@ import { FaCheckDouble } from "react-icons/fa6";
 import { IoMdHeart } from "react-icons/io";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTranslation } from "@/utils/useTranslation";
+import Breadcrumb from "../Breadcrumb";
 
 export const ProductDetailsComponent = (props) => {
   const [productActionIndex, setProductActionIndex] = useState(null);

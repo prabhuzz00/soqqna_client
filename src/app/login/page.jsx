@@ -14,6 +14,7 @@ import { patchData, postData } from "@/utils/api";
 
 import { useSession, signIn } from "next-auth/react";
 import { useTranslation } from "@/utils/useTranslation";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const LoginPage = () => {
   const context = useContext(MyContext);
@@ -178,95 +179,105 @@ const LoginPage = () => {
   };
 
   return (
-    <section className="py-5 section sm:py-10">
-      <div className="container">
-        <div className="card shadow-md w-full sm:w-[400px] m-auto rounded-md bg-white p-5 px-10">
-          <h3 className="text-center text-[18px] text-black">
-            {t("login.title")}
-          </h3>
+    <>
+      <Breadcrumb
+        paths={[
+          {
+            label: "Login",
+            href: `/`,
+          },
+        ]}
+      />
+      <section className="py-5 section sm:py-10">
+        <div className="container">
+          <div className="card shadow-md w-full sm:w-[400px] m-auto rounded-md bg-white p-5 px-10">
+            <h3 className="text-center text-[18px] text-black">
+              {t("login.title")}
+            </h3>
 
-          <form className="w-full mt-5" onSubmit={handleSubmit}>
-            <div className="w-full mb-5 form-group">
-              <TextField
-                type="text"
-                id="identifier"
-                name="identifier"
-                value={formFields.identifier}
-                disabled={isLoading === true ? true : false}
-                label={t("login.identifier_label")}
-                variant="outlined"
-                className="w-full"
-                onChange={onChangeInput}
-              />
-            </div>
+            <form className="w-full mt-5" onSubmit={handleSubmit}>
+              <div className="w-full mb-5 form-group">
+                <TextField
+                  type="text"
+                  id="identifier"
+                  name="identifier"
+                  value={formFields.identifier}
+                  disabled={isLoading === true ? true : false}
+                  label={t("login.identifier_label")}
+                  variant="outlined"
+                  className="w-full"
+                  onChange={onChangeInput}
+                />
+              </div>
 
-            <div className="relative w-full mb-5 form-group">
-              <TextField
-                type={isPasswordShow === false ? "password" : "text"}
-                id="password"
-                label={t("login.password_label")}
-                variant="outlined"
-                className="w-full"
-                name="password"
-                value={formFields.password}
-                disabled={isLoading === true ? true : false}
-                onChange={onChangeInput}
-              />
-              <Button
-                className="!absolute top-[10px] right-[10px] z-50 !w-[35px] !h-[35px] !min-w-[35px] !rounded-full !text-black"
-                onClick={() => {
-                  setIsPasswordShow(!isPasswordShow);
-                }}
+              <div className="relative w-full mb-5 form-group">
+                <TextField
+                  type={isPasswordShow === false ? "password" : "text"}
+                  id="password"
+                  label={t("login.password_label")}
+                  variant="outlined"
+                  className="w-full"
+                  name="password"
+                  value={formFields.password}
+                  disabled={isLoading === true ? true : false}
+                  onChange={onChangeInput}
+                />
+                <Button
+                  className="!absolute top-[10px] right-[10px] z-50 !w-[35px] !h-[35px] !min-w-[35px] !rounded-full !text-black"
+                  onClick={() => {
+                    setIsPasswordShow(!isPasswordShow);
+                  }}
+                >
+                  {isPasswordShow === false ? (
+                    <IoMdEye className="text-[20px] opacity-75" />
+                  ) : (
+                    <IoMdEyeOff className="text-[20px] opacity-75" />
+                  )}
+                </Button>
+              </div>
+
+              <a
+                className="link cursor-pointer text-[14px] font-[600]"
+                onClick={forgotPassword}
               >
-                {isPasswordShow === false ? (
-                  <IoMdEye className="text-[20px] opacity-75" />
-                ) : (
-                  <IoMdEyeOff className="text-[20px] opacity-75" />
-                )}
-              </Button>
-            </div>
+                {t("login.forgot_password")}
+              </a>
 
-            <a
-              className="link cursor-pointer text-[14px] font-[600]"
-              onClick={forgotPassword}
-            >
-              {t("login.forgot_password")}
-            </a>
+              <div className="flex items-center w-full mt-3 mb-3">
+                <Button
+                  type="submit"
+                  disabled={!valideValue}
+                  className="flex w-full gap-3 btn-org btn-lg"
+                >
+                  {isLoading === true ? (
+                    <CircularProgress color="inherit" />
+                  ) : (
+                    t("login.login_button")
+                  )}
+                </Button>
+              </div>
 
-            <div className="flex items-center w-full mt-3 mb-3">
-              <Button
-                type="submit"
-                disabled={!valideValue}
-                className="flex w-full gap-3 btn-org btn-lg"
-              >
-                {isLoading === true ? (
-                  <CircularProgress color="inherit" />
-                ) : (
-                  t("login.login_button")
-                )}
-              </Button>
-            </div>
+              <p className="text-center">
+                {t("login.not_registered")}{" "}
+                <Link
+                  className="link text-[14px] font-[600] text-primary"
+                  href="/register"
+                >
+                  {" "}
+                  {t("login.sign_up")}
+                </Link>
+              </p>
 
-            <p className="text-center">
-              {t("login.not_registered")}{" "}
-              <Link
-                className="link text-[14px] font-[600] text-primary"
-                href="/register"
-              >
-                {" "}
-                {t("login.sign_up")}
-              </Link>
-            </p>
+              {/* <p className="text-center font-[500]">Or continue with social account</p> */}
 
-            {/* <p className="text-center font-[500]">Or continue with social account</p> */}
-
-            {/* <Button className="flex gap-3 w-full !bg-[#f1f1f1] btn-lg !text-black"
+              {/* <Button className="flex gap-3 w-full !bg-[#f1f1f1] btn-lg !text-black"
                             onClick={authWithGoogle}>
                             <FcGoogle className="text-[20px]" /> Login with Google</Button> */}
-          </form>
+            </form>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 };
 

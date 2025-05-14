@@ -19,7 +19,7 @@ export const translations = {
       contactUs: "Contact us",
       classyShop: "Classyshop - Mega Super Store",
       address: "507-Union Trade Centre France",
-      email: "sales@yourcompany.com",
+
       onlineChat: "Online Chat",
       getExpertHelp: "Get Expert Help",
       products: "Products",
@@ -31,8 +31,10 @@ export const translations = {
       ourCompany: "Our company",
       delivery: "Delivery",
       legalNotice: "Legal Notice",
-      termsConditions: "Terms and conditions of use",
+      termsConditions: "Terms and conditions",
       aboutUs: "About us",
+      PrivacyPolicy: "Privacy Policy",
+      RefundPolicy: "Refund Policy",
       securePayment: "Secure payment",
       login: "Login",
       subscribeNewsletter: "Subscribe to newsletter",
@@ -57,9 +59,11 @@ export const translations = {
       success_otp_sent: "OTP sent to {phone}",
       success_login: "Login Successfully.",
       error_signin_failed: "An error occurred during sign-in.",
-      location_permission_denied: "Location permission denied. Please enable it in your browser settings if you want to use location features.",
+      location_permission_denied:
+        "Location permission denied. Please enable it in your browser settings if you want to use location features.",
       location_error: "An error occurred while trying to get your location.",
-      geolocation_not_supported: "Geolocation is not supported by this browser.",
+      geolocation_not_supported:
+        "Geolocation is not supported by this browser.",
     },
     addvendor: {
       becomeVendor: "Become a Vendor",
@@ -144,7 +148,7 @@ export const translations = {
       contactUs: "اتصل بنا",
       classyShop: "كلاسي شوب - متجر عملاق",
       address: "507-مركز الاتحاد التجاري فرنسا",
-      email: "sales@yourcompany.com",
+
       onlineChat: "الدردشة المباشرة",
       getExpertHelp: "احصل على مساعدة الخبراء",
       products: "المنتجات",
@@ -158,6 +162,8 @@ export const translations = {
       legalNotice: "إشعار قانوني",
       termsConditions: "الشروط والأحكام",
       aboutUs: "من نحن",
+      PrivacyPolicy: "سياسة الخصوصية",
+      RefundPolicy: "سياسة الاسترجاع",
       securePayment: "دفع آمن",
       login: "تسجيل الدخول",
       subscribeNewsletter: "اشترك في النشرة الإخبارية",
@@ -181,9 +187,11 @@ export const translations = {
       success_otp_sent: "تم إرسال رمز التحقق إلى {phone}",
       success_login: "تم تسجيل الدخول بنجاح.",
       error_signin_failed: "حدث خطأ أثناء تسجيل الدخول.",
-      location_permission_denied: "تم رفض إذن الموقع. يرجى تمكينه في إعدادات المتصفح إذا كنت ترغب في استخدام ميزات الموقع.",
+      location_permission_denied:
+        "تم رفض إذن الموقع. يرجى تمكينه في إعدادات المتصفح إذا كنت ترغب في استخدام ميزات الموقع.",
       location_error: "حدث خطأ أثناء محاولة الحصول على موقعك.",
-      geolocation_not_supported: "الموقع الجغرافي غير مدعوم من قبل هذا المتصفح.",
+      geolocation_not_supported:
+        "الموقع الجغرافي غير مدعوم من قبل هذا المتصفح.",
     },
     addvendor: {
       becomeVendor: "كن بائعاً",

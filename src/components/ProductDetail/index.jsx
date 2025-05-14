@@ -7,10 +7,12 @@ import ProductsSlider from "@/components/ProductsSlider";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTranslation } from "@/utils/useTranslation";
+import Breadcrumb from "../Breadcrumb";
 
 const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
   const [activeTab, setActiveTab] = useState(0);
   const [productData, setProductData] = useState(product);
+  const [productName, setProductName] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [reviewsCount, setReviewsCount] = useState(reviewsCountProp ?? 0);
   const [relatedProductData, setRelatedProductData] = useState(relatedProducts);
@@ -22,6 +24,7 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
   useEffect(() => {
     setProductData(product);
     setRelatedProductData(relatedProducts);
+    setProductName(product.name);
 
     if (typeof window !== "undefined") {
       window.scrollTo(0, 0);
@@ -39,6 +42,14 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
 
   return (
     <>
+      <Breadcrumb
+        paths={[
+          {
+            label: productName,
+            href: `/`,
+          },
+        ]}
+      />
       <section className="py-5 bg-white">
         {isLoading === true ? (
           <div className="flex items-center justify-center min-h-[300px]">

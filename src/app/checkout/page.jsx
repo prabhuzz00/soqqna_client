@@ -13,6 +13,7 @@ import { deleteData, postData } from "@/utils/api";
 import Script from "next/script";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const Checkout = () => {
   const [userData, setUserData] = useState(null);
@@ -320,6 +321,14 @@ const Checkout = () => {
 
   return (
     <>
+      <Breadcrumb
+        paths={[
+          {
+            label: "Checkout",
+            href: `/`,
+          },
+        ]}
+      />
       <section className="py-3 lg:py-10 px-3">
         <form onSubmit={checkout}>
           <div className="w-full lg:w-[70%] m-auto flex flex-col md:flex-row gap-5">

@@ -1,13 +1,14 @@
-import { fetchDataFromApi } from '@/utils/api';
-import ProductOverview from '@/components/ProductDetail';
-import { cache } from 'react';
+// "use client";
+import { fetchDataFromApi } from "@/utils/api";
+import ProductOverview from "@/components/ProductDetail";
+import { cache } from "react";
 
 const ProductPage = async ({ params }) => {
   const id = params.productId;
 
   // Server Action
   async function getReviews() {
-    'use server';
+    "use server";
     const res = await fetchDataFromApi(`/api/user/getReviews?productId=${id}`);
     if (res?.error === false) {
       return res.reviews.length;
@@ -16,7 +17,7 @@ const ProductPage = async ({ params }) => {
   }
 
   const getProductDetail = cache(async function getProductDetail() {
-    'use server';
+    "use server";
     const res = await fetchDataFromApi(`/api/product/${id}`);
     if (res?.error === true) {
       return null;
