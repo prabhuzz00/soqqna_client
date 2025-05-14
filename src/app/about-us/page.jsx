@@ -9,13 +9,8 @@ import {
   ShoppingBag,
   Users,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useTranslation } from "@/utils/useTranslation";
 
 const AboutPage = () => {
-  const router = useRouter();
-  const { t } = useTranslation();
-
   return (
     <div className="container mx-auto px-4 py-12">
       {/* Hero Section */}
