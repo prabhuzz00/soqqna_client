@@ -80,7 +80,7 @@ const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     const token = Cookies.get("accessToken");
-
+    getCartItems();
     if (token !== undefined && token !== null && token !== "") {
       setIsLogin(true);
 
@@ -143,49 +143,51 @@ const ThemeProvider = ({ children }) => {
     }
   };
 
+
   const addToCart = (product, userId, quantity) => {
-    if (userId === undefined) {
-      alertBox("error", "you are not login please login first");
-      return false;
+    const cart = getCart();
+    const index = cart.findIndex(item => item._id === product._id);
+
+    if (index !== -1) {
+      cart[index].quantity += quantity;
+    } else {
+      cart.push({ ...product, quantity });
     }
 
-    const data = {
-      productTitle: product?.name,
-      image: product?.image,
-      rating: product?.rating,
-      price: product?.price,
-      oldPrice: product?.oldPrice,
-      discount: product?.discount,
-      quantity: quantity,
-      subTotal: parseInt(product?.price * quantity),
-      productId: product?._id,
-      countInStock: product?.countInStock,
-      brand: product?.brand,
-      size: product?.size,
-      weight: product?.weight,
-      ram: product?.ram,
-      barcode: product?.barcode,
-      vendorId: product?.vendorId,
-      // vendorId:product?.vendorId,
-    };
+    Cookies.set('cart', JSON.stringify(cart));
+     alertBox("success", "Item Added");
 
-    postData("/api/cart/add", data).then((res) => {
-      if (res?.error === false) {
-        alertBox("success", res?.message);
+    getCartItems();
 
-        getCartItems();
-      } else {
-        alertBox("error", res?.message);
-      }
-    });
   };
 
+  const getCart = () => {
+    const cart = Cookies.get('cart');
+    setCartData(cart ? JSON.parse(cart) : []);
+    return cart ? JSON.parse(cart) : [];
+  };
+
+
   const getCartItems = () => {
-    fetchDataFromApi(`/api/cart/get`).then((res) => {
-      if (res?.error === false) {
-        setCartData(res?.data);
+    const cart = Cookies.get('cart');
+    setCartData(cart ? JSON.parse(cart) : []);
+    return cart ? JSON.parse(cart) : [];
+  }
+
+  const updateCartItemQuantity = (productId, quantity) => {
+    const cart = getCart();
+    const updatedCart = cart.map(item => {
+      if (item._id === productId) {
+        return { ...item, quantity };
       }
+      return item;
     });
+    Cookies.set('cart', JSON.stringify(updatedCart));
+  };
+
+  const handleQuantityChange = (id, newQty) => {
+    if (newQty < 1) return; // prevent 0 or negative qty
+    setCartData(getCart());
   };
 
   const getMyListData = () => {
@@ -226,6 +228,9 @@ const ThemeProvider = ({ children }) => {
     cartData,
     setCartData,
     getCartItems,
+    getCart,
+    updateCartItemQuantity,
+    handleQuantityChange,
     myListData,
     MyCatProdData,
     setMyListData,

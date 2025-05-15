@@ -5,16 +5,15 @@ import Button from "@mui/material/Button";
 import { MyContext } from "@/context/ThemeProvider";
 import Image from "next/image";
 import { deleteData } from "@/utils/api";
-
+import Cookies from "js-cookie";
 const CartPanel = (props) => {
 
   const context = useContext(MyContext);
 
   const removeItem = (id) => {
-    deleteData(`/api/cart/delete-cart-item/${id}`).then((res) => {
-      context.alertBox("success", "Item Removed ");
-      context?.getCartItems();
-    })
+   const cart = context?.getCartItems().filter(item => item._id !== id);
+    Cookies.set('cart', JSON.stringify(cart));
+    context?.getCartItems();
   }
 
   return (
@@ -27,7 +26,7 @@ const CartPanel = (props) => {
             return (
               <div className="cartItem w-full flex items-center gap-4 border-b border-[rgba(0,0,0,0.1)] pb-4" key={index}>
                 <div className="img w-[25%] overflow-hidden h-[80px] rounded-md"  onClick={context.toggleCartPanel(false)}>
-                  <Link href={`/product/44855`} className="block group">
+                  <Link href={`/product/${item?._id}`} className="block group">
                     <Image
                       width={80}
                       height={80}
@@ -40,15 +39,15 @@ const CartPanel = (props) => {
 
                 <div className="info w-[75%] pr-5 relative pt-3">
                   <h4 className="text-[12px] sm:text-[14px] font-[500]"  onClick={context.toggleCartPanel(false)}>
-                    <Link href={`/product/748548`} className="link transition-all">
-                      {item?.productTitle?.substr(0, 20) + '...'}
+                    <Link href={`/product/${item?._id}`} className="link transition-all">
+                      {item?.name?.substr(0, 20) + '...'}
                     </Link>
                   </h4>
                   <p className="flex items-center gap-5 mt-2 mb-2">
                     <span className="text-[13px] sm:text-[14px]">
                       Qty : <span>{item?.quantity}</span>
                     </span>
-                    <span className="text-primary font-bold">{item?.price?.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</span>
+                    <span className="text-primary font-bold">{parseInt(item?.price * item?.quantity)?.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</span>
                   </p>
 
                   <MdOutlineDeleteOutline className="absolute top-[10px] right-[10px] cursor-pointer text-[20px] link transition-all"  onClick={() => removeItem(item?._id)} />

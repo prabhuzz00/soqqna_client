@@ -13,7 +13,6 @@ import { FaCheckDouble } from "react-icons/fa6";
 import { IoMdHeart } from "react-icons/io";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTranslation } from "@/utils/useTranslation";
-import Breadcrumb from "../Breadcrumb";
 
 export const ProductDetailsComponent = (props) => {
   const [productActionIndex, setProductActionIndex] = useState(null);
@@ -62,14 +61,10 @@ export const ProductDetailsComponent = (props) => {
   }, [context?.myListData]);
 
   const addToCart = (product, userId, quantity) => {
-    if (userId === undefined) {
-      context?.alertBox("error", "you are not login please login first");
-      return false;
-    }
 
     const productItem = {
       _id: product?._id,
-      productTitle: product?.name,
+      name: product?.name,
       image: product?.images[0],
       rating: product?.rating,
       price: product?.price,
@@ -80,12 +75,13 @@ export const ProductDetailsComponent = (props) => {
       productId: product?._id,
       countInStock: product?.countInStock,
       brand: product?.brand,
+      size: props?.item?.size?.length !== 0 ? selectedTabName : '',
+      weight: props?.item?.productWeight?.length !== 0 ? selectedTabName : '',
+      ram: props?.item?.productRam?.length !== 0 ? selectedTabName : '',
       barcode: product?.barcode,
       vendorId: product?.vendorId,
-      size: props?.item?.size?.length !== 0 ? selectedTabName : "",
-      weight: props?.item?.productWeight?.length !== 0 ? selectedTabName : "",
-      ram: props?.item?.productRam?.length !== 0 ? selectedTabName : "",
-    };
+    }
+
 
     if (
       props?.item?.size?.length !== 0 ||
@@ -95,43 +91,29 @@ export const ProductDetailsComponent = (props) => {
       if (selectedTabName !== null) {
         setIsLoading(true);
 
-        postData("/api/cart/add", productItem).then((res) => {
-          if (res?.error === false) {
-            context?.alertBox("success", res?.message);
+  
+        context?.addToCart(productItem, userId, quantity);
+        context?.getCartItems();
+        setTimeout(() => {
+          setIsLoading(false);
+          setIsAdded(true);
+        }, 500);
 
-            context?.getCartItems();
-            setTimeout(() => {
-              setIsLoading(false);
-              setIsAdded(true);
-            }, 500);
-          } else {
-            context?.alertBox("error", res?.message);
-            setTimeout(() => {
-              setIsLoading(false);
-            }, 500);
-          }
-        });
+
       } else {
         setTabError(true);
       }
     } else {
       setIsLoading(true);
-      postData("/api/cart/add", productItem).then((res) => {
-        if (res?.error === false) {
-          context?.alertBox("success", res?.message);
 
-          context?.getCartItems();
-          setTimeout(() => {
-            setIsLoading(false);
-            setIsAdded(true);
-          }, 500);
-        } else {
-          context?.alertBox("error", res?.message);
-          setTimeout(() => {
-            setIsLoading(false);
-          }, 500);
-        }
-      });
+    
+      context?.addToCart(productItem, userId, quantity);
+      context?.getCartItems();
+      setTimeout(() => {
+        setIsLoading(false);
+        setIsAdded(true);
+      }, 500);
+
     }
   };
 
@@ -196,10 +178,10 @@ export const ProductDetailsComponent = (props) => {
       <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row items-start sm:items-center gap-4 mt-4">
         <div className="flex items-center gap-4">
           <span className="oldPrice line-through text-gray-500 text-[20px] font-[500]">
-            ${props?.item?.price}
+            ${props?.item?.oldPrice}
           </span>
           <span className="price text-primary text-[20px]  font-[600]">
-            ${props?.item?.oldPrice}
+            ${props?.item?.price}
           </span>
         </div>
 
@@ -227,11 +209,10 @@ export const ProductDetailsComponent = (props) => {
               return (
                 <Button
                   key={index}
-                  className={`${
-                    productActionIndex === index
-                      ? "!bg-primary !text-white"
-                      : ""
-                  }  ${tabError === true && "error"}`}
+                  className={`${productActionIndex === index
+                    ? "!bg-primary !text-white"
+                    : ""
+                    }  ${tabError === true && "error"}`}
                   onClick={() => handleClickActiveTab(index, item)}
                 >
                   {item}
@@ -250,11 +231,10 @@ export const ProductDetailsComponent = (props) => {
               return (
                 <Button
                   key={index}
-                  className={`${
-                    productActionIndex === index
-                      ? "!bg-primary !text-white"
-                      : ""
-                  } ${tabError === true && "error"}`}
+                  className={`${productActionIndex === index
+                    ? "!bg-primary !text-white"
+                    : ""
+                    } ${tabError === true && "error"}`}
                   onClick={() => handleClickActiveTab(index, item)}
                 >
                   {item}
@@ -273,11 +253,10 @@ export const ProductDetailsComponent = (props) => {
               return (
                 <Button
                   key={index}
-                  className={`${
-                    productActionIndex === index
-                      ? "!bg-primary !text-white"
-                      : ""
-                  }  ${tabError === true && "error"}`}
+                  className={`${productActionIndex === index
+                    ? "!bg-primary !text-white"
+                    : ""
+                    }  ${tabError === true && "error"}`}
                   onClick={() => handleClickActiveTab(index, item)}
                 >
                   {item}
@@ -334,10 +313,10 @@ export const ProductDetailsComponent = (props) => {
           {t("product.addToWishlist")}
         </span>
 
-        {/* <span className="flex items-center gap-2  text-[14px] sm:text-[15px] link cursor-pointer font-[500]">
+        <span className="flex items-center gap-2  text-[14px] sm:text-[15px] link cursor-pointer font-[500]">
           <IoGitCompareOutline className="text-[18px]" />{" "}
           {t("product.addToCompare")}
-        </span> */}
+        </span>
       </div>
     </>
   );

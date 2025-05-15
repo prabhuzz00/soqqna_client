@@ -16,9 +16,11 @@ import Link from "next/link";
 import { MyContext } from "@/context/ThemeProvider";
 import Image from "next/image";
 import { deleteData, editData, postData } from "@/utils/api";
+import { useLanguage } from "@/context/LanguageContext";
+import { useTranslation } from "@/utils/useTranslation";
+import Cookies from "js-cookie";
 
 const ProductItem = (props) => {
-
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const [isAddedInMyList, setIsAddedInMyList] = useState(false);
@@ -29,11 +31,13 @@ const ProductItem = (props) => {
   const [selectedTabName, setSelectedTabName] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const { locale } = useLanguage();
+
+  const { t } = useTranslation();
 
   const context = useContext(MyContext);
 
   const addToCart = (product, userId, quantity) => {
-
     const productItem = {
       _id: product?._id,
       name: product?.name,
@@ -47,12 +51,11 @@ const ProductItem = (props) => {
       productId: product?._id,
       countInStock: product?.countInStock,
       brand: product?.brand,
-      barcode:product?.barcode,
-      vendorId:product?.vendorId,
       size: props?.item?.size?.length !== 0 ? selectedTabName : '',
       weight: props?.item?.productWeight?.length !== 0 ? selectedTabName : '',
-      ram: props?.item?.productRam?.length !== 0 ? selectedTabName : ''
-
+      ram: props?.item?.productRam?.length !== 0 ? selectedTabName : '',
+      barcode: product?.barcode,
+      vendorId: product?.vendorId,
     }
 
 
@@ -85,7 +88,6 @@ const ProductItem = (props) => {
 
 
   }
-
 
   const handleClickActiveTab = (index, name) => {
     setActiveTab(index)
@@ -128,25 +130,17 @@ const ProductItem = (props) => {
 
 
     if (quantity === 1) {
-      deleteData(`/api/cart/delete-cart-item/${cartItem[0]?._id}`).then((res) => {
-        setIsAdded(false);
-        context.alertBox("success", "Item Removed ");
-        context?.getCartItems();
-        setIsShowTabs(false);
-        setActiveTab(null);
-      })
+      const cart = context?.cartData?.filter(item => item._id !== cartItem[0]?._id);
+      Cookies.set('cart', JSON.stringify(cart));
+      context?.getCartItems();
+      setIsAdded(false);
+      context.alertBox("success", "Item Removed ");
+      setIsShowTabs(false);
+      setActiveTab(null);
     } else {
-      const obj = {
-        _id: cartItem[0]?._id,
-        qty: quantity - 1,
-        subTotal: props?.item?.price * (quantity - 1)
-      }
-
-      editData(`/api/cart/update-qty`, obj).then((res) => {
-        context.alertBox("success", res?.data?.message);
-        context?.getCartItems();
-      })
+      context?.updateCartItemQuantity(cartItem[0]?._id, quantity - 1);
     }
+    context?.getCartItems();
 
   }
 
@@ -187,8 +181,8 @@ const ProductItem = (props) => {
         price: item?.price,
         oldPrice: item?.oldPrice,
         brand: item?.brand,
-        barcode:item?.barcode,
-      vendorId:item?.vendorId,
+        barcode: item?.barcode,
+        vendorId: item?.vendorId,
         discount: item?.discount
       }
 
@@ -321,7 +315,9 @@ const ProductItem = (props) => {
         </h6>
         <h3 className="text-[18px] title mt-3 font-[500] mb-1 text-[#000]" style={{ lineHeight: '25px' }}>
           <Link href={`/product/${props?.item?._id}`} className="link transition-all">
-            {props?.item?.name}
+           {locale === "ar"
+              ? props?.item?.arbName?.substr(0, 25) + "..."
+              : props?.item?.name?.substr(0, 25) + "..."}
           </Link>
         </h3>
 
@@ -344,9 +340,15 @@ const ProductItem = (props) => {
           {
             isAdded === false ?
 
-              <Button className="btn-org btn-border flex w-full btn-sm gap-2 " size="small"
-                onClick={() => addToCart(props?.item, context?.userData?._id, quantity)}>
-                <MdOutlineShoppingCart className="text-[18px]" /> Add to Cart
+              <Button
+                className="btn-org addToCartBtn btn-border flex w-full btn-sm gap-2 "
+                size="small"
+                onClick={() =>
+                  addToCart(props?.item, context?.userData?._id, quantity)
+                }
+              >
+                <MdOutlineShoppingCart className="text-[18px]" />{" "}
+                {t("home.addToCart")}
               </Button>
 
               :
@@ -379,6 +381,4 @@ const ProductItem = (props) => {
   );
 };
 
-const MemoizedProductItemListView = React.memo(ProductItem);
-
-export default MemoizedProductItemListView;
+export default ProductItem;
