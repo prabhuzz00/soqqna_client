@@ -123,11 +123,7 @@ const ProductItem = (props) => {
       setQuantity(1);
     }
 
-<<<<<<< HEAD
      if (quantity === 1) {
-=======
-    if (quantity === 1) {
->>>>>>> e9b72bf2eb27a0cb1e96629cd183b0f0f105a347
       const cart = context?.cartData?.filter(item => item._id !== cartItem[0]?._id);
       Cookies.set('cart', JSON.stringify(cart));
       context?.getCartItems();
