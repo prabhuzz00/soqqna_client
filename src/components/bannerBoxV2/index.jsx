@@ -11,6 +11,7 @@ const BannerBoxV2 = (props) => {
         src={props.image}
         alt="banner"
         className="w-full transition-all duration-150 group-hover:scale-105"
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" 
       />
 
       <div

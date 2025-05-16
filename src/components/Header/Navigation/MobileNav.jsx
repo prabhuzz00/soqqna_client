@@ -68,19 +68,25 @@ const MobileNav = () => {
             </Link>
 
 
-            <Link href="/my-orders"  className={pathname === "/my-orders" ? "active" : ""}  onClick={() => context?.setOpenSearchPanel(false)}>
+            <Link href="/my-orders" className={pathname === "/my-orders" ? "active" : ""} onClick={() => context?.setOpenSearchPanel(false)}>
                 <Button className="flex-col !w-[40px] !min-w-[40px] !capitalize !text-gray-700">
                     <BsBagCheck size={18} />
                     <span className='text-[12px]'>Orders</span>
                 </Button>
             </Link>
 
-            <Link href="/my-account"  className={pathname === "/my-account" ? "active" : ""} onClick={() => context?.setOpenSearchPanel(false)}>
-                <Button className="flex-col !w-[40px] !min-w-[40px] !capitalize !text-gray-700">
-                    <FiUser size={18} />
-                    <span className='text-[12px]'>Account</span>
-                </Button>
-            </Link>
+
+            {
+                context?.isLogin === true &&
+                <Link href="/my-account" className={pathname === "/my-account" ? "active" : ""} onClick={() => context?.setOpenSearchPanel(false)}>
+                    <Button className="flex-col !w-[40px] !min-w-[40px] !capitalize !text-gray-700">
+                        <FiUser size={18} />
+                        <span className='text-[12px]'>Account</span>
+                    </Button>
+                </Link>
+            }
+
+
         </div>
     )
 }

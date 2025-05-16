@@ -11,7 +11,11 @@ const CartPanel = (props) => {
   const context = useContext(MyContext);
 
   const removeItem = (id) => {
+<<<<<<< HEAD
    const cart = context?.getCart().filter(item => item._id !== id);
+=======
+   const cart = context?.getCartItems().filter(item => item._id !== id);
+>>>>>>> e9b72bf2eb27a0cb1e96629cd183b0f0f105a347
     Cookies.set('cart', JSON.stringify(cart));
     context?.getCartItems();
   }
@@ -65,7 +69,7 @@ const CartPanel = (props) => {
 
       <br />
 
-      <div className="bottomSec absolute bottom-[10px] left-[10px] w-full overflow-hidden pr-5">
+      <div className="bottomSec absolute bottom-[10px] left-[10px] w-full overflow-hidden pr-5 bg-white">
         <div className="bottomInfo py-3 px-4 w-full border-t border-[rgba(0,0,0,0.1)] flex items-center justify-between flex-col">
           <div className="flex items-center justify-between w-full">
             <span className="text-[14px] font-[600]">{props?.data?.length} item</span>
@@ -99,10 +103,10 @@ const CartPanel = (props) => {
 
           <div className="flex items-center justify-between w-full gap-5">
             <Link href="/cart" className=" w-[50%] d-block" onClick={context.toggleCartPanel(false)}>
-              <Button className="btn-org btn-lg w-full">View Cart</Button>
+              <Button className="btn-org  w-full">View Cart</Button>
             </Link>
             <Link href="/checkout" className=" w-[50%] d-block"  onClick={context.toggleCartPanel(false)}>
-              <Button className="btn-org btn-border btn-lg w-full">Checkout</Button>
+              <Button className="btn-org btn-border  w-full">Checkout</Button>
             </Link>
           </div>
         </div>

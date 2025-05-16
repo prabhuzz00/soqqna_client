@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { LiaShippingFastSolid } from "react-icons/lia";
 import { PiKeyReturnLight } from "react-icons/pi";
 import { BsWallet2 } from "react-icons/bs";
@@ -27,66 +27,37 @@ import { IoCloseSharp } from "react-icons/io5";
 import { ProductDetailsComponent } from "../ProductDetails";
 import AddAddress from "@/app/my-account/addAddress";
 import { useTranslation } from "@/utils/useTranslation";
+import { useLanguage } from "@/context/LanguageContext";
 
 const Footer = () => {
+  const [catData, setCatData] = useState([]);
   const context = useContext(MyContext);
+
+  const { locale } = useLanguage();
+
   const { t } = useTranslation();
+
+  useEffect(() => {
+    setCatData(context?.catData);
+  }, [context?.catData]);
 
   return (
     <>
       <footer className="py-6">
         <div className="container">
-          {/* <div className="flex items-center justify-center gap-2 py-3 lg:py-8 pb-0 lg:pb-8 px-0 lg:px-5 scrollableBox footerBoxWrap">
-            <div className="col flex items-center justify-center flex-col group w-[15%]">
-              <LiaShippingFastSolid className="text-[40px] transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1" />
-              <h3 className="text-[16px] font-[600] mt-3">Free Shipping</h3>
-              <p className="text-[12px] font-[500]">For all Orders Over $100</p>
-            </div>
-
-            <div className="col flex items-center justify-center flex-col group w-[15%]">
-              <PiKeyReturnLight className="text-[40px] transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1" />
-              <h3 className="text-[16px] font-[600] mt-3">30 Days Returns</h3>
-              <p className="text-[12px] font-[500]">For an Exchange Product</p>
-            </div>
-
-            <div className="col flex items-center justify-center flex-col group w-[15%]">
-              <BsWallet2 className="text-[40px] transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1" />
-              <h3 className="text-[16px] font-[600] mt-3">Secured Payment</h3>
-              <p className="text-[12px] font-[500]">Payment Cards Accepted</p>
-            </div>
-
-            <div className="col flex items-center justify-center flex-col group w-[15%]">
-              <LiaGiftSolid className="text-[40px] transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1" />
-              <h3 className="text-[16px] font-[600] mt-3">Special Gifts</h3>
-              <p className="text-[12px] font-[500]">Our First Product Order</p>
-            </div>
-
-            <div className="col flex items-center justify-center flex-col group w-[15%]">
-              <BiSupport className="text-[40px] transition-all duration-300 group-hover:text-primary group-hover:-translate-y-1" />
-              <h3 className="text-[16px] font-[600] mt-3">Support 24/7</h3>
-              <p className="text-[12px] font-[500]">Contact us Anytime</p>
-            </div>
-          </div> */}
-          {/* <br /> */}
-
-          {/* <hr /> */}
-
           <div className="footer flex px-3 lg:px-0 flex-col lg:flex-row py-8">
             <div className="part1 w-full lg:w-[25%] border-r border-[rgba(0,0,0,0.1)]">
-              <h2 className="text-[18px] font-[600] mb-4">
+              {/* <h2 className="text-[18px] font-[600] mb-4">
                 {t("footer.contactUs")}
               </h2>
               <p className="text-[13px] font-[400] pb-4">
                 {t("footer.classyShop")}
                 <br />
                 {t("footer.address")}
-              </p>
+              </p> */}
 
-              <Link
-                className="link text-[13px]"
-                href="mailto:someone@example.com"
-              >
-                {t("footer.email")}
+              <Link className="link text-[13px]" href="mailto:info@soouqna.com">
+                info@soouqna.com
               </Link>
 
               {/* <span className="text-[22px] font-[600] block w-full mt-3 mb-5 text-primary">
@@ -110,36 +81,24 @@ const Footer = () => {
                 </h2>
 
                 <ul className="list">
-                  <li className="list-none text-[14px] w-full mb-2">
-                    <Link href="/" className="link">
-                      {t("footer.pricesDrop")}
-                    </Link>
-                  </li>
-                  <li className="list-none text-[14px] w-full mb-2">
-                    <Link href="/" className="link">
-                      {t("footer.newProducts")}
-                    </Link>
-                  </li>
-                  <li className="list-none text-[14px] w-full mb-2">
-                    <Link href="/" className="link">
-                      {t("footer.bestSales")}
-                    </Link>
-                  </li>
-                  <li className="list-none text-[14px] w-full mb-2">
-                    <Link href="/" className="link">
-                      {t("footer.contactUs")}
-                    </Link>
-                  </li>
-                  <li className="list-none text-[14px] w-full mb-2">
-                    <Link href="/" className="link">
-                      {t("footer.sitemap")}
-                    </Link>
-                  </li>
-                  <li className="list-none text-[14px] w-full mb-2">
-                    <Link href="/" className="link">
-                      {t("footer.stores")}
-                    </Link>
-                  </li>
+                  {catData?.length !== 0 &&
+                    catData
+                      ?.filter((cat, idx) => idx < 8)
+                      ?.map((cat, index) => {
+                        return (
+                          <li
+                            className="list-none text-[14px] w-full mb-2"
+                            key={index}
+                          >
+                            <Link
+                              href={`/products?catId=${cat?._id}`}
+                              className="link transition text-[14px] !font-[500]"
+                            >
+                              {locale === "ar" ? cat?.arName : cat?.name}
+                            </Link>
+                          </li>
+                        );
+                      })}
                 </ul>
               </div>
 
@@ -147,36 +106,35 @@ const Footer = () => {
                 <h2 className="text-[18px] font-[600] mb-4">
                   {t("footer.ourCompany")}
                 </h2>
-
+                {/* Contact Us
+About Us
+Terms & Conditions 
+Privacy Policy 
+Refund Policy */}
                 <ul className="list">
                   <li className="list-none text-[14px] w-full mb-2">
-                    <Link href="/" className="link">
-                      {t("footer.delivery")}
-                    </Link>
-                  </li>
-                  <li className="list-none text-[14px] w-full mb-2">
-                    <Link href="/" className="link">
-                      {t("footer.legalNotice")}
-                    </Link>
-                  </li>
-                  <li className="list-none text-[14px] w-full mb-2">
-                    <Link href="/" className="link">
-                      {t("footer.termsConditions")}
-                    </Link>
-                  </li>
-                  <li className="list-none text-[14px] w-full mb-2">
-                    <Link href="/" className="link">
+                    <Link href="/about-us" className="link">
                       {t("footer.aboutUs")}
                     </Link>
                   </li>
                   <li className="list-none text-[14px] w-full mb-2">
-                    <Link href="/" className="link">
-                      {t("footer.securePayment")}
+                    <Link href="/contact-us" className="link">
+                      {t("footer.contactUs")}
                     </Link>
                   </li>
                   <li className="list-none text-[14px] w-full mb-2">
-                    <Link href="/" className="link">
-                      {t("footer.login")}
+                    <Link href="/terms-condition" className="link">
+                      {t("footer.termsConditions")}
+                    </Link>
+                  </li>
+                  <li className="list-none text-[14px] w-full mb-2">
+                    <Link href="/privacy-policy" className="link">
+                      {t("footer.PrivacyPolicy")}
+                    </Link>
+                  </li>
+                  <li className="list-none text-[14px] w-full mb-2">
+                    <Link href="/refund-policy" className="link">
+                      {t("footer.RefundPolicy")}
                     </Link>
                   </li>
                 </ul>
@@ -212,8 +170,8 @@ const Footer = () => {
       </footer>
 
       <div className="bottomStrip border-t border-[rgba(0,0,0,0.1)] pt-3 pb-[100px] lg:pb-3 bg-white">
-        <div className="container flex items-center justify-between flex-col lg:flex-row gap-4 lg:gap-0">
-          <ul className="flex items-center gap-2">
+        <div className="container flex items-center justify-center flex-col lg:flex-row gap-4 lg:gap-0">
+          {/* <ul className="flex items-center gap-2">
             <li className="list-none">
               <Link
                 href="/"
@@ -253,17 +211,17 @@ const Footer = () => {
                 <FaInstagram className="text-[17px] group-hover:text-white" />
               </Link>
             </li>
-          </ul>
+          </ul> */}
 
-          <p className="text-[13px] text-center mb-0">© 2025 - SOQQNA</p>
+          <p className="text-[13px] text-center mb-0">© 2025 - SOOUQNA</p>
 
-          <div className="flex items-center gap-1">
+          {/* <div className="flex items-center gap-1">
             <img src="/carte_bleue.png" alt="image" />
             <img src="/visa.png" alt="image" />
             <img src="/master_card.png" alt="image" />
             <img src="/american_express.png" alt="image" />
             <img src="/paypal.png" alt="image" />
-          </div>
+          </div> */}
         </div>
       </div>
 

@@ -6,6 +6,6 @@ export default createMiddleware({
   defaultLocale: 'en',
 });
 
-export const config = {
-  matcher: ['/((?!api|_next|.*\\..*).*)'],
-};
+// export const config = {
+//   matcher: ['/((?!api|_next|.*\\..*).*)'],
+// };

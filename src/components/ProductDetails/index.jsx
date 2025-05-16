@@ -91,7 +91,11 @@ export const ProductDetailsComponent = (props) => {
       if (selectedTabName !== null) {
         setIsLoading(true);
 
+<<<<<<< HEAD
         context?.alertBox("success", "Item added");
+=======
+  
+>>>>>>> e9b72bf2eb27a0cb1e96629cd183b0f0f105a347
         context?.addToCart(productItem, userId, quantity);
         context?.getCartItems();
         setTimeout(() => {
@@ -106,7 +110,11 @@ export const ProductDetailsComponent = (props) => {
     } else {
       setIsLoading(true);
 
+<<<<<<< HEAD
       context?.alertBox("success", "Item added");
+=======
+    
+>>>>>>> e9b72bf2eb27a0cb1e96629cd183b0f0f105a347
       context?.addToCart(productItem, userId, quantity);
       context?.getCartItems();
       setTimeout(() => {

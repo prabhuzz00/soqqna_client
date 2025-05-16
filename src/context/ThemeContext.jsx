@@ -11,7 +11,7 @@ const ThemeProvider = ({ children }) => {
     open: false,
     item: {},
   });
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
   const [userData, setUserData] = useState(null);
   const [catData, setCatData] = useState([]);
   const [cartData, setCartData] = useState([]);
@@ -30,12 +30,19 @@ const ThemeProvider = ({ children }) => {
   const [isFilterBtnShow, setisFilterBtnShow] = useState(false);
 
   const [openSearchPanel, setOpenSearchPanel] = useState(false);
+  const [userLocation, setUserLocation] = useState("Select Location"); // State for user location
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       // Ensure this runs only on client
       // Function to update width
       const updateWidth = () => setWindowWidth(window.innerWidth);
+
+      // Load initial location from local storage
+      const cachedLocation = localStorage.getItem("userLocation");
+      if (cachedLocation) {
+        setUserLocation(cachedLocation);
+      }
 
       setWindowWidth(window.innerWidth); // Set initial width
       window.addEventListener("resize", updateWidth); // Listen for resize events
@@ -136,6 +143,7 @@ const ThemeProvider = ({ children }) => {
     }
   };
 
+
   const addToCart = (product, userId, quantity) => {
     const cart = getCart();
     const index = cart.findIndex(item => item._id === product._id);
@@ -147,6 +155,10 @@ const ThemeProvider = ({ children }) => {
     }
 
     Cookies.set('cart', JSON.stringify(cart));
+<<<<<<< HEAD
+=======
+     alertBox("success", "Item Added");
+>>>>>>> e9b72bf2eb27a0cb1e96629cd183b0f0f105a347
 
     getCartItems();
 
@@ -154,6 +166,10 @@ const ThemeProvider = ({ children }) => {
 
   const getCart = () => {
     const cart = Cookies.get('cart');
+<<<<<<< HEAD
+=======
+    setCartData(cart ? JSON.parse(cart) : []);
+>>>>>>> e9b72bf2eb27a0cb1e96629cd183b0f0f105a347
     return cart ? JSON.parse(cart) : [];
   };
 
@@ -175,7 +191,10 @@ const ThemeProvider = ({ children }) => {
     Cookies.set('cart', JSON.stringify(updatedCart));
   };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e9b72bf2eb27a0cb1e96629cd183b0f0f105a347
   const handleQuantityChange = (id, newQty) => {
     if (newQty < 1) return; // prevent 0 or negative qty
     setCartData(getCart());
@@ -240,6 +259,8 @@ const ThemeProvider = ({ children }) => {
     isFilterBtnShow,
     setOpenSearchPanel,
     openSearchPanel,
+    userLocation, // Include userLocation in context values
+    setUserLocation, // Include setUserLocation in context values
   };
 
   return (

@@ -191,7 +191,6 @@ const AccountSidebar = () => {
             </Button>
           </NavLink>
         </li>
-
         <li className="w-full">
           <Button
             className="w-full !py-2  !text-left !px-5 !justify-start !capitalize !text-[rgba(0,0,0,0.8)] !rounded-none flex items-center gap-2"

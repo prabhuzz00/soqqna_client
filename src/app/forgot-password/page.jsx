@@ -1,11 +1,11 @@
-"use client"
+"use client";
 import React, { useContext, useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
 import { MyContext } from "@/context/ThemeProvider";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
 import { postData } from "@/utils/api";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
@@ -16,28 +16,25 @@ const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [formFields, setFormsFields] = useState({
-    email: Cookies.get("userEmail"),
-    newPassword: '',
-    confirmPassword: ''
+    email: Cookies.get("userphone"),
+    newPassword: "",
+    confirmPassword: "",
   });
 
   const context = useContext(MyContext);
   const router = useRouter();
-
-
 
   const onChangeInput = (e) => {
     const { name, value } = e.target;
     setFormsFields(() => {
       return {
         ...formFields,
-        [name]: value
-      }
-    })
-  }
+        [name]: value,
+      };
+    });
+  };
 
-
-  const valideValue = Object.values(formFields).every(el => el)
+  const valideValue = Object.values(formFields).every((el) => el);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -47,41 +44,38 @@ const ForgotPassword = () => {
     if (formFields.newPassword === "") {
       context.alertBox("error", "Please enter new password");
       setIsLoading(false);
-      return false
+      return false;
     }
-
 
     if (formFields.confirmPassword === "") {
       context.alertBox("error", "Please enter confirm password");
       setIsLoading(false);
-      return false
+      return false;
     }
 
     if (formFields.confirmPassword !== formFields.newPassword) {
       context.alertBox("error", "Password and confirm password not match");
       setIsLoading(false);
-      return false
+      return false;
     }
 
-    console.log(formFields)
+    console.log(formFields);
 
-    postData(`/api/user/forgot-password/change-password`, formFields).then((res) => {
-      console.log(res)
-      if (res?.error === false) {
-        Cookies.remove("userEmail")
-        Cookies.remove("actionType")
-        context.alertBox("success", res?.message);
-        setIsLoading(false);
-        router.push("/login")
+    postData(`/api/user/forgot-password/change-password`, formFields).then(
+      (res) => {
+        console.log(res);
+        if (res?.error === false) {
+          Cookies.remove("userphone");
+          Cookies.remove("actionType");
+          context.alertBox("success", res?.message);
+          setIsLoading(false);
+          router.push("/login");
+        } else {
+          context.alertBox("error", res?.message);
+        }
       }
-      else {
-        context.alertBox("error", res?.message);
-      }
-    })
-
-
-  }
-
+    );
+  };
 
   return (
     <section className="section py-5 lg:py-10">
@@ -117,8 +111,6 @@ const ForgotPassword = () => {
                   <IoMdEyeOff className="text-[20px] opacity-75" />
                 )}
               </Button>
-
-
             </div>
 
             <div className="form-group w-full mb-5 relative">
@@ -147,18 +139,19 @@ const ForgotPassword = () => {
               </Button>
             </div>
 
-
             <div className="flex items-center w-full mt-3 mb-3">
-              <Button type="submit" disabled={!valideValue} className="btn-org btn-lg w-full flex gap-3">
-                {
-                  isLoading === true ? <CircularProgress color="inherit" />
-                    :
-                    'Change Password'
-                }
-
+              <Button
+                type="submit"
+                disabled={!valideValue}
+                className="btn-org btn-lg w-full flex gap-3"
+              >
+                {isLoading === true ? (
+                  <CircularProgress color="inherit" />
+                ) : (
+                  "Change Password"
+                )}
               </Button>
             </div>
-
           </form>
         </div>
       </div>

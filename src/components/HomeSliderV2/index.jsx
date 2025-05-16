@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/effect-fade";
 import "swiper/css/navigation";
@@ -17,9 +16,11 @@ const HomeBannerV2 = (props) => {
 
   const context = useContext(MyContext);
 
+  const filteredData = props?.data?.filter(item => item?.isDisplayOnHomeBanner === true && item?.bannerimages?.length !== 0);
+
   return (
     <Swiper
-      loop={true}
+      loop={filteredData?.length > 1 ? true : false}
       slidesPerView={1}
       spaceBetween={30}
       effect="fade"

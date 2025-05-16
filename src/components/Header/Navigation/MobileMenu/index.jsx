@@ -103,11 +103,26 @@ const MobileMenu = ({ catData, isOpenMobileMenu, openMobileMenu }) => {
                             );
                         })}
                 </ul>
+
+
+                <div className="px-3 mt-4 grid grid-cols-2 gap-2">
+                    <Link href="https://seller.soouqna.com">
+                        <Button className="flex w-full gap-3 btn-org btn-dark !px-2 !py-2 !text-[11px]">
+                            Become Vendor
+                        </Button>
+                    </Link>
+
+                    <Link href="/login">
+                        <Button className="flex w-full gap-3 btn-org !px-2 !py-2 !text-[11px]">
+                            Login
+                        </Button>
+                    </Link>
+                </div>
             </div>
 
             {
                 isOpenMobileMenu === true &&
-                <div className="mobileMenuOverlay fixed top-0 left-0 bg-[rgba(0,0,0,0.5)] w-full h-[100%] z-[100]" onClick={()=>openMobileMenu(false)}></div>
+                <div className="mobileMenuOverlay fixed top-0 left-0 bg-[rgba(0,0,0,0.5)] w-full h-[100%] z-[100]" onClick={() => openMobileMenu(false)}></div>
             }
 
         </>
