@@ -221,16 +221,22 @@ const Header = () => {
                     {userLocation || "Select Location"}
                   </span>
                 </button>
-               
+
               </div>
             }
 
-             {locationModalOpen && (
-                  <LocationModal
-                    openkey={locationModalOpen}
-                    setOpenkey={setLocationModalOpen}
-                  />
-                )}
+          
+            {
+                locationModalOpen &&
+                <div className="mobileMenuOverlay fixed top-0 left-0 bg-[rgba(0,0,0,0.5)] w-full h-[100%] z-[100]"></div>
+            }
+
+            {locationModalOpen && (
+              <LocationModal
+                openkey={locationModalOpen}
+                setOpenkey={setLocationModalOpen}
+              />
+            )}
 
             <div
               className={`col2 fixed top-0 left-0 w-full h-full lg:w-[35%] lg:static p-2 lg:p-0 bg-white z-50 ${isClient &&
@@ -246,11 +252,11 @@ const Header = () => {
                 {
                   context?.windowWidth < 992 &&
                   <li>
-                    <HiOutlineLocationMarker size={25}  onClick={() => setLocationModalOpen(!locationModalOpen)}/>
+                    <HiOutlineLocationMarker size={25} onClick={() => setLocationModalOpen(!locationModalOpen)} />
                   </li>
                 }
 
-  
+
 
                 <li className="list-none relative" style={{ zoom: "80%" }}>
                   <FormControl sx={{ m: 1, minWidth: 35 }}>

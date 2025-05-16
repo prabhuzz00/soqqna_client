@@ -27,7 +27,7 @@ const MobileMenu = ({ catData, isOpenMobileMenu, openMobileMenu }) => {
                     {catData?.length !== 0 && catData?.filter((cat, idx) => idx < 8)
                         ?.map((cat, index) => {
                             return (
-                                <li className="list-none relative w-full group" key={index}>
+                                <li className="list-none relative w-full group border border-t-0 border-r-0 border-l-0 border-b-slate-100" key={index}>
                                     <Link
                                         href={`/products?catId=${cat?._id}`}
                                         className="link transition text-[14px] !font-[500]"
