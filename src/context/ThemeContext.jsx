@@ -155,7 +155,10 @@ const ThemeProvider = ({ children }) => {
     }
 
     Cookies.set('cart', JSON.stringify(cart));
+<<<<<<< HEAD
+=======
      alertBox("success", "Item Added");
+>>>>>>> e9b72bf2eb27a0cb1e96629cd183b0f0f105a347
 
     getCartItems();
 
@@ -163,7 +166,10 @@ const ThemeProvider = ({ children }) => {
 
   const getCart = () => {
     const cart = Cookies.get('cart');
+<<<<<<< HEAD
+=======
     setCartData(cart ? JSON.parse(cart) : []);
+>>>>>>> e9b72bf2eb27a0cb1e96629cd183b0f0f105a347
     return cart ? JSON.parse(cart) : [];
   };
 
@@ -185,6 +191,10 @@ const ThemeProvider = ({ children }) => {
     Cookies.set('cart', JSON.stringify(updatedCart));
   };
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> e9b72bf2eb27a0cb1e96629cd183b0f0f105a347
   const handleQuantityChange = (id, newQty) => {
     if (newQty < 1) return; // prevent 0 or negative qty
     setCartData(getCart());

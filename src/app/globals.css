@@ -147,8 +147,8 @@ nav ul button:hover {
   transition: all 0.2s;
 }
 
-.sliderHome:hover .swiper-button-prev,
-.sliderHome:hover .swiper-button-next {
+.sliderHome:hover .swiper-button-prev, .productsSlider :hover  .swiper-button-prev,
+.sliderHome:hover .swiper-button-next, .productsSlider :hover  .swiper-button-next {
   display: flex !important;
 }
 

@@ -11,7 +11,11 @@ const CartPanel = (props) => {
   const context = useContext(MyContext);
 
   const removeItem = (id) => {
+<<<<<<< HEAD
+   const cart = context?.getCart().filter(item => item._id !== id);
+=======
    const cart = context?.getCartItems().filter(item => item._id !== id);
+>>>>>>> e9b72bf2eb27a0cb1e96629cd183b0f0f105a347
     Cookies.set('cart', JSON.stringify(cart));
     context?.getCartItems();
   }
