@@ -175,7 +175,7 @@ const ProductPage = () => {
               ></div>
             )}
 
-            <div className="rightContent w-full lg:w-[80%] py-3">
+            <div className="rightContent w-full lg:w-[80%] py-0 lg:py-3">
               {/* Tags Input */}
               <div className="mb-4">
                 {/* <input

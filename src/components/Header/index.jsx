@@ -34,6 +34,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import Image from "next/image";
 import LocationModal from "../Location";
+import { HiOutlineLocationMarker } from "react-icons/hi";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -200,105 +201,103 @@ const Header = () => {
                 />
               </Link>
             </div>
-            <div className="col1 w-full lg:w-[20%] flex items-center justify-center">
-              <button
-                onClick={() => setLocationModalOpen(!locationModalOpen)}
-                className="
+
+            {
+              context?.windowWidth > 992 &&
+              <div className="col1 w-full lg:w-[20%] flex items-center justify-center">
+
+                <button
+                  onClick={() => setLocationModalOpen(!locationModalOpen)}
+                  className="
                       flex items-center space-x-1
                       text-sm font-medium text-gray-700
                       hover:text-primary
                       transition-colors duration-150
                       px-2 py-1
                     "
-              >
-                <LuMapPin className="text-lg" />
-                <span className="truncate max-w-[120px]">
-                  {userLocation || "Select Location"}
-                </span>
-              </button>
-              {locationModalOpen && (
-                <LocationModal
-                  openkey={locationModalOpen}
-                  setOpenkey={setLocationModalOpen}
-                />
-              )}
-            </div>
+                >
+                  <LuMapPin className="text-lg" />
+                  <span className="truncate max-w-[120px]">
+                    {userLocation || "Select Location"}
+                  </span>
+                </button>
+               
+              </div>
+            }
+
+             {locationModalOpen && (
+                  <LocationModal
+                    openkey={locationModalOpen}
+                    setOpenkey={setLocationModalOpen}
+                  />
+                )}
+
             <div
-              className={`col2 fixed top-0 left-0 w-full h-full lg:w-[35%] lg:static p-2 lg:p-0 bg-white z-50 ${
-                isClient &&
+              className={`col2 fixed top-0 left-0 w-full h-full lg:w-[35%] lg:static p-2 lg:p-0 bg-white z-50 ${isClient &&
                 clientWindowWidth !== undefined &&
                 clientWindowWidth > 992 &&
                 "!block"
-              } ${context?.openSearchPanel === true ? "block" : "hidden"}`}
+                } ${context?.openSearchPanel === true ? "block" : "hidden"}`}
             >
               <Search />
             </div>
-            <div className="col3 w-[30%] lg:w-[45%] flex items-center pl-3">
+            <div className={`col3 ${context?.windowWidth > 992 && 'w-[30%] lg:w-[45%]'} flex items-center pl-3`}>
               <ul className="flex items-center justify-end gap-2 lg:gap-3 w-full">
-                {isClient &&
-                  clientWindowWidth !== undefined &&
-                  clientWindowWidth > 992 && (
-                    // <li className="list-none relative" style={{ zoom: "80%" }}>
-                    //   <FormControl sx={{ m: 1, minWidth: 120 }}>
-                    //     <Select
-                    //       size="small"
-                    //       value={locale}
-                    //       onChange={(e) => changeLanguage(e.target.value)}
-                    //       displayEmpty
-                    //       inputProps={{ "aria-label": "Without label" }}
-                    //     >
-                    //       <MenuItem value={"en"}>English</MenuItem>
-                    //       <MenuItem value={"ar"}>العربية</MenuItem>
-                    //     </Select>
-                    //   </FormControl>
-                    // </li>
-                    <li className="list-none relative" style={{ zoom: "80%" }}>
-                      <FormControl sx={{ m: 1, minWidth: 35 }}>
-                        <Select
-                          value={locale}
-                          onChange={(e) => changeLanguage(e.target.value)}
-                          disableUnderline
-                          variant="standard"
-                          IconComponent={() => null} // Remove dropdown arrow
-                          sx={{
-                            padding: 0,
-                            minWidth: 35,
-                            backgroundColor: "transparent",
-                            "& .MuiSelect-select": {
-                              // padding: "4px",
-                              display: "flex",
-                              alignItems: "center",
-                            },
-                            "& fieldset": {
-                              border: "none",
-                            },
-                          }}
-                        >
-                          <MenuItem value="en">
-                            <Image
-                              src="/flags/en.png"
-                              alt="English"
-                              width={35}
-                              height={35}
-                            />
-                          </MenuItem>
-                          <MenuItem value="ar">
-                            <Image
-                              src="/flags/ar.png"
-                              alt="Arabic"
-                              width={35}
-                              height={35}
-                            />
-                          </MenuItem>
-                        </Select>
-                      </FormControl>
-                    </li>
-                  )}
+                {
+                  context?.windowWidth < 992 &&
+                  <li>
+                    <HiOutlineLocationMarker size={25}  onClick={() => setLocationModalOpen(!locationModalOpen)}/>
+                  </li>
+                }
+
+  
+
+                <li className="list-none relative" style={{ zoom: "80%" }}>
+                  <FormControl sx={{ m: 1, minWidth: 35 }}>
+                    <Select
+                      value={locale}
+                      onChange={(e) => changeLanguage(e.target.value)}
+                      disableUnderline
+                      variant="standard"
+                      IconComponent={() => null} // Remove dropdown arrow
+                      sx={{
+                        padding: 0,
+                        minWidth: 35,
+                        backgroundColor: "transparent",
+                        "& .MuiSelect-select": {
+                          // padding: "4px",
+                          display: "flex",
+                          alignItems: "center",
+                        },
+                        "& fieldset": {
+                          border: "none",
+                        },
+                      }}
+                    >
+                      <MenuItem value="en">
+                        <Image
+                          src="/flags/en.png"
+                          alt="English"
+                          width={35}
+                          height={35}
+                        />
+                      </MenuItem>
+                      <MenuItem value="ar">
+                        <Image
+                          src="/flags/ar.png"
+                          alt="Arabic"
+                          width={35}
+                          height={35}
+                        />
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </li>
 
                 {context.isLogin === false &&
-                isClient &&
-                clientWindowWidth !== undefined &&
-                clientWindowWidth > 992 ? (
+                  isClient &&
+                  clientWindowWidth !== undefined &&
+                  clientWindowWidth > 992 ? (
                   <li className="list-none px-1">
                     <span>
                       <Link
@@ -530,7 +529,7 @@ const Header = () => {
         />
       </header>
 
-      <div className="afterHeader mt-[115px] lg:mt-0"></div>
+      <div className="afterHeader mt-[110px] lg:mt-0"></div>
     </>
   );
 };

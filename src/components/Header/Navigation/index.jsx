@@ -163,7 +163,7 @@ const Navigation = (props) => {
                   href="/"
                   className="link transition text-[14px] font-[500]"
                 >
-                  <Button className="link transition !font-[500] !text-gray-300 hover:!text-primary !py-4">
+                  <Button className="link transition !font-[500] !text-gray-300 hover:!text-primary !py-3 lg:!py-4">
                     {t("header.home")}
                   </Button>
                 </Link>
@@ -179,7 +179,7 @@ const Navigation = (props) => {
                           href={`/products?catId=${cat?._id}`}
                           className="link transition text-[14px] !font-[500]"
                         >
-                          <Button className="link transition !font-[500] !text-gray-300 hover:!text-primary !py-4">
+                          <Button className="link transition !font-[500] !text-gray-300 hover:!text-primary !py-3 lg:!py-4">
                             {locale === "ar" ? cat?.arName : cat?.name}
                           </Button>
                         </Link>

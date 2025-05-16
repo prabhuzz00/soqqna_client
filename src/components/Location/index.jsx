@@ -3,6 +3,7 @@
 import { useEffect, useState, useContext } from "react";
 import { useSession } from "next-auth/react";
 import { MyContext } from "@/context/ThemeProvider";
+import { MdClose } from "react-icons/md";
 
 export default function LocationModal({ openkey, setOpenkey }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -106,7 +107,7 @@ export default function LocationModal({ openkey, setOpenkey }) {
   };
 
   return (
-    <div className="absolute ml-[40px] md:top-[58px] mt-2 lg:top-[78px] -sm:left-[330px] top-[40px] md:left-0 z-50 bg-white border shadow-md rounded-md sm:w-[500px]  p-4  w-[330px] -left-[200px] sm:-left-[230px]">
+    <div className="absolute top-[60px] lg:top-[80px]  left-[10px] lg:left-[30px] z-[100] shadow-md  p-4 bg-white border border-[rgba(0,0,0,0.1)]">
       <div className="flex justify-between items-start mb-2">
         <h2 className="text-md font-semibold">
           Welcome to <span className="text-primary">Soouqna</span>
@@ -115,7 +116,7 @@ export default function LocationModal({ openkey, setOpenkey }) {
           onClick={() => setOpenkey(false)}
           className="text-gray-500 hover:text-black text-xl"
         >
-          &times;
+          <MdClose size={20}/>
         </button>
       </div>
       <p className="text-sm text-gray-600 mb-4">
@@ -134,7 +135,7 @@ export default function LocationModal({ openkey, setOpenkey }) {
         <input
           type="text"
           placeholder="Search city or address..."
-          className="border rounded-md px-2 py-2 flex-1 text-sm"
+          className="border rounded-md px-2 py-2 flex-1 text-sm focus:border-[rgba(0,0,0,0.4)] outline-none"
           value={searchQuery}
           onChange={handleInputChange}
           onKeyDown={(e) => e.key === "Enter" && handleManualSearch()}

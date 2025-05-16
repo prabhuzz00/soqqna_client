@@ -123,7 +123,7 @@ const ProductItem = (props) => {
       setQuantity(1);
     }
 
-     if (quantity === 1) {
+    if (quantity === 1) {
       const cart = context?.cartData?.filter(item => item._id !== cartItem[0]?._id);
       Cookies.set('cart', JSON.stringify(cart));
       context?.getCartItems();
@@ -273,14 +273,18 @@ const ProductItem = (props) => {
         </span>
 
         <div className="actions absolute top-[-20px] right-[5px] z-50 flex items-center gap-2 flex-col w-[50px] transition-all duration-300 group-hover:top-[15px] opacity-0 group-hover:opacity-100">
-          <Button
-            className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white  text-black hover:!bg-primary hover:text-white group"
-            onClick={() =>
-              context.handleOpenProductDetailsModal(true, props?.item)
-            }
-          >
-            <MdZoomOutMap className="text-[18px] !text-black group-hover:text-white hover:!text-white" />
-          </Button>
+          {
+            context?.windowWidth > 992 &&
+            <Button
+              className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white  text-black hover:!bg-primary hover:text-white group"
+              onClick={() =>
+                context.handleOpenProductDetailsModal(true, props?.item)
+              }
+            >
+              <MdZoomOutMap className="text-[18px] !text-black group-hover:text-white hover:!text-white" />
+            </Button>
+
+          }
 
           <Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white  text-black hover:!bg-primary hover:text-white group">
             <IoGitCompareOutline className="text-[18px] !text-black group-hover:text-white hover:!text-white" />

@@ -8,10 +8,14 @@
     .btn{padding: 5px 10px !important; font-size: 12px !important;}
     .btn svg{font-size: 15px !important;}
 
+    .mobileMenu .btn-org{padding: 7px 6px !important;}
+    .bottomInfo .btn-org,.bottomInfo .btn-border{padding: 7px 6px !important;}
+
     .mobileNav a.active button{@apply !text-primary}
     .navigation ul{white-space: nowrap; overflow-x: scroll; overflow-y: hidden; display: block !important; text-align: center;}
     .navigation ul::-webkit-scrollbar{display: none !important;}
     .navigation ul li{display: inline-block !important; vertical-align: top !important;}
+    ul.nav ul button{padding: 5px 10px !important;}
 
     .container{width: 95% !important; max-width: 95% !important;}
 
@@ -33,6 +37,8 @@
     .footerBoxWrap .col{width: 180px !important;}
 
     .sidebarWrapper.open{bottom: 0px !important; opacity: 1 !important;}
+
+    header .MuiSelect-select{padding-right: 0px !important;}
     
 }
 
