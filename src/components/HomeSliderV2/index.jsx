@@ -69,7 +69,7 @@ const HomeBannerV2 = (props) => {
                         className="text-primary text-[16px] lg:text-[30px] 
                         font-[700] block lg:inline w-full lg:w-max"
                       >
-                        {item?.price?.toLocaleString('en-US', { style: 'currency', currency: 'INR' })}
+                        {item?.price?.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
                       </span>
                     </h3>
 

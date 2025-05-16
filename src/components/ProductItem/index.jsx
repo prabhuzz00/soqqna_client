@@ -17,6 +17,7 @@ import Image from "next/image";
 import { deleteData, editData, postData } from "@/utils/api";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTranslation } from "@/utils/useTranslation";
+import Cookies from "js-cookie";
 
 const ProductItem = (props) => {
   const [quantity, setQuantity] = useState(1);
@@ -47,21 +48,19 @@ const ProductItem = (props) => {
       productId: product?._id,
       countInStock: product?.countInStock,
       brand: product?.brand,
+      size: props?.item?.size?.length !== 0 ? selectedTabName : '',
+      weight: props?.item?.productWeight?.length !== 0 ? selectedTabName : '',
+      ram: props?.item?.productRam?.length !== 0 ? selectedTabName : '',
       barcode: product?.barcode,
       vendorId: product?.vendorId,
-      size: props?.item?.size?.length !== 0 ? selectedTabName : "",
-      weight: props?.item?.productWeight?.length !== 0 ? selectedTabName : "",
-      ram: props?.item?.productRam?.length !== 0 ? selectedTabName : "",
-    };
+    }
+
 
     setIsLoading(true);
 
-    if (
-      props?.item?.size?.length !== 0 ||
-      props?.item?.productRam?.length !== 0 ||
-      props?.item?.productWeight?.length !== 0
-    ) {
-      setIsShowTabs(true);
+    if (props?.item?.size?.length !== 0 || props?.item?.productRam?.length !== 0 || props?.item?.productWeight
+      ?.length !== 0) {
+      setIsShowTabs(true)
     } else {
       setIsAdded(true);
 
@@ -70,17 +69,22 @@ const ProductItem = (props) => {
         setIsLoading(false);
       }, 500);
       context?.addToCart(productItem, userId, quantity);
+
     }
+
+
 
     if (activeTab !== null) {
       context?.addToCart(productItem, userId, quantity);
       setIsAdded(true);
-      setIsShowTabs(false);
+      setIsShowTabs(false)
       setTimeout(() => {
         setIsLoading(false);
       }, 500);
     }
-  };
+
+
+  }
 
   const handleClickActiveTab = (index, name) => {
     setActiveTab(index);
@@ -118,28 +122,18 @@ const ProductItem = (props) => {
       setQuantity(1);
     }
 
-    if (quantity === 1) {
-      deleteData(`/api/cart/delete-cart-item/${cartItem[0]?._id}`).then(
-        (res) => {
-          setIsAdded(false);
-          context.alertBox("success", "Item Removed ");
-          context?.getCartItems();
-          setIsShowTabs(false);
-          setActiveTab(null);
-        }
-      );
+     if (quantity === 1) {
+      const cart = context?.cartData?.filter(item => item._id !== cartItem[0]?._id);
+      Cookies.set('cart', JSON.stringify(cart));
+      context?.getCartItems();
+      setIsAdded(false);
+      context.alertBox("success", "Item Removed ");
+      setIsShowTabs(false);
+      setActiveTab(null);
     } else {
-      const obj = {
-        _id: cartItem[0]?._id,
-        qty: quantity - 1,
-        subTotal: props?.item?.price * (quantity - 1),
-      };
-
-      editData(`/api/cart/update-qty`, obj).then((res) => {
-        context.alertBox("success", res?.data?.message);
-        context?.getCartItems();
-      });
+      context?.updateCartItemQuantity(cartItem[0]?._id, quantity - 1);
     }
+    context?.getCartItems();
   };
 
   const addQty = () => {

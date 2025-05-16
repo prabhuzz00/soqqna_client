@@ -720,6 +720,7 @@ const Checkout = () => {
             setIsloading(false);
           });
         } else {
+          setIsloading(false);
           context.alertBox("error", res?.message);
         }
         router.push("/my-orders/success");

@@ -7,7 +7,8 @@ import Rating from "@mui/material/Rating";
 import { IoCloseSharp } from "react-icons/io5";
 import { MyContext } from "@/context/ThemeProvider";
 import Image from "next/image";
-import { editData } from "@/utils/api";
+import { editData, fetchDataFromApi } from "@/utils/api";
+import Cookies from "js-cookie";
 
 const CartItems = (props) => {
 
@@ -41,62 +42,46 @@ const CartItems = (props) => {
     if (value !== null) {
       setSelectedQty(value);
 
-      const cartObj = {
-        _id: props?.item?._id,
-        qty: value,
-        subTotal: props?.item?.price * value
-      }
-
-      editData("/api/cart/update-qty", cartObj).then((res) => {
-        if (res?.data?.error === false) {
-          context.alertBox("success", res?.data?.message);
-          context?.getCartItems();
-        }
-      })
-
-
+      context?.updateCartItemQuantity(props?.item?._id, value)
+      context?.getCartItems()
 
     }
   };
 
 
-  const updateCart = (selectedVal, qty, field) => {
+  const updateCart = (selectedVal, qty, field, productId) => {
     handleCloseSize(selectedVal)
-
-    const cartObj = {
-      _id: props?.item?._id,
-      qty: qty,
-      subTotal: props?.item?.price * qty,
-      size: props?.item?.size !== "" ? selectedVal : '',
-      weight: props?.item?.weight !== "" ? selectedVal : '',
-      ram: props?.item?.ram !== "" ? selectedVal : '',
-    }
-
 
     //if product size available
     if (field === "size") {
 
-      fetchDataFromApi(`/api/product/${props?.item?.productId}`).then((res) => {
+      fetchDataFromApi(`/api/product/${productId}`).then((res) => {
         const product = res?.product;
-
 
         const item = product?.size?.filter((size) =>
           size?.includes(selectedVal)
         )
 
         if (item?.length !== 0) {
-          editData("/api/cart/update-qty", cartObj).then((res) => {
-            if (res?.data?.error === false) {
-              context.alertBox("success", res?.data?.message);
-              context?.getCartItems();
+          const cart = context?.getCart();
+          const updatedCart = cart.map(item => {
+            if (item._id === productId) {
+              return { ...item, size: props?.item?.size !== "" ? selectedVal : '' };
             }
-          })
+            return item;
+          });
+          Cookies.set('cart', JSON.stringify(updatedCart));
+          context?.getCartItems();
+
         } else {
           context.alertBox("error", `Product not available with the size of ${selectedVal}`);
         }
 
 
       })
+
+
+
 
     }
 
@@ -113,12 +98,15 @@ const CartItems = (props) => {
         )
 
         if (item?.length !== 0) {
-          editData("/api/cart/update-qty", cartObj).then((res) => {
-            if (res?.data?.error === false) {
-              context.alertBox("success", res?.data?.message);
-              context?.getCartItems();
+          const cart = context?.getCart();
+          const updatedCart = cart.map(item => {
+            if (item._id === productId) {
+              return { ...item, weight: props?.item?.weight !== "" ? selectedVal : '' };
             }
-          })
+            return item;
+          });
+          Cookies.set('cart', JSON.stringify(updatedCart));
+          context?.getCartItems();
         } else {
           context.alertBox("error", `Product not available with the weight of ${selectedVal}`);
         }
@@ -143,12 +131,15 @@ const CartItems = (props) => {
         )
 
         if (item?.length !== 0) {
-          editData("/api/cart/update-qty", cartObj).then((res) => {
-            if (res?.data?.error === false) {
-              context.alertBox("success", res?.data?.message);
-              context?.getCartItems();
+           const cart = context?.getCart();
+          const updatedCart = cart.map(item => {
+            if (item._id === productId) {
+              return { ...item, ram: props?.item?.ram !== "" ? selectedVal : '' };
             }
-          })
+            return item;
+          });
+          Cookies.set('cart', JSON.stringify(updatedCart));
+          context?.getCartItems();
         } else {
           context.alertBox("error", `Product not available with the ram of ${selectedVal}`);
         }
@@ -164,17 +155,15 @@ const CartItems = (props) => {
 
 
 
-
   const removeItem = (id) => {
-    deleteData(`/api/cart/delete-cart-item/${id}`).then((res) => {
-      context.alertBox("success", "Product removed from cart");
-      context?.getCartItems();
-    })
+    const cart = context?.getCart().filter(item => item._id !== id);
+    Cookies.set('cart', JSON.stringify(cart));
+    context?.getCartItems();
   }
 
   return (
     <div className="cartItem w-full p-3 flex items-center gap-4 pb-5 border-b border-[rgba(0,0,0,0.1)]">
-    
+
       <div className="img w-[30%] sm:w-[20%] lg:w-[15%] rounded-md overflow-hidden">
         <Link href={`/product/${props?.item?.productId}`} className="group">
           <Image width={100} height={80}
@@ -189,7 +178,7 @@ const CartItems = (props) => {
         <IoCloseSharp className="cursor-pointer absolute top-[0px] right-[0px] text-[22px] link transition-all" onClick={() => removeItem(props?.item?._id)} />
         <span className="text-[13px]">{props?.item?.brand}</span>
         <h3 className="text-[13px] sm:text-[15px] w-[80%]">
-          <Link href={`/product/${props?.item?.productId}`} className="link">{props?.item?.productTitle?.substr(0, context?.windowWidth < 992 ? 30 : 120) + '...'}</Link>
+          <Link href={`/product/${props?.item?.productId}`} className="link">{props?.item?.name?.substr(0, context?.windowWidth < 992 ? 30 : 120) + '...'}</Link>
         </h3>
 
         <Rating name="size-small" value={props?.item?.rating} size="small" readOnly />
@@ -223,7 +212,7 @@ const CartItems = (props) => {
                         return (
                           <MenuItem key={index}
                             className={`${item?.name === selectedSize && 'selected'}`}
-                            onClick={() => updateCart(item?.name, props?.item?.quantity, "size")}>
+                            onClick={() => updateCart(item?.name, props?.item?.quantity, "size", props?.item?._id)}>
                             {item?.name}
                           </MenuItem>
                         )
@@ -265,7 +254,7 @@ const CartItems = (props) => {
                         return (
                           <MenuItem key={index}
                             className={`${item?.name === selectedSize && 'selected'}`}
-                            onClick={() => updateCart(item?.name, props?.item?.quantity, "ram")}>
+                            onClick={() => updateCart(item?.name, props?.item?.quantity, "ram", props?.item?._id)}>
                             {item?.name}
                           </MenuItem>
                         )
@@ -309,7 +298,7 @@ const CartItems = (props) => {
                         return (
                           <MenuItem key={index}
                             className={`${item?.name === selectedSize && 'selected'}`}
-                            onClick={() => updateCart(item?.name, props?.item?.quantity, "weight")}>
+                            onClick={() => updateCart(item?.name, props?.item?.quantity, "weight", props?.item?._id)}>
                             {item?.name}
                           </MenuItem>
                         )

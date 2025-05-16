@@ -21,7 +21,7 @@ const BannerBoxV2 = (props) => {
         <h2 className="text-[14px] md:text-[18px] font-[600]">{props?.item?.bannerTitle}</h2>
 
         <span className="text-[20px] text-primary font-[600] w-full">
-          &#x20b9;{props?.item?.price}
+        {props?.item?.price?.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
         </span>
 
         <div className="w-full">
