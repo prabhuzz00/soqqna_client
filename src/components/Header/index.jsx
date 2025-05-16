@@ -202,10 +202,8 @@ const Header = () => {
               </Link>
             </div>
 
-            {
-              context?.windowWidth > 992 &&
+            {context?.windowWidth > 992 && (
               <div className="col1 w-full lg:w-[20%] flex items-center justify-center">
-
                 <button
                   onClick={() => setLocationModalOpen(!locationModalOpen)}
                   className="
@@ -221,15 +219,12 @@ const Header = () => {
                     {userLocation || "Select Location"}
                   </span>
                 </button>
-
               </div>
-            }
+            )}
 
-          
-            {
-                locationModalOpen &&
-                <div className="mobileMenuOverlay fixed top-0 left-0 bg-[rgba(0,0,0,0.5)] w-full h-[100%] z-[100]"></div>
-            }
+            {locationModalOpen && (
+              <div className="mobileMenuOverlay fixed top-0 left-0 bg-[rgba(0,0,0,0.5)] w-full h-[100%] z-[100]"></div>
+            )}
 
             {locationModalOpen && (
               <LocationModal
@@ -239,24 +234,29 @@ const Header = () => {
             )}
 
             <div
-              className={`col2 fixed top-0 left-0 w-full h-full lg:w-[35%] lg:static p-2 lg:p-0 bg-white z-50 ${isClient &&
+              className={`col2 fixed top-0 left-0 w-full h-full lg:w-[35%] lg:static p-2 lg:p-0 bg-white z-50 ${
+                isClient &&
                 clientWindowWidth !== undefined &&
                 clientWindowWidth > 992 &&
                 "!block"
-                } ${context?.openSearchPanel === true ? "block" : "hidden"}`}
+              } ${context?.openSearchPanel === true ? "block" : "hidden"}`}
             >
               <Search />
             </div>
-            <div className={`col3 ${context?.windowWidth > 992 && 'w-[30%] lg:w-[45%]'} flex items-center pl-3`}>
+            <div
+              className={`col3 ${
+                context?.windowWidth > 992 && "w-[30%] lg:w-[45%]"
+              } flex items-center pl-3`}
+            >
               <ul className="flex items-center justify-end gap-2 lg:gap-3 w-full">
-                {
-                  context?.windowWidth < 992 &&
+                {context?.windowWidth < 992 && (
                   <li>
-                    <HiOutlineLocationMarker size={25} onClick={() => setLocationModalOpen(!locationModalOpen)} />
+                    <HiOutlineLocationMarker
+                      size={25}
+                      onClick={() => setLocationModalOpen(!locationModalOpen)}
+                    />
                   </li>
-                }
-
-
+                )}
 
                 <li className="list-none relative" style={{ zoom: "80%" }}>
                   <FormControl sx={{ m: 1, minWidth: 35 }}>
@@ -266,6 +266,14 @@ const Header = () => {
                       disableUnderline
                       variant="standard"
                       IconComponent={() => null} // Remove dropdown arrow
+                      renderValue={() => (
+                        <Image
+                          src="/flags/internet.png" // Always show en.png (or any fixed image)
+                          alt="Language"
+                          width={35}
+                          height={35}
+                        />
+                      )}
                       sx={{
                         padding: 0,
                         minWidth: 35,
@@ -301,9 +309,9 @@ const Header = () => {
                 </li>
 
                 {context.isLogin === false &&
-                  isClient &&
-                  clientWindowWidth !== undefined &&
-                  clientWindowWidth > 992 ? (
+                isClient &&
+                clientWindowWidth !== undefined &&
+                clientWindowWidth > 992 ? (
                   <li className="list-none px-1">
                     <span>
                       <Link
