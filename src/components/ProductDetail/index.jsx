@@ -44,17 +44,17 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
 
   return (
     <>
-      {/* <Breadcrumb
+      <Breadcrumb
         paths={[
           {
             label: productName,
             href: `/`,
           },
         ]}
-      /> */}
+      />
 
       <div className="container py-2">
-        <Breadcrumbs aria-label="breadcrumb">
+        {/* <Breadcrumbs aria-label="breadcrumb">
           <Link
             underline="hover"
             color="inherit"
@@ -71,7 +71,7 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
           >
             Fashion
           </Link>
-        </Breadcrumbs>
+        </Breadcrumbs> */}
       </div>
 
       <section className="py-5 bg-white">
