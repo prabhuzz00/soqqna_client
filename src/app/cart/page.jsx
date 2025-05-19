@@ -7,12 +7,15 @@ import { MyContext } from "@/context/ThemeProvider";
 import Link from "next/link";
 import { fetchDataFromApi } from "@/utils/api";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/utils/useTranslation";
 
 const CartPage = () => {
   const [productSizeData, setProductSizeData] = useState([]);
   const [productRamsData, setProductRamsData] = useState([]);
   const [productWeightData, setProductWeightData] = useState([]);
   const context = useContext(MyContext);
+
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -66,13 +69,13 @@ const CartPage = () => {
         <div className="leftPart w-full lg:w-[70%]">
           <div className="shadow-md rounded-md bg-white">
             <div className="py-5 px-3 border-b border-[rgba(0,0,0,0.1)]">
-              <h2>Your Cart</h2>
+              <h2>{t("cartPage.title")}</h2>
               <p className="mt-0 mb-0">
-                There are{" "}
+                {t("cartPage.there")}{" "}
                 <span className="font-bold text-primary">
                   {context?.cartData?.length}
                 </span>{" "}
-                products in your cart
+                {t("cartPage.productsInCart")}
               </p>
             </div>
 
@@ -95,9 +98,11 @@ const CartPage = () => {
                 <>
                   <div className="flex items-center justify-center flex-col py-10 gap-5">
                     <img src="/empty-cart.png" className="w-[150px]" />
-                    <h4>Your Cart is currently empty</h4>
+                    <h4>{t("cartPage.emptyTitle")}</h4>
                     <Link href="/">
-                      <Button className="btn-org">Continue Shopping</Button>
+                      <Button className="btn-org">
+                        {t("cartPage.continueShopping")}
+                      </Button>
                     </Link>
                   </div>
                 </>
@@ -108,11 +113,13 @@ const CartPage = () => {
 
         <div className="rightPart w-full lg:w-[30%]">
           <div className="shadow-md rounded-md bg-white p-5 sticky top-[70px] z-[90]">
-            <h3 className="pb-3">Cart Totals</h3>
+            <h3 className="pb-3">{t("cartPage.totalsTitle")}</h3>
             <hr />
 
             <p className="flex items-center justify-between">
-              <span className="text-[14px] font-[500]">Subtotal</span>
+              <span className="text-[14px] font-[500]">
+                {t("cartPage.subtotal")}
+              </span>
               <span className="text-primary font-bold">
                 {(context.cartData?.length !== 0
                   ? context.cartData
@@ -127,12 +134,16 @@ const CartPage = () => {
             </p>
 
             <p className="flex items-center justify-between">
-              <span className="text-[14px] font-[500]">Shipping</span>
-              <span className="font-bold">Free</span>
+              <span className="text-[14px] font-[500]">
+                {t("cartPage.shipping")}
+              </span>
+              <span className="font-bold">{t("cartPage.shippingValue")}</span>
             </p>
 
             <p className="flex items-center justify-between">
-              <span className="text-[14px] font-[500]">Estimate for</span>
+              <span className="text-[14px] font-[500]">
+                {t("cartPage.estimateFor")}
+              </span>
               <span className="font-bold">
                 <span className="font-bold">
                   {context?.userData?.address_details[0]?.country}
@@ -141,7 +152,9 @@ const CartPage = () => {
             </p>
 
             <p className="flex items-center justify-between">
-              <span className="text-[14px] font-[500]">Total</span>
+              <span className="text-[14px] font-[500]">
+                {t("cartPage.total")}
+              </span>
               <span className="text-primary font-bold">
                 {(context.cartData?.length !== 0
                   ? context.cartData
@@ -162,7 +175,8 @@ const CartPage = () => {
               className="btn-org btn-lg w-full flex gap-2"
               onClick={onCheckout}
             >
-              <BsFillBagCheckFill className="text-[20px]" /> Checkout
+              <BsFillBagCheckFill className="text-[20px]" />{" "}
+              {t("cartPage.checkout")}
             </Button>
             {/* </Link> */}
           </div>

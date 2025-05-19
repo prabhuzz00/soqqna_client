@@ -7,8 +7,12 @@ import Image from "next/image";
 import { deleteData } from "@/utils/api";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/utils/useTranslation";
+import { useLanguage } from "@/context/LanguageContext";
 const CartPanel = (props) => {
   const context = useContext(MyContext);
+  const { t } = useTranslation();
+  const { locale } = useLanguage();
 
   const removeItem = (id) => {
     const cart = context?.getCartItems().filter((item) => item._id !== id);
@@ -59,12 +63,14 @@ const CartPanel = (props) => {
                     href={`/product/${item?._id}`}
                     className="link transition-all"
                   >
-                    {item?.name?.substr(0, 20) + "..."}
+                    {locale === "ar"
+                      ? item?.arName?.substr(0, 20) + "..."
+                      : item?.name?.substr(0, 20) + "..."}
                   </Link>
                 </h4>
                 <p className="flex items-center gap-5 mt-2 mb-2">
                   <span className="text-[13px] sm:text-[14px]">
-                    Qty : <span>{item?.quantity}</span>
+                    {t("cartPage.qty")} : <span>{item?.quantity}</span>
                   </span>
                   <span className="text-primary font-bold">
                     {parseInt(item?.price * item?.quantity)?.toLocaleString(
@@ -90,7 +96,7 @@ const CartPanel = (props) => {
         <div className="bottomInfo py-3 px-4 w-full border-t border-[rgba(0,0,0,0.1)] flex items-center justify-between flex-col">
           <div className="flex items-center justify-between w-full">
             <span className="text-[14px] font-[600]">
-              {props?.data?.length} item
+              {props?.data?.length} {t("cartPage.item")}
             </span>
             <span className="text-primary font-bold">
               {(props?.data?.length !== 0
@@ -108,7 +114,9 @@ const CartPanel = (props) => {
 
         <div className="bottomInfo py-3 px-4 w-full border-t border-[rgba(0,0,0,0.1)] flex items-center justify-between flex-col">
           <div className="flex items-center justify-between w-full">
-            <span className="text-[14px] font-[600]">Total (tax excl.)</span>
+            <span className="text-[14px] font-[600]">
+              {t("cartPage.totalex")}
+            </span>
             <span className="text-primary font-bold">
               {(props?.data?.length !== 0
                 ? props?.data
@@ -130,7 +138,9 @@ const CartPanel = (props) => {
               className=" w-[50%] d-block"
               onClick={context.toggleCartPanel(false)}
             >
-              <Button className="btn-org  w-full">View Cart</Button>
+              <Button className="btn-org  w-full">
+                {t("cartPage.viewcart")}
+              </Button>
             </Link>
             {/* <Link
               className=" w-[50%] d-block"
@@ -141,7 +151,7 @@ const CartPanel = (props) => {
                 className=" btn-org btn-border  w-full"
                 onClick={onCheckout}
               >
-                Checkout
+                {t("cartPage.checkout")}
               </Button>
             </div>
             {/* </Link> */}
