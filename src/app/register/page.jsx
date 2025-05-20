@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 
 import Cookies from "js-cookie";
 import Breadcrumb from "@/components/Breadcrumb";
+import { useTranslation } from "@/utils/useTranslation";
 
 const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +32,7 @@ const Register = () => {
 
   const context = useContext(MyContext);
   const router = useRouter();
+  const { t } = useTranslation();
 
   const { data: session, status } = useSession();
 
@@ -58,22 +60,22 @@ const Register = () => {
     setIsLoading(true);
 
     if (formFields.name === "") {
-      context.alertBox("error", "Please enter full name");
+      context.alertBox("error", t("register.error_name_required"));
       return false;
     }
 
     if (formFields.email === "") {
-      context.alertBox("error", "Please enter email address");
+      context.alertBox("error", t("register.error_email_required"));
       return false;
     }
 
     if (formFields.phone === "") {
-      context.alertBox("error", "Please enter phone number");
+      context.alertBox("error", t("register.error_phone_required"));
       return false;
     }
 
     if (formFields.password === "") {
-      context.alertBox("error", "Please enter password");
+      context.alertBox("error", t("register.error_password_required"));
       return false;
     }
 
@@ -126,7 +128,7 @@ const Register = () => {
           router.push("/");
         }, 2000);
       } catch (error) {
-        console.error("Error posting data to backend:", error);
+        // console.error("Error posting data to backend:", error);
 
         context.alertBox("error", "An error occurred during sign-in.");
       } finally {
@@ -151,7 +153,7 @@ const Register = () => {
       <Breadcrumb
         paths={[
           {
-            label: "Register",
+            label: t("register.registerButton"),
             href: `/`,
           },
         ]}
@@ -161,7 +163,7 @@ const Register = () => {
         <div className="container">
           <div className="card shadow-md w-full sm:w-[400px] m-auto rounded-md bg-white p-5 px-10">
             <h3 className="text-center text-[18px] text-black">
-              Register with a new account
+              {t("register.title")}
             </h3>
 
             <form className="w-full mt-5" onSubmit={handleSubmit}>
@@ -172,7 +174,7 @@ const Register = () => {
                   name="name"
                   value={formFields.name}
                   disabled={isLoading === true ? true : false}
-                  label="Full Name"
+                  label={t("register.fullName")}
                   variant="outlined"
                   className="w-full"
                   onChange={onChangeInput}
@@ -184,7 +186,7 @@ const Register = () => {
                   type="email"
                   id="email"
                   name="email"
-                  label="Email"
+                  label={t("register.email")}
                   value={formFields.email}
                   disabled={isLoading === true ? true : false}
                   variant="outlined"
@@ -198,7 +200,7 @@ const Register = () => {
                   type="number"
                   id="phone"
                   name="phone"
-                  label="Phone"
+                  label={t("register.phone")}
                   value={formFields.phone}
                   disabled={isLoading === true ? true : false}
                   variant="outlined"
@@ -212,7 +214,7 @@ const Register = () => {
                   type={isPasswordShow === false ? "password" : "text"}
                   id="password"
                   name="password"
-                  label="Password"
+                  label={t("register.password")}
                   variant="outlined"
                   className="w-full"
                   value={formFields.password}
@@ -242,19 +244,19 @@ const Register = () => {
                   {isLoading === true ? (
                     <CircularProgress color="inherit" />
                   ) : (
-                    "Register"
+                    t("register.registerButton")
                   )}
                 </Button>
               </div>
 
               <p className="text-center">
-                Already have an account?{" "}
+                {t("register.alreadyHaveAccount")}{" "}
                 <Link
                   className="link text-[14px] font-[600] text-primary"
                   href="/login"
                 >
                   {" "}
-                  Login
+                  {t("register.login")}
                 </Link>
               </p>
 

@@ -1,4 +1,5 @@
 "use client";
+
 import { MyContext } from "@/context/ThemeProvider";
 import React, { useContext, useEffect, useState, useCallback } from "react";
 import TextField from "@mui/material/TextField";
@@ -30,6 +31,18 @@ const LoginPage = () => {
   });
 
   const { data: session, status } = useSession();
+
+  // const searchParams = useSearchParams();
+  // const redirectPath = searchParams.get("redirect") || "/";
+
+  const [redirectPath, setRedirectPath] = useState("/");
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get("redirect") || "/";
+      setRedirectPath(redirect);
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -120,7 +133,8 @@ const LoginPage = () => {
 
           context.setIsLogin(true);
 
-          router.push("/");
+          // router.push("/");
+          router.push(redirectPath);
         } else {
           context.alertBox("error", res?.message);
           setIsLoading(false);

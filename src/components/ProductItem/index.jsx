@@ -38,6 +38,7 @@ const ProductItem = (props) => {
     const productItem = {
       _id: product?._id,
       name: product?.name,
+      arName: product?.arbName,
       image: product?.images[0],
       rating: product?.rating,
       price: product?.price,
@@ -48,19 +49,21 @@ const ProductItem = (props) => {
       productId: product?._id,
       countInStock: product?.countInStock,
       brand: product?.brand,
-      size: props?.item?.size?.length !== 0 ? selectedTabName : '',
-      weight: props?.item?.productWeight?.length !== 0 ? selectedTabName : '',
-      ram: props?.item?.productRam?.length !== 0 ? selectedTabName : '',
+      size: props?.item?.size?.length !== 0 ? selectedTabName : "",
+      weight: props?.item?.productWeight?.length !== 0 ? selectedTabName : "",
+      ram: props?.item?.productRam?.length !== 0 ? selectedTabName : "",
       barcode: product?.barcode,
       vendorId: product?.vendorId,
-    }
-
+    };
 
     setIsLoading(true);
 
-    if (props?.item?.size?.length !== 0 || props?.item?.productRam?.length !== 0 || props?.item?.productWeight
-      ?.length !== 0) {
-      setIsShowTabs(true)
+    if (
+      props?.item?.size?.length !== 0 ||
+      props?.item?.productRam?.length !== 0 ||
+      props?.item?.productWeight?.length !== 0
+    ) {
+      setIsShowTabs(true);
     } else {
       setIsAdded(true);
 
@@ -69,22 +72,17 @@ const ProductItem = (props) => {
         setIsLoading(false);
       }, 500);
       context?.addToCart(productItem, userId, quantity);
-
     }
-
-
 
     if (activeTab !== null) {
       context?.addToCart(productItem, userId, quantity);
       setIsAdded(true);
-      setIsShowTabs(false)
+      setIsShowTabs(false);
       setTimeout(() => {
         setIsLoading(false);
       }, 500);
     }
-
-
-  }
+  };
 
   const handleClickActiveTab = (index, name) => {
     setActiveTab(index);
@@ -123,9 +121,11 @@ const ProductItem = (props) => {
       setQuantity(1);
     }
 
-     if (quantity === 1) {
-      const cart = context?.cartData?.filter(item => item._id !== cartItem[0]?._id);
-      Cookies.set('cart', JSON.stringify(cart));
+    if (quantity === 1) {
+      const cart = context?.cartData?.filter(
+        (item) => item._id !== cartItem[0]?._id
+      );
+      Cookies.set("cart", JSON.stringify(cart));
       context?.getCartItems();
       setIsAdded(false);
       context.alertBox("success", "Item Removed ");
@@ -140,16 +140,19 @@ const ProductItem = (props) => {
   const addQty = () => {
     setQuantity(quantity + 1);
 
-    const obj = {
-      _id: cartItem[0]?._id,
-      qty: quantity + 1,
-      subTotal: props?.item?.price * (quantity + 1),
-    };
+    // const obj = {
+    //   _id: cartItem[0]?._id,
+    //   qty: quantity + 1,
+    //   subTotal: props?.item?.price * (quantity + 1),
+    // };
 
-    editData(`/api/cart/update-qty`, obj).then((res) => {
-      context.alertBox("success", res?.data?.message);
-      context?.getCartItems();
-    });
+    // editData(`/api/cart/update-qty`, obj).then((res) => {
+    //   context.alertBox("success", res?.data?.message);
+    //   context?.getCartItems();
+    // });
+
+    context?.updateCartItemQuantity(cartItem[0]?._id, quantity + 1);
+    context?.getCartItems();
   };
 
   const handleAddToMyList = (item) => {
@@ -273,8 +276,7 @@ const ProductItem = (props) => {
         </span>
 
         <div className="actions absolute top-[-20px] right-[5px] z-50 flex items-center gap-2 flex-col w-[50px] transition-all duration-300 group-hover:top-[15px] opacity-0 group-hover:opacity-100">
-          {
-            context?.windowWidth > 992 &&
+          {context?.windowWidth > 992 && (
             <Button
               className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white  text-black hover:!bg-primary hover:text-white group"
               onClick={() =>
@@ -283,8 +285,7 @@ const ProductItem = (props) => {
             >
               <MdZoomOutMap className="text-[18px] !text-black group-hover:text-white hover:!text-white" />
             </Button>
-
-          }
+          )}
 
           <Button className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white  text-black hover:!bg-primary hover:text-white group">
             <IoGitCompareOutline className="text-[18px] !text-black group-hover:text-white hover:!text-white" />

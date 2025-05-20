@@ -233,7 +233,9 @@ Refund Policy */}
         className="cartPanel"
       >
         <div className="flex items-center justify-between py-3 px-4 gap-3 border-b border-[rgba(0,0,0,0.1)] overflow-hidden">
-          <h4>Shopping Cart ({context?.cartData?.length})</h4>
+          <h4>
+            {t("cartPage.panelTitle")} ({context?.cartData?.length})
+          </h4>
           <IoCloseSharp
             className="text-[20px] cursor-pointer"
             onClick={context.toggleCartPanel(false)}

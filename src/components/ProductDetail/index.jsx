@@ -54,7 +54,7 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
       />
 
       <div className="container py-2">
-        <Breadcrumbs aria-label="breadcrumb">
+        {/* <Breadcrumbs aria-label="breadcrumb">
           <Link
             underline="hover"
             color="inherit"
@@ -71,7 +71,7 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
           >
             Fashion
           </Link>
-        </Breadcrumbs>
+        </Breadcrumbs> */}
       </div>
 
       <section className="py-5 bg-white">
@@ -98,16 +98,18 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
             <div className="container pt-10">
               <div className="flex items-center gap-8 mb-5">
                 <span
-                  className={`link text-[17px] cursor-pointer font-[500] ${activeTab === 0 && "text-primary"
-                    }`}
+                  className={`link text-[17px] cursor-pointer font-[500] ${
+                    activeTab === 0 && "text-primary"
+                  }`}
                   onClick={() => setActiveTab(0)}
                 >
                   Description
                 </span>
 
                 <span
-                  className={`link text-[17px] cursor-pointer font-[500] ${activeTab === 1 && "text-primary"
-                    }`}
+                  className={`link text-[17px] cursor-pointer font-[500] ${
+                    activeTab === 1 && "text-primary"
+                  }`}
                   onClick={() => setActiveTab(1)}
                   ref={reviewSec}
                 >
