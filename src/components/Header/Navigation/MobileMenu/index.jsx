@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Button } from '@mui/material';
 import { IoIosArrowDown } from "react-icons/io";
 import { Collapse } from "react-collapse";
-
+import { RiGridFill } from "react-icons/ri";
 const MobileMenu = ({ catData, isOpenMobileMenu, openMobileMenu }) => {
 
     const [submenuIndex, setSubmenuIndex] = useState(null);
@@ -50,52 +50,210 @@ const MobileMenu = ({ catData, isOpenMobileMenu, openMobileMenu }) => {
 
                                     {cat?.children?.length !== 0 && (
                                         <Collapse isOpened={submenuIndex === index && submenuToggle}>
-                                            <div className="submenu w-full bg-white">
-                                                <ul>
-                                                    {cat?.children?.map((subCat, index_) => {
-                                                        return (
-                                                            <li
-                                                                className="list-none w-full relative"
-                                                                key={index_}
-                                                            >
-                                                                <Link
-                                                                    href={`/products?subCatId=${subCat?._id}`}
-                                                                    className="w-full"
-                                                                >
-                                                                    <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none !text-gray-800 hover:!text-primary !py-2 !capitalize">
-                                                                        {subCat?.name}
-                                                                    </Button>
-                                                                </Link>
+                                            <div className="submenu w-full bg-white py-5">
 
-                                                                {subCat?.children?.length !== 0 && (
-                                                                    <div className="submenu w-full bg-white transition-all">
-                                                                        <ul>
-                                                                            {subCat?.children?.map(
-                                                                                (thirdLavelCat, index__) => {
-                                                                                    return (
-                                                                                        <li
-                                                                                            className="list-none w-full"
-                                                                                            key={index__}
-                                                                                        >
-                                                                                            <Link
-                                                                                                href={`/products?thirdLavelCatId=${thirdLavelCat?._id}`}
-                                                                                                className="w-full"
-                                                                                            >
-                                                                                                <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none !text-gray-800 hover:!text-primary !py-2 ">
-                                                                                                    {thirdLavelCat?.name}
-                                                                                                </Button>
-                                                                                            </Link>
-                                                                                        </li>
-                                                                                    );
-                                                                                }
-                                                                            )}
-                                                                        </ul>
-                                                                    </div>
-                                                                )}
-                                                            </li>
-                                                        );
-                                                    })}
-                                                </ul>
+                                                <h3 className="pl-3">SHOP BY CATEGORY</h3>
+
+                                                <div className="grid grid-cols-4 mt-4 gap-4">
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden bg-gray-200">
+                                                            <RiGridFill size={30} className="hover:!text-primary" />
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">View All</h4>
+                                                    </Link>
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742452096038_thth1.jpg" className="w-full h-full object-cover transition" />
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">New In</h4>
+                                                    </Link>
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742452035507_rtrt1.jpg" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">Top Rated</h4>
+                                                    </Link>
+
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742447215241_blubags-waterproof-school-backpack-36-l-laptop-bag-college-backpack-school-bag-product-images-rvxyzquw2b-0-202312201359.webp" className="w-full h-full object-cover" />
+
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">Top Bags</h4>
+                                                    </Link>
+
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742445932012_paragon-puk7014l-women-sandals-casual-everyday-sandals-stylish-comfortable-durable-for-daily-occasion-wear-product-images-rvy1o3iatj-0-202309191612.jpg" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">Top Sandels</h4>
+                                                    </Link>
+
+
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742439142762_gespo-peach-solid-mandarin-collar-half-sleeve-casual-t-shirt-product-images-rvrtzhyumb-0-202304080900.webp" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">Men T-Shirts</h4>
+                                                    </Link>
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742439426966_modestouze-attires-women-s-mukaish-worked-ethnic-jacket-with-top-and-pant-set-product-images-rvziicqwq6-0-202403231855.jpg" className="w-full h-full object-cover" />
+
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">New Arrivals</h4>
+                                                    </Link>
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742439504084_deel-band-women-rayon-embroidered-kurta-pant-dupatta-set-product-images-rvz2bvyrm2-0-202404071602.webp" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">Girls Suits</h4>
+                                                    </Link>
+
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742439887415_miss-ayse-women-s-multicolor-crepe-printed-top-product-images-rvvlrud6qm-0-202410111253.webp" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">Girls Tops</h4>
+                                                    </Link>
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742451878625_gosriki-women-s-pink-ethnic-motifs-printed-kurta-with-trouser-dupatta-product-images-rvpkyh5qdr-4-202310141511.jpg" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">Girls Kurta</h4>
+                                                    </Link>
+
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742452096038_thth1.jpg" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">New In</h4>
+                                                    </Link>
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742452035507_rtrt1.jpg" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">Top Rated</h4>
+                                                    </Link>
+
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742447215241_blubags-waterproof-school-backpack-36-l-laptop-bag-college-backpack-school-bag-product-images-rvxyzquw2b-0-202312201359.webp" className="w-full h-full object-cover" />
+
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">Top Bags</h4>
+                                                    </Link>
+
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742445932012_paragon-puk7014l-women-sandals-casual-everyday-sandals-stylish-comfortable-durable-for-daily-occasion-wear-product-images-rvy1o3iatj-0-202309191612.jpg" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">Top Sandels</h4>
+                                                    </Link>
+
+
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742439142762_gespo-peach-solid-mandarin-collar-half-sleeve-casual-t-shirt-product-images-rvrtzhyumb-0-202304080900.webp" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">Men T-Shirts</h4>
+                                                    </Link>
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742439426966_modestouze-attires-women-s-mukaish-worked-ethnic-jacket-with-top-and-pant-set-product-images-rvziicqwq6-0-202403231855.jpg" className="w-full h-full object-cover" />
+
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">New Arrivals</h4>
+                                                    </Link>
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742439504084_deel-band-women-rayon-embroidered-kurta-pant-dupatta-set-product-images-rvz2bvyrm2-0-202404071602.webp" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">Girls Suits</h4>
+                                                    </Link>
+
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742439887415_miss-ayse-women-s-multicolor-crepe-printed-top-product-images-rvvlrud6qm-0-202410111253.webp" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">Girls Tops</h4>
+                                                    </Link>
+
+                                                    <Link href="#" className="flex items-center justify-center flex-col gap-1">
+                                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                                            <img src="https://serviceapi.spicezgold.com/download/1742451878625_gosriki-women-s-pink-ethnic-motifs-printed-kurta-with-trouser-dupatta-product-images-rvpkyh5qdr-4-202310141511.jpg" className="w-full h-full object-cover" />
+                                                        </div>
+                                                        <h4 className="text-center text-[12px] hover:!text-primary">Girls Kurta</h4>
+                                                    </Link>
+
+
+                                                </div>
+
+
+                                                {
+                                                    //  <ul>
+                                                    //         {cat?.children?.map((subCat, index_) => {
+                                                    //             return (
+                                                    //                 <li
+                                                    //                     className="list-none w-full relative"
+                                                    //                     key={index_}
+                                                    //                 >
+                                                    //                     <Link
+                                                    //                         href={`/products?subCatId=${subCat?._id}`}
+                                                    //                         className="w-full"
+                                                    //                     >
+                                                    //                         <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none !text-gray-800 hover:!text-primary !py-2 !capitalize">
+                                                    //                             {subCat?.name}
+                                                    //                         </Button>
+                                                    //                     </Link>
+
+                                                    //                     {subCat?.children?.length !== 0 && (
+                                                    //                         <div className="submenu w-full bg-white transition-all">
+                                                    //                             <ul>
+                                                    //                                 {subCat?.children?.map(
+                                                    //                                     (thirdLavelCat, index__) => {
+                                                    //                                         return (
+                                                    //                                             <li
+                                                    //                                                 className="list-none w-full"
+                                                    //                                                 key={index__}
+                                                    //                                             >
+                                                    //                                                 <Link
+                                                    //                                                     href={`/products?thirdLavelCatId=${thirdLavelCat?._id}`}
+                                                    //                                                     className="w-full"
+                                                    //                                                 >
+                                                    //                                                     <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none !text-gray-800 hover:!text-primary !py-2 ">
+                                                    //                                                         {thirdLavelCat?.name}
+                                                    //                                                     </Button>
+                                                    //                                                 </Link>
+                                                    //                                             </li>
+                                                    //                                         );
+                                                    //                                     }
+                                                    //                                 )}
+                                                    //                             </ul>
+                                                    //                         </div>
+                                                    //                     )}
+                                                    //                 </li>
+                                                    //             );
+                                                    //         })}
+                                                    //     </ul>
+                                                }
                                             </div>
                                         </Collapse>
                                     )}

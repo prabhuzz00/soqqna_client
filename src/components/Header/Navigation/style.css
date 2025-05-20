@@ -10,3 +10,5 @@
 
 .nav li .submenu li .submenu button{color: rgba(0,0,0,0.80) !important;}
 .nav li .submenu li .submenu button:hover{color: #ff5252 !important;}
+
+.submenu::-webkit-scrollbar-thumb{background: #ccc !important;}
