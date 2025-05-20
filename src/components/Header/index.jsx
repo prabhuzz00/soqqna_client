@@ -350,9 +350,8 @@ const Header = () => {
                               clientWindowWidth !== undefined &&
                               clientWindowWidth > 992 && (
                                 <div className="info flex flex-col">
-                                  <h4 className="leading-3 text-[14px] text-[rgba(0,0,0,0.6)] font-[500] mb-0 capitalize text-center justify-center">
+                                  <h4 className="leading-4 text-[14px] text-[rgba(0,0,0,0.6)] font-[500] mb-0 capitalize text-left !justify-start lead">
                                     Welcome
-                                    <br />
                                     <br />
                                     {context?.userData?.name}
                                   </h4>

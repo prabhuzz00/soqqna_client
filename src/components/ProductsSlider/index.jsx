@@ -14,7 +14,7 @@ const ProductsSlider = (props) => {
   const context = useContext(MyContext);
 
   return (
-    <div className="productsSlider pt-1 lg:pt-3 pb-0">
+    <div className="productsSlider pt-1 lg:pt-2 pb-0">
       <Swiper
         slidesPerView={props.items}
         spaceBetween={10}
