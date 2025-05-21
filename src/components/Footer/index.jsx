@@ -108,8 +108,8 @@ const Footer = () => {
                 </h2>
                 {/* Contact Us
 About Us
-Terms & Conditions 
-Privacy Policy 
+Terms & Conditions
+Privacy Policy
 Refund Policy */}
                 <ul className="list">
                   <li className="list-none text-[14px] w-full mb-2">
@@ -282,7 +282,7 @@ Refund Policy */}
         </div>
       </Drawer>
 
-      <Dialog
+      {/* <Dialog
         open={context?.openProductDetailsModal.open}
         fullWidth={context?.fullWidth}
         maxWidth={context?.maxWidth}
@@ -310,6 +310,49 @@ Refund Policy */}
                 <div className="col2 w-[60%] py-8 px-8 pr-16 productContent ">
                   <ProductDetailsComponent
                     item={context?.openProductDetailsModal?.item}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog> */}
+
+      {/* Product Details Modal */}
+      <Dialog
+        open={context?.openProductDetailsModal.open}
+        fullWidth={context?.fullWidth}
+        maxWidth={context?.maxWidth}
+        onClose={context?.handleCloseProductDetailsModal}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        className="productDetailsModal"
+      >
+        <DialogContent>
+          <div className="flex items-center w-full productDetailsModalContainer relative">
+            <Button
+              className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !text-[#000] !absolute top-[15px] right-[15px] !bg-[#f1f1f1]"
+              onClick={context?.handleCloseProductDetailsModal}
+            >
+              <IoCloseSharp className="text-[20px]" />
+            </Button>
+            {Object.keys(context?.openProductDetailsModal?.item || {})
+              .length !== 0 && (
+              <>
+                <div className="col1 w-[40%] px-3 py-8">
+                  <ProductZoom
+                    images={
+                      context?.openProductDetailsModal?.extraProps?.images ||
+                      context?.openProductDetailsModal?.item?.images
+                    }
+                  />
+                </div>
+                <div className="col2 w-[60%] py-8 px-8 pr-16 productContent">
+                  <ProductDetailsComponent
+                    item={context?.openProductDetailsModal?.item}
+                    setImages={
+                      context?.openProductDetailsModal?.extraProps?.setImages
+                    }
                   />
                 </div>
               </>

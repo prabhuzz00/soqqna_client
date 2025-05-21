@@ -10,6 +10,7 @@ const ThemeProvider = ({ children }) => {
   const [openProductDetailsModal, setOpenProductDetailsModal] = useState({
     open: false,
     item: {},
+    extraProps: {}, // Add extraProps to store images and setImages
   });
   const [isLogin, setIsLogin] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -52,10 +53,11 @@ const ThemeProvider = ({ children }) => {
     }
   }, []);
 
-  const handleOpenProductDetailsModal = (status, item) => {
+  const handleOpenProductDetailsModal = (status, item, extraProps = {}) => {
     setOpenProductDetailsModal({
       open: status,
       item: item,
+      extraProps: extraProps, // Store the extra props
     });
   };
 
@@ -63,6 +65,7 @@ const ThemeProvider = ({ children }) => {
     setOpenProductDetailsModal({
       open: false,
       item: {},
+      extraProps: {},
     });
   };
 
@@ -143,10 +146,9 @@ const ThemeProvider = ({ children }) => {
     }
   };
 
-
   const addToCart = (product, userId, quantity) => {
     const cart = getCart();
-    const index = cart.findIndex(item => item._id === product._id);
+    const index = cart.findIndex((item) => item._id === product._id);
 
     if (index !== -1) {
       cart[index].quantity += quantity;
@@ -154,33 +156,31 @@ const ThemeProvider = ({ children }) => {
       cart.push({ ...product, quantity });
     }
 
-    Cookies.set('cart', JSON.stringify(cart));
+    Cookies.set("cart", JSON.stringify(cart));
 
     getCartItems();
-
   };
 
   const getCart = () => {
-    const cart = Cookies.get('cart');
+    const cart = Cookies.get("cart");
     return cart ? JSON.parse(cart) : [];
   };
 
-
   const getCartItems = () => {
-    const cart = Cookies.get('cart');
+    const cart = Cookies.get("cart");
     setCartData(cart ? JSON.parse(cart) : []);
     return cart ? JSON.parse(cart) : [];
-  }
+  };
 
   const updateCartItemQuantity = (productId, quantity) => {
     const cart = getCart();
-    const updatedCart = cart.map(item => {
+    const updatedCart = cart.map((item) => {
       if (item._id === productId) {
         return { ...item, quantity };
       }
       return item;
     });
-    Cookies.set('cart', JSON.stringify(updatedCart));
+    Cookies.set("cart", JSON.stringify(updatedCart));
   };
 
   const handleQuantityChange = (id, newQty) => {

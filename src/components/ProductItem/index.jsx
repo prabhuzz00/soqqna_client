@@ -30,9 +30,20 @@ const ProductItem = (props) => {
   const [selectedTabName, setSelectedTabName] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [images, setImages] = useState([]); // Add images state
+
   const context = useContext(MyContext);
   const { locale } = useLanguage();
   const { t } = useTranslation();
+
+  // Initialize images state with product images or first variation's images
+  useEffect(() => {
+    const initialImages =
+      props?.item?.variation?.length > 0
+        ? props?.item?.variation[0]?.color?.images || props?.item?.images
+        : props?.item?.images;
+    setImages(initialImages || []);
+  }, [props?.item?.images, props?.item?.variation]);
 
   const addToCart = (product, userId, quantity) => {
     const productItem = {
@@ -213,7 +224,7 @@ const ProductItem = (props) => {
 
         {isShowTabs === true && (
           <div
-            className="flex items-center justify-center absolute top-0 left-0 w-full h-full 
+            className="flex items-center justify-center absolute top-0 left-0 w-full h-full
       bg-[rgba(0,0,0,0.7)] z-[60] p-3 gap-2"
           >
             <Button
@@ -229,8 +240,8 @@ const ProductItem = (props) => {
                 return (
                   <span
                     key={index}
-                    className={`flex items-center justify-center p-1 px-2 bg-[rgba(255,555,255,0.8)] max-w-[35px] h-[25px]  
-          rounded-sm cursor-pointer hover:bg-white 
+                    className={`flex items-center justify-center p-1 px-2 bg-[rgba(255,555,255,0.8)] max-w-[35px] h-[25px]
+          rounded-sm cursor-pointer hover:bg-white
           ${activeTab === index && "!bg-primary text-white"}`}
                     onClick={() => handleClickActiveTab(index, item)}
                   >
@@ -244,8 +255,8 @@ const ProductItem = (props) => {
                 return (
                   <span
                     key={index}
-                    className={`flex items-center justify-center p-1 px-2 bg-[rgba(255,555,255,0.8)] max-w-[45px] h-[25px]  
-          rounded-sm cursor-pointer hover:bg-white 
+                    className={`flex items-center justify-center p-1 px-2 bg-[rgba(255,555,255,0.8)] max-w-[45px] h-[25px]
+          rounded-sm cursor-pointer hover:bg-white
           ${activeTab === index && "!bg-primary text-white"}`}
                     onClick={() => handleClickActiveTab(index, item)}
                   >
@@ -259,8 +270,8 @@ const ProductItem = (props) => {
                 return (
                   <span
                     key={index}
-                    className={`flex items-center justify-center p-1 px-2 bg-[rgba(255,555,255,0.8)] max-w-[35px] h-[25px]  
-          rounded-sm cursor-pointer hover:bg-white 
+                    className={`flex items-center justify-center p-1 px-2 bg-[rgba(255,555,255,0.8)] max-w-[35px] h-[25px]
+          rounded-sm cursor-pointer hover:bg-white
           ${activeTab === index && "!bg-primary text-white"}`}
                     onClick={() => handleClickActiveTab(index, item)}
                   >
@@ -280,7 +291,10 @@ const ProductItem = (props) => {
             <Button
               className="!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !bg-white  text-black hover:!bg-primary hover:text-white group"
               onClick={() =>
-                context.handleOpenProductDetailsModal(true, props?.item)
+                context.handleOpenProductDetailsModal(true, props?.item, {
+                  images,
+                  setImages,
+                })
               }
             >
               <MdZoomOutMap className="text-[18px] !text-black group-hover:text-white hover:!text-white" />

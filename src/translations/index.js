@@ -166,6 +166,8 @@ export const translations = {
       item: "Item",
       panelTitle: "Shopping Cart",
       totalex: "Total (tax excl.)",
+      size: "Selected Size",
+      color: "Selected Color",
     },
   },
   ar: {
@@ -332,6 +334,8 @@ export const translations = {
       item: "غرض",
       panelTitle: "سلة التسوق",
       totalex: "الاجمالي (بدون ضريبة)",
+      size: "الحجم المختار",
+      color: "اللون المختار",
     },
   },
 };
