@@ -11,6 +11,7 @@ const ThemeProvider = ({ children }) => {
     open: false,
     item: {},
     extraProps: {}, // Add extraProps to store images and setImages
+    productId: null, // Add productId to track which product is open
   });
   const [isLogin, setIsLogin] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -58,6 +59,7 @@ const ThemeProvider = ({ children }) => {
       open: status,
       item: item,
       extraProps: extraProps, // Store the extra props
+      productId: status ? item?._id : null, // Set productId when opening, clear when closing
     });
   };
 
@@ -66,6 +68,7 @@ const ThemeProvider = ({ children }) => {
       open: false,
       item: {},
       extraProps: {},
+      productId: null,
     });
   };
 
