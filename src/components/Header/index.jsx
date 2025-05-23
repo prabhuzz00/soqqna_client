@@ -58,7 +58,6 @@ const Header = () => {
   const [logoSrc, setLogoSrc] = useState("/sooqna.svg");
   const { data: session } = useSession(); // Get session for authenticated user
   const { userLocation } = useContext(MyContext); // Get userLocation from context
-  
 
   useEffect(() => {
     setIsClient(true);
@@ -235,17 +234,19 @@ const Header = () => {
             )}
 
             <div
-              className={`col2 fixed top-0 left-0 w-full h-full lg:w-[35%] lg:static p-2 lg:p-0 bg-white z-50 ${isClient &&
+              className={`col2 fixed top-0 left-0 w-full h-full lg:w-[35%] lg:static p-2 lg:p-0 bg-white z-50 ${
+                isClient &&
                 clientWindowWidth !== undefined &&
                 clientWindowWidth > 992 &&
                 "!block"
-                } ${context?.openSearchPanel === true ? "block" : "hidden"}`}
+              } ${context?.openSearchPanel === true ? "block" : "hidden"}`}
             >
               <Search />
             </div>
             <div
-              className={`col3 ${context?.windowWidth > 992 && "w-[30%] lg:w-[45%]"
-                } flex items-center pl-3`}
+              className={`col3 ${
+                context?.windowWidth > 992 && "w-[30%] lg:w-[45%]"
+              } flex items-center pl-3`}
             >
               <ul className="flex items-center justify-end gap-2 lg:gap-3 w-full">
                 {context?.windowWidth < 992 && (
@@ -308,9 +309,9 @@ const Header = () => {
                 </li>
 
                 {context.isLogin === false &&
-                  isClient &&
-                  clientWindowWidth !== undefined &&
-                  clientWindowWidth > 992 ? (
+                isClient &&
+                clientWindowWidth !== undefined &&
+                clientWindowWidth > 992 ? (
                   <li className="list-none px-1">
                     <span>
                       <Link
@@ -455,19 +456,21 @@ const Header = () => {
                                 </MenuItem>
                               </Link>
                             </span>
-                            <span>
-                              <Link href="/my-list" className="w-full block">
-                                <MenuItem
-                                  onClick={handleClose}
-                                  className="flex gap-2 ! !py-2"
-                                >
-                                  <IoMdHeartEmpty className="text-[18px]" />{" "}
-                                  <span className="text-[14px]">
-                                    {t("account.myList")}
-                                  </span>
-                                </MenuItem>
-                              </Link>
-                            </span>
+                            {context?.isLogin == true && (
+                              <span>
+                                <Link href="/my-list" className="w-full block">
+                                  <MenuItem
+                                    onClick={handleClose}
+                                    className="flex gap-2 ! !py-2"
+                                  >
+                                    <IoMdHeartEmpty className="text-[18px]" />{" "}
+                                    <span className="text-[14px]">
+                                      {t("account.myList")}
+                                    </span>
+                                  </MenuItem>
+                                </Link>
+                              </span>
+                            )}
 
                             <MenuItem
                               onClick={logout}
@@ -484,7 +487,7 @@ const Header = () => {
                   </>
                 )}
 
-                {isClient &&
+                {context?.isLogin &&
                   clientWindowWidth !== undefined &&
                   clientWindowWidth > 992 && (
                     <li>
@@ -538,16 +541,12 @@ const Header = () => {
           setIsOpenCatPanel={setIsOpenCatPanel}
           isOpenMobileMenu={isOpenMobileMenu}
           openMobileMenu={openMobileMenu}
-          
         />
       </header>
 
-      {
-      isOpenCatPanel === true && 
-      <div className="overlay bg-[rgba(0,0,0,0.5)] w-full h-full fixed top-0 left-0 z-[100]"></div>
-      }
-      
-
+      {isOpenCatPanel === true && (
+        <div className="overlay bg-[rgba(0,0,0,0.5)] w-full h-full fixed top-0 left-0 z-[100]"></div>
+      )}
 
       <div className="afterHeader mt-[110px] lg:mt-0"></div>
     </>
