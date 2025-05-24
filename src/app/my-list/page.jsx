@@ -7,9 +7,17 @@ import { MyContext } from "@/context/ThemeProvider";
 import Button from "@mui/material/Button";
 import Link from "next/link";
 import Breadcrumb from "@/components/Breadcrumb";
+import { useRouter } from "next/navigation";
 
 const MyList = () => {
   const context = useContext(MyContext);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (context?.isLogin === false) {
+      router.push("/login");
+    }
+  }, [context?.isLogin, router]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {

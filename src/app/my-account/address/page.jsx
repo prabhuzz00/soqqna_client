@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import AddressBox from "./addressBox";
 import { deleteData, fetchDataFromApi } from "@/utils/api";
 import Breadcrumb from "@/components/Breadcrumb";
+import { useRouter } from "next/navigation";
 
 const label = { inputProps: { "aria-label": "Radio demo" } };
 
@@ -17,6 +18,13 @@ const Address = () => {
   const [address, setAddress] = useState([]);
 
   const context = useContext(MyContext);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (context?.isLogin === false) {
+      router.push("/login");
+    }
+  }, [context?.isLogin, router]);
 
   useEffect(() => {
     if (context?.windowWidth < 992) {

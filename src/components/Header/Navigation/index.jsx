@@ -1,13 +1,10 @@
 "use client";
 import Button from "@mui/material/Button";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { RiMenu2Fill } from "react-icons/ri";
 import { LiaAngleDownSolid } from "react-icons/lia";
 import { GoRocket } from "react-icons/go";
-// import CategoryPanel from "./CategoryPanel";
-
 import "../Navigation/style.css";
-// import MobileNav from "./MobileNav";
 import { MyContext } from "@/context/ThemeProvider";
 import Link from "next/link";
 import CategoryPanel from "./CategoryPanel";
@@ -23,10 +20,11 @@ const Navigation = (props) => {
   const [isOpenCatPanel, setIsOpenCatPanel] = useState(false);
   const [catData, setCatData] = useState([]);
   const [MyCatProdData, setCatProd] = useState([]);
+  const [activeCategoryIndex, setActiveCategoryIndex] = useState(null);
+  const dropdownRef = useRef(null); // Ref for dropdown container
 
   const context = useContext(MyContext);
   const { locale } = useLanguage();
-
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -37,13 +35,44 @@ const Navigation = (props) => {
     setCatProd(context?.catData);
   }, [context?.catData]);
 
-  // useEffect(() => {
-  //   setIsOpenCatPanel(props.isOpenCatPanel);
-  // }, [props.isOpenCatPanel]);
+  // Handle outside clicks
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        isOpenCatPanel &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
+        setIsOpenCatPanel(false);
+        props.setIsOpenCatPanel(false);
+        setActiveCategoryIndex(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isOpenCatPanel, props]);
 
   const openCategoryPanel = () => {
     setIsOpenCatPanel(!isOpenCatPanel);
     props.setIsOpenCatPanel(!isOpenCatPanel);
+    if (!isOpenCatPanel) {
+      setActiveCategoryIndex(0); // Set first category active when opening
+    } else {
+      setActiveCategoryIndex(null); // Reset when closing
+    }
+  };
+
+  const handleCategoryClick = (index) => {
+    setActiveCategoryIndex(index === activeCategoryIndex ? null : index);
+  };
+
+  const handleLinkClick = () => {
+    setIsOpenCatPanel(false);
+    props.setIsOpenCatPanel(false);
+    setActiveCategoryIndex(null);
   };
 
   return (
@@ -51,7 +80,7 @@ const Navigation = (props) => {
       <nav className="navigation bg-gray-900 relative">
         <div className="container flex items-center justify-start lg:justify-end gap-8">
           {context?.windowWidth > 992 && (
-            <div className="col_1 w-[20%] static">
+            <div className="col_1 w-[20%] static" ref={dropdownRef}>
               <Button
                 className="!text-gray-300 !font-[600] gap-2 w-full"
                 onClick={openCategoryPanel}
@@ -61,10 +90,7 @@ const Navigation = (props) => {
                 <LiaAngleDownSolid className="text-[13px] ml-auto font-bold" />
               </Button>
 
-              <div
-                className="categoryDropdownMwnu w-full h-auto bg-white absolute 
-              top-[100%] left-0 z-[100] shadow-md"
-              >
+              <div className="categoryDropdownMwnu w-full h-auto bg-white absolute top-[100%] left-0 z-[100] shadow-md">
                 <Collapse isOpened={isOpenCatPanel}>
                   <div className="flex gap-4 py-4">
                     <ul className="mb-0 p-2 pl-8 w-[300px]">
@@ -74,45 +100,43 @@ const Navigation = (props) => {
                           ?.map((cat, index) => {
                             return (
                               <li
-                                className="list-none static w-full group mb-1"
+                                唐三
+                                className="list-none static w-full mb-1"
                                 key={index}
                               >
-                                <Link
-                                  href={`/products?catId=${cat?._id}`}
-                                  className="link transition text-[14px] !font-[500]"
+                                <Button
+                                  className={`link transition !font-[500] !text-gray-800 hover:!text-black !py-2 !w-full !text-left !justify-start hover:!bg-gray-200`}
+                                  onClick={() => handleCategoryClick(index)}
                                 >
-                                  <Button
-                                    className={`link transition !font-[500] !text-gray-800 hover:!text-black !py-2 !w-full !text-left !justify-start hover:!bg-gray-200 `}
-                                  >
-                                    <img
-                                      src={cat?.images[0]}
-                                      alt="image"
-                                      className="w-[20px] mr-2"
+                                  <img
+                                    src={cat?.images[0] || "/default-image.jpg"}
+                                    alt="image"
+                                    className="w-[20px] mr-2"
+                                  />
+                                  {locale === "ar" ? cat?.arName : cat?.name}
+                                  {cat?.children?.length !== 0 && (
+                                    <MdOutlineKeyboardArrowRight
+                                      className="ml-auto"
+                                      size={18}
                                     />
-                                    {locale === "ar" ? cat?.arName : cat?.name}
-                                    {cat?.children?.length !== 0 && (
-                                      <MdOutlineKeyboardArrowRight
-                                        className="ml-auto"
-                                        size={18}
-                                      />
-                                    )}
-                                  </Button>
-                                </Link>
+                                  )}
+                                </Button>
 
                                 {cat?.children?.length !== 0 && (
                                   <div
-                                    className={`submenu absolute top-[0%] left-[22%] min-w-[78%] bg-white opacity-0 invisible  group-hover:opacity-100 group-hover:visible border-l [border-left-color:#ccc] h-[100%] p-4 py-6 text-orange overflow-y-scroll ${
-                                      index === 0 &&
-                                      isOpenCatPanel === true &&
-                                      "!opacity-100 !visible"
-                                    }`}
+                                    className={`submenu absolute top-[0%] left-[22%] min-w-[78%] bg-white ${
+                                      activeCategoryIndex === index
+                                        ? "opacity-100 visible"
+                                        : "opacity-0 invisible"
+                                    } border-l [border-left-color:#ccc] h-[100%] p-4 py-6 text-orange overflow-y-scroll`}
                                   >
                                     <h3 className="pl-5">SHOP BY CATEGORY</h3>
 
                                     <div className="grid grid-cols-8 mt-4 gap-4">
                                       <Link
-                                        href="#"
+                                        href={`/products?catId=${cat?._id}`}
                                         className="flex items-center justify-center flex-col gap-1"
+                                        onClick={handleLinkClick}
                                       >
                                         <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden bg-gray-200">
                                           <RiGridFill
@@ -121,331 +145,43 @@ const Navigation = (props) => {
                                           />
                                         </div>
                                         <h4 className="text-center text-[12px] hover:!text-primary">
-                                          View All
+                                          {locale === "ar"
+                                            ? cat?.arName
+                                            : cat?.name}
                                         </h4>
                                       </Link>
 
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742452096038_thth1.jpg"
-                                            className="w-full h-full object-cover transition"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          New In
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742452035507_rtrt1.jpg"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          Top Rated
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742447215241_blubags-waterproof-school-backpack-36-l-laptop-bag-college-backpack-school-bag-product-images-rvxyzquw2b-0-202312201359.webp"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          Top Bags
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742445932012_paragon-puk7014l-women-sandals-casual-everyday-sandals-stylish-comfortable-durable-for-daily-occasion-wear-product-images-rvy1o3iatj-0-202309191612.jpg"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          Top Sandels
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742439142762_gespo-peach-solid-mandarin-collar-half-sleeve-casual-t-shirt-product-images-rvrtzhyumb-0-202304080900.webp"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          Men T-Shirts
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742439426966_modestouze-attires-women-s-mukaish-worked-ethnic-jacket-with-top-and-pant-set-product-images-rvziicqwq6-0-202403231855.jpg"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          New Arrivals
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742439504084_deel-band-women-rayon-embroidered-kurta-pant-dupatta-set-product-images-rvz2bvyrm2-0-202404071602.webp"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          Girls Suits
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742439887415_miss-ayse-women-s-multicolor-crepe-printed-top-product-images-rvvlrud6qm-0-202410111253.webp"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          Girls Tops
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742451878625_gosriki-women-s-pink-ethnic-motifs-printed-kurta-with-trouser-dupatta-product-images-rvpkyh5qdr-4-202310141511.jpg"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          Girls Kurta
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742452096038_thth1.jpg"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          New In
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742452035507_rtrt1.jpg"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          Top Rated
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742447215241_blubags-waterproof-school-backpack-36-l-laptop-bag-college-backpack-school-bag-product-images-rvxyzquw2b-0-202312201359.webp"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          Top Bags
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742445932012_paragon-puk7014l-women-sandals-casual-everyday-sandals-stylish-comfortable-durable-for-daily-occasion-wear-product-images-rvy1o3iatj-0-202309191612.jpg"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          Top Sandels
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742439142762_gespo-peach-solid-mandarin-collar-half-sleeve-casual-t-shirt-product-images-rvrtzhyumb-0-202304080900.webp"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          Men T-Shirts
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742439426966_modestouze-attires-women-s-mukaish-worked-ethnic-jacket-with-top-and-pant-set-product-images-rvziicqwq6-0-202403231855.jpg"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          New Arrivals
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742439504084_deel-band-women-rayon-embroidered-kurta-pant-dupatta-set-product-images-rvz2bvyrm2-0-202404071602.webp"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          Girls Suits
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742439887415_miss-ayse-women-s-multicolor-crepe-printed-top-product-images-rvvlrud6qm-0-202410111253.webp"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          Girls Tops
-                                        </h4>
-                                      </Link>
-
-                                      <Link
-                                        href="#"
-                                        className="flex items-center justify-center flex-col gap-1"
-                                      >
-                                        <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                          <img
-                                            src="https://serviceapi.spicezgold.com/download/1742451878625_gosriki-women-s-pink-ethnic-motifs-printed-kurta-with-trouser-dupatta-product-images-rvpkyh5qdr-4-202310141511.jpg"
-                                            className="w-full h-full object-cover"
-                                          />
-                                        </div>
-                                        <h4 className="text-center text-[12px] hover:!text-primary">
-                                          Girls Kurta
-                                        </h4>
-                                      </Link>
+                                      {cat?.children?.map(
+                                        (subCat, subIndex) => (
+                                          <Link
+                                            href={`/products?subCatId=${subCat?._id}`}
+                                            className="flex items-center justify-center flex-col gap-1"
+                                            key={subIndex}
+                                            onClick={handleLinkClick}
+                                          >
+                                            <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
+                                              <img
+                                                src={
+                                                  subCat?.images[0] ||
+                                                  "/default-image.jpg"
+                                                }
+                                                className="w-full h-full object-cover transition"
+                                                alt={
+                                                  locale === "ar"
+                                                    ? subCat?.arName
+                                                    : subCat?.name
+                                                }
+                                              />
+                                            </div>
+                                            <h4 className="text-center text-[12px] hover:!text-primary">
+                                              {locale === "ar"
+                                                ? subCat?.arName
+                                                : subCat?.name}
+                                            </h4>
+                                          </Link>
+                                        )
+                                      )}
                                     </div>
-
-                                    {
-                                      //   <ul>
-                                      //   {cat?.children?.map((subCat, index_) => {
-                                      //     return (
-                                      //       <li
-                                      //         className="list-none w-full relative"
-                                      //         key={index_}
-                                      //       >
-                                      //         <Link
-                                      //           href={`/products?subCatId=${subCat?._id}`}
-                                      //           className="w-full"
-                                      //         >
-                                      //           <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none !text-gray-800 hover:!text-primary !py-2 ">
-                                      //             {locale === "ar"
-                                      //               ? subCat?.arName
-                                      //               : subCat?.name}
-                                      //           </Button>
-                                      //         </Link>
-                                      //         {subCat?.children?.length !== 0 && (
-                                      //           <div className="submenu absolute top-[0%] left-[100%] min-w-[150px] bg-white shadow-md opacity-0 transition-all">
-                                      //             <ul>
-                                      //               {subCat?.children?.map(
-                                      //                 (thirdLavelCat, index__) => {
-                                      //                   return (
-                                      //                     <li
-                                      //                       className="list-none w-full"
-                                      //                       key={index__}
-                                      //                     >
-                                      //                       <Link
-                                      //                         href={`/products?thirdLavelCatId=${thirdLavelCat?._id}`}
-                                      //                         className="w-full"
-                                      //                       >
-                                      //                         <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none !text-gray-800 hover:!text-primary !py-2 ">
-                                      //                           {locale === "ar"
-                                      //                             ? thirdLavelCat?.arName
-                                      //                             : thirdLavelCat?.name}
-                                      //                         </Button>
-                                      //                       </Link>
-                                      //                     </li>
-                                      //                   );
-                                      //                 }
-                                      //               )}
-                                      //             </ul>
-                                      //           </div>
-                                      //         )}
-                                      //       </li>
-                                      //     );
-                                      //   })}
-                                      // </ul>
-                                    }
                                   </div>
                                 )}
                               </li>
@@ -499,7 +235,7 @@ const Navigation = (props) => {
                                       href={`/products?subCatId=${subCat?._id}`}
                                       className="w-full"
                                     >
-                                      <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none">
+                                      <Button className="!text-[rgba(0,0,0,0.8)] w-full !text-left !justify-start !rounded-none">
                                         {locale === "ar"
                                           ? subCat?.arName
                                           : subCat?.name}
@@ -520,7 +256,7 @@ const Navigation = (props) => {
                                                     href={`/products?thirdLavelCatId=${thirdLavelCat?._id}`}
                                                     className="w-full"
                                                   >
-                                                    <Button className="!text-[rgba(0,0,0,0.8)]  w-full !text-left !justify-start !rounded-none">
+                                                    <Button className="!text-[rgba(0,0,0,0.8)] w-full !text-left !justify-start !rounded-none">
                                                       {locale === "ar"
                                                         ? thirdLavelCat?.arName
                                                         : thirdLavelCat?.name}
@@ -544,13 +280,6 @@ const Navigation = (props) => {
                   })}
             </ul>
           </div>
-
-          {/* <div className="col_3 w-[20%] hidden lg:block">
-            <p className="text-[14px] !text-gray-300 font-[500] flex items-center gap-3 mb-0 mt-0">
-              <GoRocket className="text-[18px]" />
-              {t("header.freeDelivery")}
-            </p>
-          </div> */}
         </div>
       </nav>
 

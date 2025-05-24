@@ -42,13 +42,20 @@ const MyAccount = () => {
   const router = useRouter();
   const { t } = useTranslation();
 
-  useEffect(() => {
-    const token = Cookies.get("accessToken");
+  // useEffect(() => {
+  //   const token = Cookies.get("accessToken");
 
-    if (token === null) {
-      router.push("/");
+  //   if (token === null) {
+  //     router.push("/");
+  //   }
+  // }, [context?.isLogin]);
+
+  // Redirect to login if not logged in
+  useEffect(() => {
+    if (context?.isLogin === false) {
+      router.push("/login");
     }
-  }, [context?.isLogin]);
+  }, [context?.isLogin, router]);
 
   useEffect(() => {
     if (context?.userData?._id !== "" && context?.userData?._id !== undefined) {
