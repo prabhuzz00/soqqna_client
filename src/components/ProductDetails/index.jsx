@@ -959,10 +959,10 @@ export const ProductDetailsComponent = (props) => {
           {t("product.addToWishlist")}
         </span>
 
-        <span className="flex items-center gap-2 text-[14px] sm:text-[15px] link cursor-pointer font-[500]">
+        {/* <span className="flex items-center gap-2 text-[14px] sm:text-[15px] link cursor-pointer font-[500]">
           <IoGitCompareOutline className="text-[18px]" />{" "}
           {t("product.addToCompare")}
-        </span>
+        </span> */}
       </div>
     </>
   );
