@@ -42,13 +42,13 @@ const SearchPage = () => {
       setPage(1);
       if (context.searchData.totalPages) {
         setTotalPages(context.searchData.totalPages);
-      } else if (context.searchData.meta?.totalPages) { 
-         setTotalPages(context.searchData.meta.totalPages);
+      } else if (context.searchData.meta?.totalPages) {
+        setTotalPages(context.searchData.meta.totalPages);
       } else {
-         setTotalPages(context.searchData.totalPages || 1);
+        setTotalPages(context.searchData.totalPages || 1);
       }
     }
-  }, [context?.searchData]); 
+  }, [context?.searchData]);
 
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -267,3 +267,300 @@ const SearchPage = () => {
 };
 
 export default SearchPage;
+
+// "use client";
+// import React, { useContext, useEffect, useState } from "react";
+// import { Sidebar } from "@/components/Sidebar";
+// import Breadcrumbs from "@mui/material/Breadcrumbs";
+// import ProductItem from "@/components/ProductItem/index";
+// import ProductItemListView from "@/components/ProductItemListView/index";
+// import VendorItem from "@/components/VendorItem/index";
+// import VendorItemListView from "@/components/VendorItemListView/index";
+// import Button from "@mui/material/Button";
+// import { IoGridSharp } from "react-icons/io5";
+// import { LuMenu } from "react-icons/lu";
+// import Menu from "@mui/material/Menu";
+// import MenuItem from "@mui/material/MenuItem";
+// import Pagination from "@mui/material/Pagination";
+// import ProductLoadingGrid from "@/components/ProductLoading/productLoadingGrid";
+// import { postData } from "@/utils/api";
+// import { MyContext } from "@/context/ThemeProvider";
+// import { Suspense } from "react";
+
+// const SearchPage = () => {
+//   const [itemView, setItemView] = useState("grid");
+//   const [anchorEl, setAnchorEl] = useState(null);
+//   const [productsData, setProductsData] = useState({ products: [], vendors: [] });
+//   const [isLoading, setIsLoading] = useState(false);
+//   const [page, setPage] = useState({ products: 1, vendors: 1 });
+//   const [totalPages, setTotalPages] = useState({ products: 1, vendors: 1 });
+//   const [selectedSortVal, setSelectedSortVal] = useState("Name, A to Z");
+
+//   const context = useContext(MyContext);
+
+//   useEffect(() => {
+//     if (typeof window !== "undefined") {
+//       window.scrollTo(0, 0);
+//     }
+//   }, []);
+
+//   // Effect to update productsData when context.searchData changes
+//   useEffect(() => {
+//     if (context?.searchData) {
+//       setProductsData({
+//         products: context.searchData.products || [],
+//         vendors: context.searchData.vendors || [],
+//       });
+//       setPage({ products: 1, vendors: 1 });
+//       setTotalPages({
+//         products: context.searchData.totalPages?.products || context.searchData.meta?.totalPages?.products || 1,
+//         vendors: context.searchData.totalPages?.vendors || context.searchData.meta?.totalPages?.vendors || 1,
+//       });
+//     }
+//   }, [context?.searchData]);
+
+//   const open = Boolean(anchorEl);
+//   const handleClick = (event) => {
+//     setAnchorEl(event.currentTarget);
+//   };
+//   const handleClose = () => {
+//     setAnchorEl(null);
+//   };
+
+//   const handleSortBy = (name, order, type) => {
+//     setSelectedSortVal(name === "name" ? (order === "asc" ? "Name, A to Z" : "Name, Z to A") : (order === "asc" ? "Price, low to high" : "Price, high to low"));
+//     setIsLoading(true);
+//     postData(`/api/${type}/sortBy`, {
+//       items: type === "product" ? productsData.products : productsData.vendors,
+//       sortBy: name,
+//       order: order,
+//     }).then((res) => {
+//       setProductsData((prev) => ({
+//         ...prev,
+//         [type === "product" ? "products" : "vendors"]: res.items || [],
+//       }));
+//       setIsLoading(false);
+//       setAnchorEl(null);
+//     });
+//   };
+
+//   const handlePageChange = (type, value) => {
+//     setPage((prev) => ({ ...prev, [type]: value }));
+//     setIsLoading(true);
+//     postData(`/api/search/get`, {
+//       page: value,
+//       limit: 10, // Adjust based on your backend
+//       query: context.searchData?.query || "",
+//     }).then((res) => {
+//       setProductsData({
+//         products: res.products || [],
+//         vendors: res.vendors || [],
+//       });
+//       setTotalPages({
+//         products: res.totalPages?.products || res.meta?.totalPages?.products || 1,
+//         vendors: res.totalPages?.vendors || res.meta?.totalPages?.vendors || 1,
+//       });
+//       setIsLoading(false);
+//     });
+//   };
+
+//   return (
+//     <Suspense fallback={<div>Loading...</div>}>
+//       <section className="pb-0">
+//         <div className="bg-white p-2">
+//           <div className="container flex gap-3">
+//             <div
+//               className={`sidebarWrapper fixed -bottom-[100%] left-0 w-full lg:h-full lg:static lg:w-[20%] bg-white z-[102] lg:z-[100] p-3 lg:p-0 transition-all lg:opacity-100 opacity-0 ${
+//                 context?.openFilter === true ? "open" : ""
+//               }`}
+//             >
+//               <Sidebar
+//                 productsData={productsData}
+//                 setProductsData={setProductsData}
+//                 isLoading={isLoading}
+//                 setIsLoading={setIsLoading}
+//                 page={page.products}
+//                 setTotalPages={(pages) => setTotalPages((prev) => ({ ...prev, products: pages }))}
+//               />
+//             </div>
+
+//             {context?.windowWidth < 992 && (
+//               <div
+//                 className={`filter_overlay w-full h-full bg-[rgba(0,0,0,0.5)] fixed top-0 left-0 z-[101] ${
+//                   context?.openFilter === true ? "block" : "hidden"
+//                 }`}
+//                 onClick={() => context?.setOpenFilter(false)}
+//               ></div>
+//             )}
+
+//             <div className="rightContent w-full lg:w-[80%] py-3">
+//               <div className="bg-[#f1f1f1] p-2 w-full mb-4 rounded-md flex items-center justify-between sticky top-[51px] z-[99]">
+//                 <div className="col1 flex items-center itemViewActions">
+//                   <Button
+//                     className={`!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !text-[#000] ${
+//                       itemView === "list" && "active !bg-[#dfdfdf]"
+//                     }`}
+//                     onClick={() => setItemView("list")}
+//                   >
+//                     <LuMenu className="text-[rgba(0,0,0,0.7)] text-[16px]" />
+//                   </Button>
+//                   <Button
+//                     className={`!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !text-[#000] ${
+//                       itemView === "grid" && "active !bg-[#dfdfdf]"
+//                     }`}
+//                     onClick={() => setItemView("grid")}
+//                   >
+//                     <IoGridSharp className="text-[rgba(0,0,0,0.7)] text-[14px]" />
+//                   </Button>
+//                   <span className="text-[14px] hidden sm:block md:block lg:block font-[500] pl-3 text-[rgba(0,0,0,0.7)]">
+//                     Found {productsData.products?.length || 0} products and {productsData.vendors?.length || 0} vendors.
+//                   </span>
+//                 </div>
+
+//                 <div className="col2 ml-auto flex items-center justify-end gap-3 pr-4">
+//                   <span className="text-[14px] font-[500] pl-3 text-[rgba(0,0,0,0.7)]">Sort By</span>
+//                   <Button
+//                     id="basic-button"
+//                     aria-controls={open ? "basic-menu" : undefined}
+//                     aria-haspopup="true"
+//                     aria-expanded={open ? "true" : undefined}
+//                     onClick={handleClick}
+//                     className="!bg-white !text-[12px] !text-[#000] !capitalize !border-2 !border-[#000]"
+//                   >
+//                     {selectedSortVal}
+//                   </Button>
+//                   <Menu
+//                     id="basic-menu"
+//                     anchorEl={anchorEl}
+//                     open={open}
+//                     onClose={handleClose}
+//                     MenuListProps={{ "aria-labelledby": "basic-button" }}
+//                   >
+//                     <MenuItem
+//                       onClick={() => handleSortBy("name", "asc", "product", "Name, A to Z")}
+//                       className="!text-[13px] !text-[#000] !capitalize"
+//                     >
+//                       Name, A to Z (Products)
+//                     </MenuItem>
+//                     <MenuItem
+//                       onClick={() => handleSortBy("name", "desc", "product", "Name, Z to A")}
+//                       className="!text-[13px] !text-[#000] !capitalize"
+//                     >
+//                       Name, Z to A (Products)
+//                     </MenuItem>
+//                     <MenuItem
+//                       onClick={() => handleSortBy("price", "asc", "product", "Price, low to high")}
+//                       className="!text-[13px] !text-[#000] !capitalize"
+//                     >
+//                       Price, low to high (Products)
+//                     </MenuItem>
+//                     <MenuItem
+//                       onClick={() => handleSortBy("price", "desc", "product", "Price, high to low")}
+//                       className="!text-[13px] !text-[#000] !capitalize"
+//                     >
+//                       Price, high to low (Products)
+//                     </MenuItem>
+//                     <MenuItem
+//                       onClick={() => handleSortBy("name", "asc", "vendor", "Name, A to Z")}
+//                       className="!text-[13px] !text-[#000] !capitalize"
+//                     >
+//                       Name, A to Z (Vendors)
+//                     </MenuItem>
+//                     <MenuItem
+//                       onClick={() => handleSortBy("name", "desc", "vendor", "Name, Z to A")}
+//                       className="!text-[13px] !text-[#000] !capitalize"
+//                     >
+//                       Name, Z to A (Vendors)
+//                     </MenuItem>
+//                   </Menu>
+//                 </div>
+//               </div>
+
+//               {/* Products Section */}
+//               {productsData.products?.length > 0 && (
+//                 <div className="mb-8">
+//                   <h2 className="text-[18px] font-semibold mb-4">Products</h2>
+//                   <div
+//                     className={`grid ${
+//                       itemView === "grid"
+//                         ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+//                         : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1"
+//                     } gap-4`}
+//                   >
+//                     {isLoading ? (
+//                       <ProductLoadingGrid view={itemView} />
+//                     ) : (
+//                       productsData.products.map((item, index) =>
+//                         itemView === "grid" ? (
+//                           <ProductItem key={`product-${index}`} item={item} />
+//                         ) : (
+//                           <ProductItemListView key={`product-${index}`} item={item} />
+//                         )
+//                       )
+//                     )}
+//                   </div>
+//                   {totalPages.products > 1 && (
+//                     <div className="flex items-center justify-center mt-6">
+//                       <Pagination
+//                         showFirstButton
+//                         showLastButton
+//                         count={totalPages.products}
+//                         page={page.products}
+//                         onChange={(e, value) => handlePageChange("products", value)}
+//                       />
+//                     </div>
+//                   )}
+//                 </div>
+//               )}
+
+//               {/* Vendors Section */}
+//               {productsData.vendors?.length > 0 && (
+//                 <div className="mb-8">
+//                   <h2 className="text-[18px] font-semibold mb-4">Vendors</h2>
+//                   <div
+//                     className={`grid ${
+//                       itemView === "grid"
+//                         ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+//                         : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1"
+//                     } gap-4`}
+//                   >
+//                     {isLoading ? (
+//                       <ProductLoadingGrid view={itemView} />
+//                     ) : (
+//                       productsData.vendors.map((item, index) =>
+//                         itemView === "grid" ? (
+//                           <VendorItem key={`vendor-${index}`} item={item} />
+//                         ) : (
+//                           <VendorItemListView key={`vendor-${index}`} item={item} />
+//                         )
+//                       )
+//                     )}
+//                   </div>
+//                   {totalPages.vendors > 1 && (
+//                     <div className="flex items-center justify-center mt-6">
+//                       <Pagination
+//                         showFirstButton
+//                         showLastButton
+//                         count={totalPages.vendors}
+//                         page={page.vendors}
+//                         onChange={(e, value) => handlePageChange("vendors", value)}
+//                       />
+//                     </div>
+//                   )}
+//                 </div>
+//               )}
+
+//               {productsData.products?.length === 0 && productsData.vendors?.length === 0 && !isLoading && (
+//                 <div className="text-center py-10">
+//                   <p className="text-[16px] text-gray-500">No products or vendors found.</p>
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+//         </div>
+//       </section>
+//     </Suspense>
+//   );
+// };
+
+// export default SearchPage;
