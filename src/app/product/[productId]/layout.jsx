@@ -1,16 +1,12 @@
-import React from 'react'
+import React from "react";
 
 export const metadata = {
-    title: "PRODUCTS DETSILS PAGE",
-    description: "PRODUCTS",
-  };
+  title: "PRODUCTS DETAILS PAGE",
+  description: "PRODUCTS",
+};
 
 const ProductPageLayout = ({ children }) => {
-    return (
-        <>
-            {children}
-        </>
-    )
-}
+  return <>{children}</>;
+};
 
-export default ProductPageLayout
+export default ProductPageLayout;
