@@ -47,6 +47,7 @@ import "./responsive.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
+import PWARegister from "@/components/PWARegister";
 
 export const metadata = {
   title: "Soouqna Shopping Platform",
@@ -72,6 +73,7 @@ export default function RootLayout({ children }) {
             </LanguageProvider>
           </ThemeProvider>
         </AuthProvider>
+        <PWARegister />
         <script
           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places&v=beta&callback=initMap`}
           async
