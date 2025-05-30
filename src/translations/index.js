@@ -287,6 +287,26 @@ export const translations = {
         "By using the SOOUQNA Platform, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions.",
       returnto: "Return to Homepage",
     },
+    about: {
+      title: "About SOOUQNA",
+      description:
+        "Your trusted destination for quality products and exceptional shopping experiences.",
+      ourStoryTitle: "Our Story",
+      ourStoryP1:
+        'SOOUQNA was founded in 2020 with a simple mission: to create an online marketplace that connects customers with high-quality products from around the world. Our name, inspired by the Arabic word "souq" (market), reflects our commitment to building a vibrant digital marketplace.',
+      ourStoryP2:
+        "What started as a small operation has grown into a trusted e-commerce platform serving thousands of customers. Throughout our journey, we've remained dedicated to our core values of quality, transparency, and customer satisfaction.",
+      missionTitle: "Our Mission & Values",
+      qualityTitle: "Quality Products",
+      qualityText:
+        "We carefully curate our selection to ensure every product meets our high standards of quality and value.",
+      customerTitle: "Customer First",
+      customerText:
+        "Your satisfaction is our priority. We're committed to providing exceptional service at every step of your journey.",
+      communityTitle: "Community Impact",
+      communityText:
+        "We believe in giving back to the communities we serve through sustainable practices and charitable initiatives.",
+    },
   },
   ar: {
     header: {
@@ -569,6 +589,26 @@ export const translations = {
       acceptanceP1:
         "باستخدامك لمنصة SOOUQNA، فإنك تقر بأنك قرأت وفهمت وتوافق على الالتزام بهذه الشروط والأحكام.",
       returnto: "العودة إلى الصفحة الرئيسية",
+    },
+    about: {
+      title: "حول سوقنا",
+      description:
+        "وجهتك الموثوقة للمنتجات عالية الجودة وتجربة تسوق استثنائية.",
+      ourStoryTitle: "قصتنا",
+      ourStoryP1:
+        'تأسست سوقنا في عام 2020 بهدف بسيط: إنشاء سوق إلكتروني يربط العملاء بالمنتجات عالية الجودة من جميع أنحاء العالم. اسمنا، المستوحى من الكلمة العربية "سوق"، يعكس التزامنا ببناء سوق رقمي نابض بالحياة.',
+      ourStoryP2:
+        "ما بدأ كعملية صغيرة نما ليصبح منصة تجارة إلكترونية موثوقة تخدم الآلاف من العملاء. على مدار رحلتنا، ظللنا ملتزمين بقيمنا الأساسية وهي الجودة والشفافية ورضا العملاء.",
+      missionTitle: "مهمتنا وقيمنا",
+      qualityTitle: "منتجات عالية الجودة",
+      qualityText:
+        "نقوم باختيار منتجاتنا بعناية لضمان أن كل منتج يفي بمعاييرنا العالية للجودة والقيمة.",
+      customerTitle: "العميل أولاً",
+      customerText:
+        "رضاك هو أولويتنا. نحن ملتزمون بتقديم خدمة استثنائية في كل خطوة من رحلتك.",
+      communityTitle: "أثر المجتمع",
+      communityText:
+        "نؤمن برد الجميل للمجتمعات التي نخدمها من خلال الممارسات المستدامة والمبادرات الخيرية.",
     },
   },
 };

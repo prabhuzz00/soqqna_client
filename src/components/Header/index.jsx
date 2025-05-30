@@ -124,7 +124,7 @@ const Header = () => {
   return (
     <>
       <header className="bg-white fixed lg:sticky left-0 w-full top-0 lg:-top-[87px] z-[101]">
-        <div className="top-strip hidden  py-2 border-t-[1px] border-gray-250  border-b-[1px]">
+        {/* <div className="top-strip hidden  py-2 border-t-[1px] border-gray-250  border-b-[1px]">
           <div className="container">
             <div className="flex items-center justify-between">
               <div className="col1 w-[50%] hidden lg:block">
@@ -134,25 +134,6 @@ const Header = () => {
               </div>
 
               <div className="col2 flex items-center justify-between w-full lg:w-[50%] lg:justify-end">
-                {/* <ul className="flex items-center gap-3 w-full justify-between lg:w-[200px]">
-                  <li className="list-none">
-                    <Link
-                      href="/help-center"
-                      className="text-[11px] lg:text-[13px] link font-[500] transition"
-                    >
-                      Help Center{" "}
-                    </Link>
-                  </li>
-                  <li className="list-none">
-                    <Link
-                      href="/order-tracking"
-                      className="text-[11px] lg:text-[13px] link font-[500] transition"
-                    >
-                      Order Tracking
-                    </Link>
-                  </li>
-                </ul> */}
-
                 <ul className="flex items-center gap-3 w-full justify-between lg:w-[250px]">
                   <li className="list-none">
                     <Link
@@ -174,7 +155,7 @@ const Header = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="header py-2 lg:py-4 border-b-[1px] border-gray-250">
           <div className="container flex items-center justify-between">
@@ -203,7 +184,7 @@ const Header = () => {
             </div>
 
             {context?.windowWidth > 992 && (
-              <div className="col1 w-full lg:w-[20%] flex items-center justify-center">
+              <div className="col1 w-full lg:w-[15%] flex items-center justify-center">
                 <button
                   onClick={() => setLocationModalOpen(!locationModalOpen)}
                   className="
@@ -234,7 +215,7 @@ const Header = () => {
             )}
 
             <div
-              className={`col2 fixed top-0 left-0 w-full h-full lg:w-[35%] lg:static p-2 lg:p-0 bg-white z-50 ${
+              className={`col2 fixed top-0 left-0 w-full h-full lg:w-[45%] lg:static p-2 lg:p-0 bg-white z-50 ${
                 isClient &&
                 clientWindowWidth !== undefined &&
                 clientWindowWidth > 992 &&
@@ -245,7 +226,7 @@ const Header = () => {
             </div>
             <div
               className={`col3 ${
-                context?.windowWidth > 992 && "w-[30%] lg:w-[45%]"
+                context?.windowWidth > 992 && "w-[30%] lg:w-[35%]"
               } flex items-center pl-3`}
             >
               <ul className="flex items-center justify-end gap-2 lg:gap-3 w-full">
@@ -308,20 +289,22 @@ const Header = () => {
                   </FormControl>
                 </li>
 
+                <li className="list-none px1">
+                  <span>
+                    <Link
+                      href="https://seller.soouqna.com/"
+                      className="link transition text-[15px] font-[500] px-2"
+                    >
+                      {t("header.becomeVendor")}
+                    </Link>
+                  </span>
+                </li>
+
                 {context.isLogin === false &&
                 isClient &&
                 clientWindowWidth !== undefined &&
                 clientWindowWidth > 992 ? (
                   <li className="list-none px-1">
-                    <span>
-                      <Link
-                        href="https://seller.soouqna.com/"
-                        className="link transition text-[15px] font-[500] px-2"
-                      >
-                        {t("header.becomeVendor")}
-                      </Link>
-                    </span>
-
                     <span>
                       <Link
                         href="/login"
@@ -350,8 +333,20 @@ const Header = () => {
                             className="!text-[#000] myAccountWrap flex items-center gap-3 cursor-pointer"
                             onClick={handleClick}
                           >
-                            <div className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-gray-200 flex items-center justify-center">
+                            {/* <div className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-gray-200 flex items-center justify-center">
                               <FaRegUser className="text-[17px] text-[rgba(0,0,0,0.7)]" />
+                            </div> */}
+                            <div className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-gray-200 flex items-center justify-center overflow-hidden">
+                              {context?.userData?.avatar !== "" &&
+                              context?.userData?.avatar !== undefined ? (
+                                <img
+                                  src={context.userData.avatar}
+                                  alt="User Avatar"
+                                  className="w-full h-full object-cover rounded-full"
+                                />
+                              ) : (
+                                <FaRegUser className="text-[17px] text-[rgba(0,0,0,0.7)]" />
+                              )}
                             </div>
 
                             {isClient &&

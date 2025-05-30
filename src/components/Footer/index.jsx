@@ -141,7 +141,7 @@ Refund Policy */}
               </div>
             </div>
 
-            <div className="part2  w-full lg:w-[35%] flex pl-0 lg:pl-8 flex-col pr-8 mt-5 lg:mt-0">
+            {/* <div className="part2  w-full lg:w-[35%] flex pl-0 lg:pl-8 flex-col pr-8 mt-5 lg:mt-0">
               <h2 className="text-[18px] font-[600] mb-2 lg:mb-4">
                 {t("footer.subscribeNewsletter")}
               </h2>
@@ -164,7 +164,7 @@ Refund Policy */}
                   label={t("footer.agreeTermsPrivacy")}
                 />
               </form>
-            </div>
+            </div> */}
           </div>
         </div>
       </footer>
