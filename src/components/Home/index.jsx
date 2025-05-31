@@ -69,7 +69,7 @@ export default function Home() {
             fetchDataFromApi("/api/product/getAllFeaturedProducts"),
             fetchDataFromApi("/api/bannerV1"),
             fetchDataFromApi("/api/bannerList2"),
-            fetchDataFromApi("/api/blog"),
+            // fetchDataFromApi("/api/blog"),
           ]);
         setHomeSlidesData(homeSlides?.data || []);
         setAllProductsData(products?.products || []);

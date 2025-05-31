@@ -100,7 +100,6 @@ const Navigation = (props) => {
                           ?.map((cat, index) => {
                             return (
                               <li
-                                唐三
                                 className="list-none static w-full mb-1"
                                 key={index}
                               >

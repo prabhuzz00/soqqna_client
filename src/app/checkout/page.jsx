@@ -692,6 +692,18 @@ const Checkout = () => {
     }
 
     try {
+      const token =
+        Cookies.get("accessToken") || localStorage.getItem("accessToken");
+      console.log("ApplyCoupon - Token:", token ? "Token present" : "No token");
+      if (!token) {
+        setCouponError("Please log in to apply a coupon");
+        console.log("ApplyCoupon - No token found");
+        router.push("/login");
+        return;
+      }
+
+      console.log("ApplyCoupon - Request:", { code, orderAmount: totalAmount });
+
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_APP_API_URL}/api/coupons/validate`,
         {
@@ -701,6 +713,7 @@ const Checkout = () => {
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -711,7 +724,7 @@ const Checkout = () => {
       setCouponMessage(message);
       setCouponCode(code);
     } catch (error) {
-      setCouponError(error.response?.data?.error || "Failed to apply coupon");
+      setCouponError(error.response?.data?.error);
       setAppliedCoupon(null);
       setDiscountedAmount(totalAmount);
       setCouponCode("");
