@@ -307,6 +307,23 @@ export const translations = {
       communityText:
         "We believe in giving back to the communities we serve through sustainable practices and charitable initiatives.",
     },
+    whatsappChat: {
+      openChat: "Open WhatsApp Chat",
+      customerSupport: "Customer Support",
+      replyTime: "We reply within minutes",
+      welcomeMessage: "Hi there! How can we help you today?",
+      quickQuestions: "Quick Questions:",
+      customMessageLabel: "Or send a custom message:",
+      inputPlaceholder: "Type your message...",
+      redirectNote: "You'll be redirected to WhatsApp",
+      quickMessages: {
+        helpWithOrder: "Hi! I need help with my order",
+        productAvailability: "I want to know about product availability",
+        shippingQuestion: "I have a question about shipping",
+        returnsHelp: "I need help with returns/exchanges",
+        trackOrder: "I want to track my order",
+      },
+    },
   },
   ar: {
     header: {
@@ -609,6 +626,23 @@ export const translations = {
       communityTitle: "أثر المجتمع",
       communityText:
         "نؤمن برد الجميل للمجتمعات التي نخدمها من خلال الممارسات المستدامة والمبادرات الخيرية.",
+    },
+    whatsappChat: {
+      openChat: "افتح دردشة واتساب",
+      customerSupport: "دعم العملاء",
+      replyTime: "نرد خلال دقائق",
+      welcomeMessage: "👋 مرحبًا! كيف يمكننا مساعدتك اليوم؟",
+      quickQuestions: "الأسئلة السريعة:",
+      customMessageLabel: "أو أرسل رسالة مخصصة:",
+      inputPlaceholder: "اكتب رسالتك...",
+      redirectNote: "سيتم توجيهك إلى واتساب",
+      quickMessages: {
+        helpWithOrder: "مرحبًا! أحتاج مساعدة بشأن طلبي",
+        productAvailability: "أود معرفة مدى توافر المنتج",
+        shippingQuestion: "لدي سؤال حول الشحن",
+        returnsHelp: "أحتاج مساعدة في الإرجاع أو الاستبدال",
+        trackOrder: "أرغب في تتبع طلبي",
+      },
     },
   },
 };

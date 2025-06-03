@@ -42,8 +42,9 @@ const ThemeProvider = ({ children }) => {
 
       // Load initial location from local storage
       const cachedLocation = localStorage.getItem("userLocation");
-      if (cachedLocation) {
-        setUserLocation(cachedLocation);
+      const parsedLocation = JSON.parse(cachedLocation);
+      if (parsedLocation) {
+        setUserLocation(parsedLocation.address.city);
       }
 
       setWindowWidth(window.innerWidth); // Set initial width

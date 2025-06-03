@@ -47,6 +47,7 @@ const AddAddress = () => {
         let parsedAddress;
         try {
           parsedAddress = JSON.parse(cachedAddress);
+          console.log("Parsed address from cache:", parsedAddress);
         } catch (err) {
           const parts = cachedAddress.split(",");
           parsedAddress = {
@@ -60,11 +61,11 @@ const AddAddress = () => {
         if (parsedAddress) {
           setFormsFields((prevState) => ({
             ...prevState,
-            address_line1: parsedAddress.address_line1 || "",
-            city: parsedAddress.city || "",
-            state: parsedAddress.state || "",
-            country: parsedAddress.country || "",
-            pincode: parsedAddress.pincode || "",
+            address_line1: parsedAddress.address.address_line_1 || "",
+            city: parsedAddress.address.city || "",
+            state: parsedAddress.address.state || "",
+            country: parsedAddress.address.country || "",
+            pincode: parsedAddress.address.pincode || "",
           }));
         }
       }

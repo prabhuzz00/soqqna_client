@@ -26,12 +26,13 @@ export default function LocationModal({ openkey, setOpenkey }) {
           `/api/geocode?lat=${latitude}&lng=${longitude}`
         );
         const geoData = await geoRes.json();
-        const address = geoData.results?.[0]?.formatted_address || fallback;
-        setUserLocation(address);
+        console.log("Detected address:", geoData);
+        const strGeoData = JSON.stringify(geoData);
+        setUserLocation(geoData.address.city);
         if (session?.user?.id) {
-          await saveAddress(address, session.user.id);
+          await saveAddress(strGeoData, session.user.id);
         } else {
-          localStorage.setItem("userLocation", address);
+          localStorage.setItem("userLocation", strGeoData);
         }
       } catch {
         setUserLocation(fallback);
@@ -70,13 +71,13 @@ export default function LocationModal({ openkey, setOpenkey }) {
     try {
       const geoRes = await fetch(`/api/geocode?place_id=${s.place_id}`);
       const geoData = await geoRes.json();
-      const address = geoData.results?.[0]?.formatted_address || s.description;
-      setUserLocation(address);
+      const strGeoData = JSON.stringify(geoData);
+      setUserLocation(geoData.address.city);
 
       if (session?.user?.id) {
-        await saveAddress(address, session.user.id);
+        await saveAddress(strGeoData, session.user.id);
       } else {
-        localStorage.setItem("userLocation", address);
+        localStorage.setItem("userLocation", strGeoData);
       }
     } catch (err) {
       console.error("Geocode by place_id error:", err);
@@ -92,12 +93,12 @@ export default function LocationModal({ openkey, setOpenkey }) {
     handleSelectSuggestion({ description: searchQuery.trim(), place_id: "" });
   };
 
-  const saveAddress = async (address, userId) => {
+  const saveAddress = async (geoData, userId) => {
     try {
       const res = await fetch("/api/user/address", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, address }),
+        body: JSON.stringify({ userId, geoData }),
       });
       if (!res.ok) throw new Error(await res.text());
       console.log("Saved");

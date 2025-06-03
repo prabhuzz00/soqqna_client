@@ -34,6 +34,10 @@ const Address = () => {
     }
 
     if (context?.userData?._id !== "" && context?.userData?._id !== undefined) {
+      console.log(
+        "Fetching address for user ",
+        context?.userData
+      );
       setAddress(context?.userData?.address_details);
     }
   }, [context?.userData]);
@@ -43,6 +47,7 @@ const Address = () => {
       fetchDataFromApi(
         `/api/address/get?userId=${context?.userData?._id}`
       ).then((res) => {
+        console.log("Address removed successfully", res);
         setAddress(res.data);
         context?.getUserDetails();
       });

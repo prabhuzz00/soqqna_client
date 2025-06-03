@@ -48,6 +48,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
 import PWARegister from "@/components/PWARegister";
+import WhatsAppChat from "../components/WhatsappChat";
 
 export const metadata = {
   title: "Soouqna Shopping Platform",
@@ -69,6 +70,7 @@ export default function RootLayout({ children }) {
             <LanguageProvider>
               <Header />
               {children}
+              <WhatsAppChat/>
               <Footer />
             </LanguageProvider>
           </ThemeProvider>
