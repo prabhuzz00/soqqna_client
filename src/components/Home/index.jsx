@@ -64,19 +64,19 @@ export default function Home() {
       try {
         const [homeSlides, products, featured, banners, banners2, blogs] =
           await Promise.all([
-            fetchDataFromApi("/api/homeSlides"),
+            // fetchDataFromApi("/api/homeSlides"),
             fetchDataFromApi("/api/product/getAllProducts"),
             fetchDataFromApi("/api/product/getAllFeaturedProducts"),
             fetchDataFromApi("/api/bannerV1"),
             fetchDataFromApi("/api/bannerList2"),
             // fetchDataFromApi("/api/blog"),
           ]);
-        setHomeSlidesData(homeSlides?.data || []);
+        // setHomeSlidesData(homeSlides?.data || []);
         setAllProductsData(products?.products || []);
         setFeaturedProducts(featured?.products || []);
         setBannerV1Data(banners?.data || []);
         setBannerList2Data(banners2?.data || []);
-        setBlogData(blogs?.blogs || []);
+        // setBlogData(blogs?.blogs || []);
       } catch (err) {
         setError("Failed to load data. Please try again.");
       } finally {
@@ -146,12 +146,12 @@ export default function Home() {
   };
 
   if (error) return <div>{error}</div>;
-  if (isLoading) return <BannerLoading />;
+  // if (isLoading) return <BannerLoading />;
 
   return (
     <>
-      {homeSlidesData?.length === 0 && <BannerLoading />}
-      {homeSlidesData?.length > 0 && <HomeSlider data={homeSlidesData} />}
+      {/* {homeSlidesData?.length === 0 && <BannerLoading />} */}
+      {/* {homeSlidesData?.length > 0 && <HomeSlider data={homeSlidesData} />} */}
 
       {context?.catData?.length > 0 && <HomeCatSlider data={context.catData} />}
 
