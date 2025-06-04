@@ -571,6 +571,7 @@ import Script from "next/script";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import Breadcrumb from "@/components/Breadcrumb";
+import Image from "next/image";
 
 const Checkout = () => {
   const [userData, setUserData] = useState(null);
@@ -1089,7 +1090,7 @@ const Checkout = () => {
                   ) : (
                     <>
                       <div className="flex items-center mt-5 justify-between flex-col p-5">
-                        <img src="/map.png" width="100" />
+                        <Image src="/map.png" width={100} height={100} alt="map" />
                         <h2 className="text-center">
                           No Addresses found in your account!
                         </h2>
@@ -1131,8 +1132,10 @@ const Checkout = () => {
                       >
                         <div className="part1 flex items-center gap-3">
                           <div className="img w-[50px] h-[50px] object-cover overflow-hidden rounded-md group cursor-pointer">
-                            <img
+                            <Image
                               src={item?.image}
+                              width={50}
+                              height={50}
                               className="w-full transition-all group-hover:scale-105"
                               alt={item?.productTitle}
                             />

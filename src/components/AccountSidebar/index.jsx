@@ -137,7 +137,13 @@ const AccountSidebar = () => {
                   );
                 })
               ) : (
-                <img src={"/user.jpg"} className="w-full h-full object-cover" />
+                <Image
+                  src="/user.jpg"
+                  width={110}
+                  height={110}
+                  className="w-full h-full object-cover"
+                  alt="avatar"
+                />
               )}
             </>
           )}

@@ -11,6 +11,7 @@ import Button from "@mui/material/Button";
 Link
 import { MyContext } from "@/context/ThemeProvider";
 import Link from "next/link";
+import Image from "next/image";
 
 const HomeBannerV2 = (props) => {
 
@@ -44,7 +45,7 @@ const HomeBannerV2 = (props) => {
 
                 <div className="item w-full rounded-md overflow-hidden relative">
                 
-                  <img src={item?.bannerimages[0]} className="w-full" />
+                  <Image src={item?.bannerimages[0]} width={800} height={400} className="w-full" alt="" />
 
                   <div className="info absolute top-0 -right-[100%] opacity-0 w-[50%] h-[100%] z-50 p-8 flex items-center flex-col justify-center transition-all duration-700">
 

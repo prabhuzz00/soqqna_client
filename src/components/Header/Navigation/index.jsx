@@ -15,6 +15,7 @@ import { Collapse } from "react-collapse";
 import MobileMenu from "./MobileMenu";
 import { useLanguage } from "@/context/LanguageContext";
 import { RiGridFill } from "react-icons/ri";
+import Image from "next/image";
 
 const Navigation = (props) => {
   const [isOpenCatPanel, setIsOpenCatPanel] = useState(false);
@@ -107,9 +108,11 @@ const Navigation = (props) => {
                                   className={`link transition !font-[500] !text-gray-800 hover:!text-black !py-2 !w-full !text-left !justify-start hover:!bg-gray-200`}
                                   onClick={() => handleCategoryClick(index)}
                                 >
-                                  <img
+                                  <Image
                                     src={cat?.images[0] || "/default-image.jpg"}
                                     alt="image"
+                                    width={20}
+                                    height={20}
                                     className="w-[20px] mr-2"
                                   />
                                   {locale === "ar" ? cat?.arName : cat?.name}
@@ -159,11 +162,13 @@ const Navigation = (props) => {
                                             onClick={handleLinkClick}
                                           >
                                             <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full overflow-hidden">
-                                              <img
+                                              <Image
                                                 src={
                                                   subCat?.images[0] ||
                                                   "/default-image.jpg"
                                                 }
+                                                width={60}
+                                                height={60}
                                                 className="w-full h-full object-cover transition"
                                                 alt={
                                                   locale === "ar"
