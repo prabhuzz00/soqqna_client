@@ -7,6 +7,7 @@ import { MyContext } from "@/context/ThemeProvider";
 import Link from "next/link";
 import { CategoryCollapse } from "@/components/CategoryCollapse";
 import Cookies from "js-cookie";
+import Image from "next/image";
 
 const CategoryPanel = (props) => {
 
@@ -24,7 +25,7 @@ const CategoryPanel = (props) => {
       <div className="p-3">
         {
           Cookies.get('logo') !== undefined &&
-          <img src={'/sooqna.svg'} className="w-[110px]" alt="logo" />
+          <Image src={'/sooqna.svg'} width={110} height={40} className="w-[110px]" alt="logo" />
         }
        
       </div>

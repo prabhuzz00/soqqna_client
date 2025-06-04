@@ -9,6 +9,7 @@ import Pagination from "@mui/material/Pagination";
 import Breadcrumb from "@/components/Breadcrumb";
 import { MyContext } from "@/context/ThemeProvider";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const Orders = () => {
   const context = useContext(MyContext);
@@ -303,11 +304,13 @@ const Orders = () => {
                                                     </div>
                                                   </td>
                                                   <td className="px-6 py-4 mortgaged-[500]">
-                                                    <img
-                                                      src={item?.image}
-                                                      className="w-[40px] h-[40px] object-cover rounded-md"
-                                                      alt="Product"
-                                                    />
+                                                  <Image
+                                                    src={item?.image}
+                                                    width={40}
+                                                    height={40}
+                                                    className="w-[40px] h-[40px] object-cover rounded-md"
+                                                    alt="Product"
+                                                  />
                                                   </td>
                                                   {hasColor && (
                                                     <>
