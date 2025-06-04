@@ -1,5 +1,6 @@
 "use client";
 import React, { useContext, useEffect, useState } from "react";
+import Image from "next/image";
 import Button from "@mui/material/Button";
 import { BsFillBagCheckFill } from "react-icons/bs";
 import CartItems from "./cartItems";
@@ -97,7 +98,12 @@ const CartPage = () => {
               <>
                 <>
                   <div className="flex items-center justify-center flex-col py-10 gap-5">
-                    <img src="/empty-cart.png" className="w-[150px]" />
+                    <Image
+                      src="/empty-cart.png"
+                      alt="Empty cart"
+                      width={150}
+                      height={150}
+                    />
                     <h4>{t("cartPage.emptyTitle")}</h4>
                     <Link href="/">
                       <Button className="btn-org">

@@ -1,5 +1,6 @@
 "use client";
 import React, { useContext, useEffect, useState } from "react";
+import Image from "next/image";
 import OtpBox from "@/components/OtpBox";
 import Button from "@mui/material/Button";
 import { MyContext } from "@/context/ThemeProvider";
@@ -54,7 +55,7 @@ const VerifyAccount = () => {
       <div className="container">
         <div className="card shadow-md w-full sm:w-[400px] m-auto rounded-md bg-white p-5 px-10">
           <div className="text-center flex items-center justify-center">
-            <img src="/verify3.png" width="80" alt="image" />
+            <Image src="/verify3.png" alt="Verify" width={80} height={80} />
           </div>
           <h3 className="text-center text-[18px] text-black mt-4 mb-1">
             Verify OTP

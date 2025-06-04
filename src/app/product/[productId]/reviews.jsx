@@ -100,14 +100,20 @@ export const Reviews = (props) => {
 
                                             {
                                                 review?.image !== "" && review?.image !== null ?
-                                                    <img
+                                                    <Image
                                                         src={review?.image}
+                                                        alt="review"
+                                                        width={100}
+                                                        height={100}
                                                         className="w-full"
                                                     />
 
                                                     :
-                                                    <img
+                                                    <Image
                                                         src={"/user.jpg"}
+                                                        alt="user"
+                                                        width={100}
+                                                        height={100}
                                                         className="w-full"
                                                     />
                                             }

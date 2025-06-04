@@ -1,5 +1,6 @@
 "use client";
 import React, { useContext, useEffect, useState } from "react";
+import Image from "next/image";
 import { LiaShippingFastSolid } from "react-icons/lia";
 import { PiKeyReturnLight } from "react-icons/pi";
 import { BsWallet2 } from "react-icons/bs";
@@ -247,7 +248,12 @@ Refund Policy */}
         ) : (
           <>
             <div className="flex items-center justify-center flex-col pt-[100px] gap-5">
-              <img src="/empty-cart.png" className="w-[150px]" />
+              <Image
+                src="/empty-cart.png"
+                alt="empty cart"
+                width={150}
+                height={150}
+              />
               <h4>Your Cart is currently empty</h4>
               <Button
                 className="btn-org btn-sm"

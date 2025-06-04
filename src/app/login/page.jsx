@@ -42,7 +42,7 @@ const LoginPage = () => {
       const redirect = params.get("redirect") || "/";
       setRedirectPath(redirect);
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -55,7 +55,7 @@ const LoginPage = () => {
     if (token !== undefined && token !== null && token !== "") {
       router.push("/");
     }
-  }, []);
+  }, [router]);
 
   const forgotPassword = () => {
     if (formFields.identifier === "") {
@@ -179,7 +179,7 @@ const LoginPage = () => {
         setIsProcessing(false);
       }
     },
-    [context, router, isProcessing]
+    [context, router, t, isProcessing]
   );
 
   useEffect(() => {

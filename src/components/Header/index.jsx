@@ -339,9 +339,11 @@ const Header = () => {
                             <div className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-gray-200 flex items-center justify-center overflow-hidden">
                               {context?.userData?.avatar !== "" &&
                               context?.userData?.avatar !== undefined ? (
-                                <img
+                                <Image
                                   src={context.userData.avatar}
                                   alt="User Avatar"
+                                  width={40}
+                                  height={40}
                                   className="w-full h-full object-cover rounded-full"
                                 />
                               ) : (
