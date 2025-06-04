@@ -1,17 +1,28 @@
 "use client";
-import { Sidebar } from "@/components/Sidebar";
+import dynamic from "next/dynamic";
 import { MyContext } from "@/context/ThemeProvider";
 import React, { useContext, useEffect, useState } from "react";
+
+const Sidebar = dynamic(() => import("@/components/Sidebar").then(mod => mod.Sidebar), {
+  ssr: false,
+});
+const ProductItem = dynamic(() => import("@/components/ProductItem"), {
+  ssr: false,
+});
+const ProductItemListView = dynamic(() => import("@/components/ProductItemListView"), {
+  ssr: false,
+});
+const ProductLoadingGrid = dynamic(
+  () => import("@/components/ProductLoading/productLoadingGrid"),
+  { ssr: false }
+);
 import Button from "@mui/material/Button";
 import { LuMenu } from "react-icons/lu";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Pagination from "@mui/material/Pagination";
 import { IoGridSharp } from "react-icons/io5";
-import ProductItem from "@/components/ProductItem";
-import ProductItemListView from "@/components/ProductItemListView";
 import { fetchDataFromApi, postData } from "@/utils/api";
-import ProductLoadingGrid from "@/components/ProductLoading/productLoadingGrid";
 import { Suspense } from "react";
 import Breadcrumb from "@/components/Breadcrumb";
 

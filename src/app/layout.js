@@ -44,11 +44,22 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import ThemeProvider from "@/context/ThemeContext";
 import "./globals.css";
 import "./responsive.css";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import dynamic from "next/dynamic";
+import Script from "next/script";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
-import PWARegister from "@/components/PWARegister";
-import WhatsAppChat from "../components/WhatsappChat";
+
+const Header = dynamic(() => import("@/components/Header"), {
+  ssr: false,
+});
+const Footer = dynamic(() => import("@/components/Footer"), {
+  ssr: false,
+});
+const PWARegister = dynamic(() => import("@/components/PWARegister"), {
+  ssr: false,
+});
+const WhatsAppChat = dynamic(() => import("../components/WhatsappChat"), {
+  ssr: false,
+});
 
 export const metadata = {
   title: "Soouqna Shopping Platform",
@@ -76,11 +87,10 @@ export default function RootLayout({ children }) {
           </ThemeProvider>
         </AuthProvider>
         <PWARegister />
-        <script
+        <Script
           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places&v=beta&callback=initMap`}
-          async
-          defer
-        ></script>
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
