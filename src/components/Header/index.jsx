@@ -289,16 +289,18 @@ const Header = () => {
                   </FormControl>
                 </li>
 
-                <li className="list-none px1">
-                  <span>
-                    <Link
-                      href="https://seller.soouqna.com/"
-                      className="link transition text-[15px] font-[500] px-2"
-                    >
-                      {t("header.becomeVendor")}
-                    </Link>
-                  </span>
-                </li>
+                {context?.windowWidth > 992 && (
+                  <li className="list-none px1">
+                    <span>
+                      <Link
+                        href="https://seller.soouqna.com/"
+                        className="link transition text-[15px] font-[500] px-2"
+                      >
+                        {t("header.becomeVendor")}
+                      </Link>
+                    </span>
+                  </li>
+                )}
 
                 {context.isLogin === false &&
                 isClient &&
