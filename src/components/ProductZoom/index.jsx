@@ -46,7 +46,7 @@ export const ProductZoom = (props) => {
                     }`}
                     onClick={() => goto(index)}
                   >
-                    <img src={item} />
+                    <Image src={item} alt="product" width={100} height={100} />
                   </div>
                 </SwiperSlide>
               );

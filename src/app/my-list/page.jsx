@@ -1,5 +1,6 @@
 "use client";
 import React, { useContext, useEffect, useState } from "react";
+import Image from "next/image";
 
 import MyListItems from "./myListItems";
 import AccountSidebar from "@/components/AccountSidebar";
@@ -60,7 +61,12 @@ const MyList = () => {
                 })
               ) : (
                 <div className="flex items-center justify-center flex-col py-10 px-3 gap-5">
-                  <img src="/mylistempty.png" className="w-[100px]" />
+                  <Image
+                    src="/mylistempty.png"
+                    alt="empty list"
+                    width={100}
+                    height={100}
+                  />
                   <h3>My List is currently empty</h3>
                   <Link href="/">
                     <Button className="btn-org btn-sm">
