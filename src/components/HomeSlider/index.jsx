@@ -25,9 +25,11 @@ const HomeSlider = (props) => {
           }}
           className="sliderHome"
         >
-          {
-            props?.data?.length !== 0 && props?.data?.slice()?.reverse()?.map((item, index) => {
-              return (
+          {props?.data?.length !== 0 &&
+            props?.data
+              ?.slice()
+              ?.reverse()
+              ?.map((item, index) => (
                 <SwiperSlide key={index}>
                   <div className="item rounded-[10px] overflow-hidden relative">
                     <Image
@@ -36,14 +38,12 @@ const HomeSlider = (props) => {
                       src={item?.images[0]}
                       alt="Banner slide"
                       className="!w-full !h-auto"
-                      priority 
+                      priority={index === 0}
+                      loading={index === 0 ? "eager" : "lazy"}
                     />
                   </div>
                 </SwiperSlide>
-              )
-            })
-          }
-
+              ))}
         </Swiper>
       </div>
     </div>
