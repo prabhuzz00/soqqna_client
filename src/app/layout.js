@@ -47,10 +47,10 @@ import "./responsive.css";
 import dynamic from "next/dynamic";
 import Script from "next/script";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
-
-const Header = dynamic(() => import("@/components/Header"), {
-  ssr: false,
-});
+import Header from "@/components/Header";
+// const Header = dynamic(() => import("@/components/Header"), {
+//   ssr: false,
+// });
 const Footer = dynamic(() => import("@/components/Footer"), {
   ssr: false,
 });
@@ -81,7 +81,7 @@ export default function RootLayout({ children }) {
             <LanguageProvider>
               <Header />
               {children}
-              <WhatsAppChat/>
+              <WhatsAppChat />
               <Footer />
             </LanguageProvider>
           </ThemeProvider>
