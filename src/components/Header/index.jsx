@@ -6,7 +6,6 @@ import { MyContext } from "@/context/ThemeProvider"; // Import MyContext
 import { styled } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import { MdOutlineShoppingCart } from "react-icons/md";
-import { IoGitCompareOutline } from "react-icons/io5";
 import { FaRegHeart } from "react-icons/fa6";
 import Tooltip from "@mui/material/Tooltip";
 import Navigation from "./Navigation";
