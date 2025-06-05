@@ -59,9 +59,27 @@ const Header = () => {
   const { data: session } = useSession(); // Get session for authenticated user
   const { userLocation } = useContext(MyContext); // Get userLocation from context
 
+
+  const [lang, setlang] = useState(null);
+  const openLang = Boolean(lang);
+
+  const [selectedlang, setSelectedlang] = useState({
+    img: "",
+    lang: ""
+  })
+
+  const { locale, changeLanguage } = useLanguage();
+  const { t } = useTranslation();
+
+
   useEffect(() => {
     setIsClient(true);
     setClientWindowWidth(context?.windowWidth);
+    const lang = localStorage.getItem("locale");
+    setSelectedlang({
+      img: lang === "en" ? "/flags/en.png" : "/flags/ar.png",
+      lang: lang === "en" ? "en" : "ar"
+    })
   }, [context?.windowWidth]);
 
   // Remove the useEffect that was reading from localStorage directly
@@ -73,6 +91,14 @@ const Header = () => {
     }
   }, [isClient, context?.isLogin]);
 
+  const handleClickLang = (event) => {
+    setlang(event.currentTarget);
+  };
+  const handleCloseLang = () => {
+    setlang(null);
+  };
+
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -80,8 +106,16 @@ const Header = () => {
     setAnchorEl(null);
   };
 
-  const { locale, changeLanguage } = useLanguage();
-  const { t } = useTranslation();
+  const selectedlangFun = (lang) => {
+    setSelectedlang({
+      img: lang.img,
+      lang: lang.lang
+    })
+    setlang(null);
+    changeLanguage(lang.lang)
+  }
+
+
 
   useEffect(() => {
     fetchDataFromApi("/api/logo").then((res) => {
@@ -123,7 +157,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-white fixed lg:sticky left-0 w-full top-0 lg:-top-[87px] z-[101]">
+      <header className="bg-white fixed lg:sticky left-0 w-full top-0 lg:-top-[85px] z-[1001] ">
         {/* <div className="top-strip hidden  py-2 border-t-[1px] border-gray-250  border-b-[1px]">
           <div className="container">
             <div className="flex items-center justify-between">
@@ -157,20 +191,21 @@ const Header = () => {
           </div>
         </div> */}
 
-        <div className="header py-2 lg:py-4 border-b-[1px] border-gray-250">
-          <div className="container flex items-center justify-between">
-            {isClient &&
-              clientWindowWidth !== undefined &&
-              clientWindowWidth < 992 && (
-                <Button
-                  className="!w-[35px] !min-w-[35px] !h-[35px] !rounded-full !text-gray-800"
-                  onClick={() => openMobileMenu(true)}
-                >
-                  <HiOutlineMenu size={22} />
-                </Button>
-              )}
+        <div className="container flex items-center justify-between gap-2 lg:gap-3 py-4">
+          {isClient &&
+            clientWindowWidth !== undefined &&
+            clientWindowWidth < 992 && (
+              <Button
+                className="!w-[35px] !min-w-[35px] !h-[35px] !rounded-full !text-gray-800"
+                onClick={() => openMobileMenu(true)}
+              >
+                <HiOutlineMenu size={22} />
+              </Button>
+            )}
 
-            <div className="">
+          <div className="headerPart1 flex items-center  gap-5">
+            {/* logo wrapper start here */}
+            <div className="logoWrapper">
               <Link href="/">
                 <Image
                   src={logoSrc}
@@ -182,24 +217,28 @@ const Header = () => {
                 />
               </Link>
             </div>
+            {/* logo wrapper ends here */}
 
+
+
+
+            {/* location wrapper ends here */}
             {context?.windowWidth > 992 && (
-              <div className="col1 w-full lg:w-[15%] flex items-center justify-center">
-                <button
+              <div className="col1 flex items-center justify-center">
+                <Button
                   onClick={() => setLocationModalOpen(!locationModalOpen)}
                   className="
                       flex items-center space-x-1
-                      text-sm font-medium text-gray-700
-                      hover:text-primary
-                      transition-colors duration-150
-                      px-2 py-1
+                      text-sm !font-medium !text-gray-700
+                      hover:!text-gray-900 hover:!bg-gray-100
+                      px-2 py-1 !capitalize
                     "
                 >
                   <LuMapPin className="text-lg" />
                   <span className="truncate max-w-[120px]">
                     {userLocation || "Select Location"}
                   </span>
-                </button>
+                </Button>
               </div>
             )}
 
@@ -214,340 +253,355 @@ const Header = () => {
               />
             )}
 
+            {/* location wrapper ends here */}
+          </div>
+
+
+          <div className="headerPart2 w-[35%]">
+            {/* search wrapper ends here */}
             <div
-              className={`col2 fixed top-0 left-0 w-full h-full lg:w-[45%] lg:static p-2 lg:p-0 bg-white z-50 ${
-                isClient &&
+              className={`col2 fixed top-0 left-0 w-full h-full lg:static p-2 lg:p-0 bg-white z-50 ${isClient &&
                 clientWindowWidth !== undefined &&
                 clientWindowWidth > 992 &&
-                "!block"
-              } ${context?.openSearchPanel === true ? "block" : "hidden"}`}
+                '!block'
+                } ${context?.openSearchPanel === true ? 'block' : 'hidden'}`}
             >
               <Search />
             </div>
-            <div
-              className={`col3 ${
-                context?.windowWidth > 992 && "w-[30%] lg:w-[35%]"
-              } flex items-center pl-3`}
-            >
-              <ul className="flex items-center justify-end gap-2 lg:gap-3 w-full">
-                {context?.windowWidth < 992 && (
-                  <li>
-                    <HiOutlineLocationMarker
-                      size={25}
-                      onClick={() => setLocationModalOpen(!locationModalOpen)}
-                    />
-                  </li>
-                )}
 
-                <li className="list-none relative" style={{ zoom: "80%" }}>
-                  <FormControl sx={{ m: 1, minWidth: 35 }}>
-                    <Select
-                      value={locale}
-                      onChange={(e) => changeLanguage(e.target.value)}
-                      disableUnderline
-                      variant="standard"
-                      IconComponent={() => null} // Remove dropdown arrow
-                      renderValue={() => (
-                        <Image
-                          src="/flags/internet.png" // Always show en.png (or any fixed image)
-                          alt="Language"
-                          width={35}
-                          height={35}
-                        />
-                      )}
-                      sx={{
-                        padding: 0,
-                        minWidth: 35,
-                        backgroundColor: "transparent",
-                        "& .MuiSelect-select": {
-                          // padding: "4px",
-                          display: "flex",
-                          alignItems: "center",
-                        },
-                        "& fieldset": {
-                          border: "none",
-                        },
-                      }}
-                    >
-                      <MenuItem value="en">
-                        <Image
-                          src="/flags/en.png"
-                          alt="English"
-                          width={35}
-                          height={35}
-                        />
-                      </MenuItem>
-                      <MenuItem value="ar">
-                        <Image
-                          src="/flags/ar.png"
-                          alt="Arabic"
-                          width={35}
-                          height={35}
-                        />
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
+
+            {/* search wrapper ends here */}
+          </div>
+
+
+          <div className="headerPart3 flex items-center justify-end gap-5">
+            <ul className="flex items-center justify-end gap-2 lg:gap-3 w-full">
+
+              {context?.windowWidth < 992 && (
+                <li>
+                  <HiOutlineLocationMarker
+                    size={25}
+                    onClick={() => setLocationModalOpen(!locationModalOpen)}
+                  />
                 </li>
+              )}
 
-                {context?.windowWidth > 992 && (
-                  <li className="list-none px1">
-                    <span>
-                      <Link
-                        href="https://seller.soouqna.com/"
-                        className="link transition text-[15px] font-[500] px-2"
-                      >
-                        {t("header.becomeVendor")}
-                      </Link>
-                    </span>
-                  </li>
-                )}
+              <li className="list-none relative">
+                <div className="relative">
+                  <Button className="flex items-center gap-1" onClick={handleClickLang}>
+                    <Image
+                      src={selectedlang.img}
+                      alt="lang"
+                      width={25}
+                      height={25}
+                    />
+                    <span className="text-gray-800">{selectedlang.lang}</span>
+                  </Button>
 
-                {context.isLogin === false &&
+                  <Menu
+                    id="basic-menu"
+                    anchorEl={lang}
+                    open={openLang}
+                    onClose={handleCloseLang}
+                    slotProps={{
+                      list: {
+                        'aria-labelledby': 'basic-button',
+                      },
+                    }}
+                  >
+                    <MenuItem onClick={() => selectedlangFun({
+                      img: "/flags/en.png",
+                      lang: "en"
+                    })} className="flex items-center gap-1">
+                      <Image
+                        src="/flags/en.png"
+                        alt="English"
+                        width={25}
+                        height={25}
+                      />
+                      <span className="text-gray-800 text-[15px]">EN</span>
+                    </MenuItem>
+
+                    <MenuItem onClick={() => selectedlangFun({
+                      img: "/flags/ar.png",
+                      lang: "ar"
+                    })} className="flex items-center gap-1">
+                      <Image
+                        src="/flags/ar.png"
+                        alt="Arabic"
+                        width={25}
+                        height={25}
+                      />
+                      <span className="text-gray-800  text-[15px]">AR</span>
+                    </MenuItem>
+
+                  </Menu>
+
+                </div>
+              </li>
+
+
+              {context?.windowWidth > 992 && (
+                <li className="list-none px1">
+                  <span>
+                    <Link
+                      href="https://seller.soouqna.com/"
+                      className="link transition text-[15px] font-[500] px-2"
+                    >
+                      {t("header.becomeVendor")}
+                    </Link>
+                  </span>
+                </li>
+              )}
+
+
+              {context.isLogin === false &&
                 isClient &&
                 clientWindowWidth !== undefined &&
                 clientWindowWidth > 992 ? (
-                  <li className="list-none px-1">
-                    <span>
-                      <Link
-                        href="/login"
-                        className="link transition text-[15px] font-[500] px-2"
-                      >
-                        {t("header.login")}
-                      </Link>
-                    </span>
+                <li className="list-none px-1">
+                  <Link
+                    href="/login"
+                    className="link transition text-[15px] font-[500] px-2"
+                  >
+                    <Button className="btn-org btn-sm">
+                      {t("header.login")}
+                    </Button>
+                  </Link>
 
-                    <span>
-                      <Link
-                        href="/register"
-                        className="link  transition text-[15px]  font-[500] px-2"
-                      >
-                        {t("header.register")}
-                      </Link>
-                    </span>
-                  </li>
-                ) : (
-                  <>
-                    {isClient &&
-                      clientWindowWidth !== undefined &&
-                      clientWindowWidth > 992 && (
-                        <li>
-                          <Button
-                            className="!text-[#000] myAccountWrap flex items-center gap-3 cursor-pointer"
-                            onClick={handleClick}
-                          >
-                            {/* <div className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-gray-200 flex items-center justify-center">
+                </li>
+              ) : (
+                <>
+                  {isClient &&
+                    clientWindowWidth !== undefined &&
+                    clientWindowWidth > 992 && (
+                      <li>
+                        <Button
+                          className="!text-[#000] myAccountWrap flex items-center gap-3 cursor-pointer"
+                          onClick={handleClick}
+                        >
+                          {/* <div className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-gray-200 flex items-center justify-center">
                               <FaRegUser className="text-[17px] text-[rgba(0,0,0,0.7)]" />
                             </div> */}
-                            <div className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-gray-200 flex items-center justify-center overflow-hidden">
-                              {context?.userData?.avatar !== "" &&
+                          <div className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-gray-200 flex items-center justify-center overflow-hidden">
+                            {context?.userData?.avatar !== "" &&
                               context?.userData?.avatar !== undefined ? (
-                                <Image
-                                  src={context.userData.avatar}
-                                  alt="User Avatar"
-                                  width={40}
-                                  height={40}
-                                  className="w-full h-full object-cover rounded-full"
-                                />
-                              ) : (
-                                <FaRegUser className="text-[17px] text-[rgba(0,0,0,0.7)]" />
-                              )}
-                            </div>
+                              <Image
+                                src={context.userData.avatar}
+                                alt="User Avatar"
+                                width={40}
+                                height={40}
+                                className="w-full h-full object-cover rounded-full"
+                              />
+                            ) : (
+                              <FaRegUser className="text-[17px] text-[rgba(0,0,0,0.7)]" />
+                            )}
+                          </div>
 
-                            {isClient &&
-                              clientWindowWidth !== undefined &&
-                              clientWindowWidth > 992 && (
-                                <div className="info flex flex-col">
-                                  <h4 className="leading-4 text-[14px] text-[rgba(0,0,0,0.6)] font-[500] mb-0 capitalize text-left !justify-start lead">
-                                    Welcome
-                                    <br />
-                                    {context?.userData?.name}
-                                  </h4>
-                                  {/* <span className="text-[13px] text-[rgba(0,0,0,0.6)]  font-[400] capitalize text-left justify-start">
+                          {isClient &&
+                            clientWindowWidth !== undefined &&
+                            clientWindowWidth > 992 && (
+                              <div className="info flex flex-col">
+                                <h4 className="leading-4 text-[14px] text-[rgba(0,0,0,0.6)] font-[500] mb-0 capitalize text-left !justify-start lead">
+                                  Welcome
+                                  <br />
+                                  {context?.userData?.name}
+                                </h4>
+                                {/* <span className="text-[13px] text-[rgba(0,0,0,0.6)]  font-[400] capitalize text-left justify-start">
                               {context?.userData?.email}
                             </span> */}
-                                </div>
-                              )}
-                          </Button>
+                              </div>
+                            )}
+                        </Button>
 
-                          <Menu
-                            anchorEl={anchorEl}
-                            id="account-menu"
-                            open={open}
-                            onClose={handleClose}
-                            onClick={handleClose}
-                            slotProps={{
-                              paper: {
-                                elevation: 0,
-                                sx: {
-                                  overflow: "visible",
-                                  filter:
-                                    "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-                                  mt: 1.5,
-                                  "& .MuiAvatar-root": {
-                                    width: 32,
-                                    height: 32,
-                                    ml: -0.5,
-                                    mr: 1,
-                                  },
-                                  "&::before": {
-                                    content: '""',
-                                    display: "block",
-                                    position: "absolute",
-                                    top: 0,
-                                    right: 14,
-                                    width: 10,
-                                    height: 10,
-                                    bgcolor: "background.paper",
-                                    transform: "translateY(-50%) rotate(45deg)",
-                                    zIndex: 0,
-                                  },
+                        <Menu
+                          anchorEl={anchorEl}
+                          id="account-menu"
+                          open={open}
+                          onClose={handleClose}
+                          onClick={handleClose}
+                          slotProps={{
+                            paper: {
+                              elevation: 0,
+                              sx: {
+                                overflow: "visible",
+                                filter:
+                                  "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                                mt: 1.5,
+                                "& .MuiAvatar-root": {
+                                  width: 32,
+                                  height: 32,
+                                  ml: -0.5,
+                                  mr: 1,
+                                },
+                                "&::before": {
+                                  content: '""',
+                                  display: "block",
+                                  position: "absolute",
+                                  top: 0,
+                                  right: 14,
+                                  width: 10,
+                                  height: 10,
+                                  bgcolor: "background.paper",
+                                  transform: "translateY(-50%) rotate(45deg)",
+                                  zIndex: 0,
                                 },
                               },
-                            }}
-                            transformOrigin={{
-                              horizontal: "right",
-                              vertical: "top",
-                            }}
-                            anchorOrigin={{
-                              horizontal: "right",
-                              vertical: "bottom",
-                            }}
-                          >
-                            <span>
-                              <Link href="/my-account" className="w-full block">
-                                <MenuItem
-                                  onClick={handleClose}
-                                  className="flex gap-2 ! !py-2"
-                                >
-                                  <FaRegUser className="text-[18px]" />{" "}
-                                  <span className="text-[14px]">
-                                    {t("header.myAccount")}
-                                  </span>
-                                </MenuItem>
-                              </Link>
-                            </span>
-                            <span>
-                              <Link
-                                href="/my-account/address"
-                                className="w-full block"
+                            },
+                          }}
+                          transformOrigin={{
+                            horizontal: "right",
+                            vertical: "top",
+                          }}
+                          anchorOrigin={{
+                            horizontal: "right",
+                            vertical: "bottom",
+                          }}
+                        >
+                          <span>
+                            <Link href="/my-account" className="w-full block">
+                              <MenuItem
+                                onClick={handleClose}
+                                className="flex gap-2 ! !py-2"
                               >
-                                <MenuItem
-                                  onClick={handleClose}
-                                  className="flex gap-2 ! !py-2"
-                                >
-                                  <LuMapPin className="text-[18px]" />{" "}
-                                  <span className="text-[14px]">
-                                    {t("account.address")}
-                                  </span>
-                                </MenuItem>
-                              </Link>
-                            </span>
-                            <span>
-                              <Link href="/my-orders" className="w-full block">
-                                <MenuItem
-                                  onClick={handleClose}
-                                  className="flex gap-2 ! !py-2"
-                                >
-                                  <IoBagCheckOutline className="text-[18px]" />{" "}
-                                  <span className="text-[14px]">
-                                    {t("account.orders")}
-                                  </span>
-                                </MenuItem>
-                              </Link>
-                            </span>
-                            {context?.isLogin == true && (
-                              <span>
-                                <Link href="/my-list" className="w-full block">
-                                  <MenuItem
-                                    onClick={handleClose}
-                                    className="flex gap-2 ! !py-2"
-                                  >
-                                    <IoMdHeartEmpty className="text-[18px]" />{" "}
-                                    <span className="text-[14px]">
-                                      {t("account.myList")}
-                                    </span>
-                                  </MenuItem>
-                                </Link>
-                              </span>
-                            )}
-
-                            <MenuItem
-                              onClick={logout}
-                              className="flex gap-2 ! !py-2"
+                                <FaRegUser className="text-[18px]" />{" "}
+                                <span className="text-[14px]">
+                                  {t("header.myAccount")}
+                                </span>
+                              </MenuItem>
+                            </Link>
+                          </span>
+                          <span>
+                            <Link
+                              href="/my-account/address"
+                              className="w-full block"
                             >
-                              <IoIosLogOut className="text-[18px]" />{" "}
-                              <span className="text-[14px]">
-                                {t("account.logout")}
-                              </span>
-                            </MenuItem>
-                          </Menu>
-                        </li>
-                      )}
-                  </>
+                              <MenuItem
+                                onClick={handleClose}
+                                className="flex gap-2 ! !py-2"
+                              >
+                                <LuMapPin className="text-[18px]" />{" "}
+                                <span className="text-[14px]">
+                                  {t("account.address")}
+                                </span>
+                              </MenuItem>
+                            </Link>
+                          </span>
+                          <span>
+                            <Link href="/my-orders" className="w-full block">
+                              <MenuItem
+                                onClick={handleClose}
+                                className="flex gap-2 ! !py-2"
+                              >
+                                <IoBagCheckOutline className="text-[18px]" />{" "}
+                                <span className="text-[14px]">
+                                  {t("account.orders")}
+                                </span>
+                              </MenuItem>
+                            </Link>
+                          </span>
+                          {context?.isLogin == true && (
+                            <span>
+                              <Link href="/my-list" className="w-full block">
+                                <MenuItem
+                                  onClick={handleClose}
+                                  className="flex gap-2 ! !py-2"
+                                >
+                                  <IoMdHeartEmpty className="text-[18px]" />{" "}
+                                  <span className="text-[14px]">
+                                    {t("account.myList")}
+                                  </span>
+                                </MenuItem>
+                              </Link>
+                            </span>
+                          )}
+
+                          <MenuItem
+                            onClick={logout}
+                            className="flex gap-2 ! !py-2"
+                          >
+                            <IoIosLogOut className="text-[18px]" />{" "}
+                            <span className="text-[14px]">
+                              {t("account.logout")}
+                            </span>
+                          </MenuItem>
+                        </Menu>
+                      </li>
+                    )}
+                </>
+              )}
+
+
+
+              {context?.isLogin &&
+                clientWindowWidth !== undefined &&
+                clientWindowWidth > 992 && (
+                  <li>
+                    <Tooltip title={t("header.wishlist")}>
+                      <span>
+                        <Link href="/my-list">
+                          <IconButton aria-label="cart">
+                            <StyledBadge
+                              badgeContent={
+                                context?.myListData?.length !== 0
+                                  ? context?.myListData?.length
+                                  : 0
+                              }
+                              color="secondary"
+                            >
+                              <FaRegHeart />
+                            </StyledBadge>
+                          </IconButton>
+                        </Link>
+                      </span>
+                    </Tooltip>
+                  </li>
                 )}
 
-                {context?.isLogin &&
-                  clientWindowWidth !== undefined &&
-                  clientWindowWidth > 992 && (
-                    <li>
-                      <Tooltip title={t("header.wishlist")}>
-                        <span>
-                          <Link href="/my-list">
-                            <IconButton aria-label="cart">
-                              <StyledBadge
-                                badgeContent={
-                                  context?.myListData?.length !== 0
-                                    ? context?.myListData?.length
-                                    : 0
-                                }
-                                color="secondary"
-                              >
-                                <FaRegHeart />
-                              </StyledBadge>
-                            </IconButton>
-                          </Link>
-                        </span>
-                      </Tooltip>
-                    </li>
-                  )}
-
-                <li>
-                  <Tooltip title={t("header.cart")}>
-                    <IconButton
-                      aria-label="cart"
-                      onClick={() => context.setOpenCartPanel(true)}
+              <li>
+                <Tooltip title={t("header.cart")}>
+                  <IconButton
+                    aria-label="cart"
+                    onClick={() => context.setOpenCartPanel(true)}
+                  >
+                    <StyledBadge
+                      badgeContent={
+                        context?.cartData?.length !== 0
+                          ? context?.cartData?.length
+                          : 0
+                      }
+                      color="secondary"
                     >
-                      <StyledBadge
-                        badgeContent={
-                          context?.cartData?.length !== 0
-                            ? context?.cartData?.length
-                            : 0
-                        }
-                        color="secondary"
-                      >
-                        <MdOutlineShoppingCart />
-                      </StyledBadge>
-                    </IconButton>
-                  </Tooltip>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
+                      <MdOutlineShoppingCart />
+                    </StyledBadge>
+                  </IconButton>
+                </Tooltip>
+              </li>
 
+
+            </ul>
+
+
+
+
+
+          </div>
+
+        </div>
         <Navigation
           isOpenCatPanel={isOpenCatPanel}
           setIsOpenCatPanel={setIsOpenCatPanel}
           isOpenMobileMenu={isOpenMobileMenu}
           openMobileMenu={openMobileMenu}
         />
-      </header>
+      </header >
 
       {isOpenCatPanel === true && (
-        <div className="overlay bg-[rgba(0,0,0,0.5)] w-full h-full fixed top-0 left-0 z-[100]"></div>
-      )}
+        <div className="overlay bg-[rgba(0,0,0,0.5)] w-full h-full fixed top-0 left-0 z-[1000]"></div>
+      )
+      }
 
-      <div className="afterHeader mt-[110px] lg:mt-0"></div>
+      <div className="afterHeader mt-[120px] lg:mt-0"></div>
     </>
   );
 };

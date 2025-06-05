@@ -22,6 +22,7 @@ import BlogItem from "@/components/BlogItem";
 import HomeBannerV2 from "@/components/HomeSliderV2";
 import { useTranslation } from "@/utils/useTranslation";
 import { useLanguage } from "@/context/LanguageContext";
+import HomeLoading from "../LoadingSkeleton/homeLoading";
 
 export default function Home() {
   const [value, setValue] = useState(0);
@@ -146,14 +147,18 @@ export default function Home() {
   };
 
   if (error) return <div>{error}</div>;
-  if (isLoading) return <BannerLoading />;
+  // if (isLoading) return <HomeLoading />;
 
   return (
     <>
-      {homeSlidesData?.length === 0 && <BannerLoading />}
-      {homeSlidesData?.length > 0 && <HomeSlider data={homeSlidesData} />}
+      {homeSlidesData?.length === 0 &&   <HomeLoading/>}
+      {homeSlidesData?.length > 0 && <>
+        <HomeSlider data={homeSlidesData} />
+        {context?.catData?.length > 0 && <HomeCatSlider data={context.catData} />}
+        </>
+      }
 
-      {context?.catData?.length > 0 && <HomeCatSlider data={context.catData} />}
+      
 
       <section className="bg-white py-3 lg:py-8">
         <div className="container">

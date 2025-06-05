@@ -161,6 +161,7 @@ const ThemeProvider = ({ children }) => {
     }
 
     Cookies.set("cart", JSON.stringify(cart));
+    alertBox("success", "Item added in the cart...");
 
     getCartItems();
   };

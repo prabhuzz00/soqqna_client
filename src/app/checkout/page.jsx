@@ -874,8 +874,8 @@ const Checkout = () => {
   useEffect(() => {
     const amt = context.cartData?.length
       ? context.cartData
-          .map((i) => parseInt(i.price) * i.quantity)
-          .reduce((a, b) => a + b, 0)
+        .map((i) => parseInt(i.price) * i.quantity)
+        .reduce((a, b) => a + b, 0)
       : 0;
 
     setTotalAmount(amt);
@@ -907,7 +907,7 @@ const Checkout = () => {
   /* ---------- shipping + final calculations ---------- */
   const shippingCost =
     (appliedCoupon ? discountedAmount : totalAmount) >=
-    shippingSetting.FreeDeliveryFee
+      shippingSetting.FreeDeliveryFee
       ? 0
       : shippingSetting.deliveryFee; // NEW
 
@@ -1199,9 +1199,8 @@ const Checkout = () => {
                   {userData?.address_details?.length !== 0 ? (
                     userData?.address_details?.map((address, index) => (
                       <label
-                        className={`flex gap-3 p-4 border border-[rgba(0,0,0,0.1)] rounded-md relative ${
-                          isChecked === index && "bg-[#fff2f2]"
-                        }`}
+                        className={`flex gap-3 p-4 border border-[rgba(0,0,0,0.1)] rounded-md relative ${isChecked === index && "bg-[#fff2f2]"
+                          }`}
                         key={index}
                       >
                         <div>
@@ -1288,7 +1287,7 @@ const Checkout = () => {
 
                 <div
                   ref={invoiceRef}
-                  className="mb-5 overflow-x-hidden pr-2 invoice-content"
+                  className="mb-5 overflow-x-hidden !p-0 pr-2 invoice-content"
                 >
                   {context?.cartData?.length !== 0 &&
                     context.cartData.map((item, index) => (
@@ -1327,17 +1326,18 @@ const Checkout = () => {
                   {/* ---------- SUMMARY footer ---------- */}
                   <div className="invoice-footer">
                     {appliedCoupon && (
-                      <h3>
-                        <strong>Discount:</strong>{" "}
-                        {moneyFmt(appliedCoupon.discount)}
+                      <h3 className="!text-[16px] flex items-center justify-between py-1">
+                        <span className="font-[600]">Discount:</span>{" "}
+                        <span className="font-[500] text-[14px]"> {moneyFmt(appliedCoupon.discount)}</span>
                       </h3>
                     )}
-                    <h3>
-                      <strong>Shipping:</strong>{" "}
-                      {shippingCost === 0 ? "FREE" : moneyFmt(shippingCost)}
+                    <h3 className="!text-[16px] flex items-center justify-between py-1">
+                      <span className="font-[600]">Shipping:</span>{" "}
+                      <span className="font-[500] text-[14px]"> {shippingCost === 0 ? "FREE" : moneyFmt(shippingCost)}</span>
                     </h3>
-                    <h3>
-                      <strong>Grand Total:</strong> {moneyFmt(finalAmount)}
+                    <h3 className="!text-[16px] flex items-center justify-between py-1">
+                      <span className="font-[600]">Grand Total:</span>
+                      <span className="font-[500] text-[14px]">{moneyFmt(finalAmount)}</span>
                     </h3>
                   </div>
                 </div>
@@ -1349,15 +1349,6 @@ const Checkout = () => {
                   >
                     <BsFillBagCheckFill className="text-[20px]" /> Checkout
                   </Button>
-
-                  <div
-                    id="paypal-button-container"
-                    className={`${
-                      userData?.address_details?.length === 0
-                        ? "pointer-events-none"
-                        : ""
-                    }`}
-                  ></div>
 
                   <Button
                     type="button"
@@ -1379,7 +1370,7 @@ const Checkout = () => {
                     <h3 className="text-[14px] font-[600] mb-2">
                       Apply Coupon
                     </h3>
-                    <div className="flex gap-2 mb-3">
+                    <div className="flex gap-2">
                       <input
                         type="text"
                         value={couponCode}
@@ -1387,11 +1378,11 @@ const Checkout = () => {
                           setCouponCode(e.target.value.toUpperCase())
                         }
                         placeholder="Enter coupon code"
-                        className="border border-[rgba(0,0,0,0.1)] rounded-md p-2 w-full"
+                        className="border border-[rgba(0,0,0,0.1)] rounded-sm p-2 w-full h-[35px] focus:outline-none text-[14px] focus:border-[rgba(0,0,0,0.3)]"
                       />
                       <Button
                         variant="contained"
-                        className="btn-org"
+                        className="btn-org btn-sm"
                         onClick={() => applyCoupon(couponCode)}
                         disabled={isLoading}
                       >
@@ -1408,66 +1399,75 @@ const Checkout = () => {
                         {couponError}
                       </p>
                     )}
-                    {availableCoupons.length > 0 && (
-                      <div className="coupon-list">
-                        <h4 className="text-[13px] font-[500] mb-2">
-                          Available Coupons
-                        </h4>
-                        <div className="flex flex-col gap-2">
-                          {availableCoupons.map((coupon) => (
-                            <div
-                              key={coupon._id}
-                              className={`border border-[rgba(0,0,0,0.1)] p-3 rounded-md cursor-pointer hover:bg-[#fff2f2] ${
-                                appliedCoupon?.couponId === coupon._id
-                                  ? "bg-[#fff2f2]"
-                                  : ""
-                              }`}
-                              onClick={() => handleCouponSelect(coupon)}
-                            >
-                              <p className="text-[14px] font-[600]">
-                                {coupon.code}
-                              </p>
-                              <p className="text-[13px]">
-                                {coupon.discountType === "percentage"
-                                  ? `${coupon.discountValue}% off`
-                                  : `${coupon.discountValue.toLocaleString(
-                                      "en-US",
-                                      {
-                                        style: "currency",
-                                        currency: "USD",
-                                      }
-                                    )} off`}{" "}
-                                {coupon.maxDiscountAmount
-                                  ? `(up to ${coupon.maxDiscountAmount.toLocaleString(
-                                      "en-US",
-                                      {
-                                        style: "currency",
-                                        currency: "USD",
-                                      }
-                                    )})`
-                                  : ""}
-                              </p>
-                              <p className="text-[12px] text-gray-600">
-                                Min. order:{" "}
-                                {coupon.minOrderAmount.toLocaleString("en-US", {
-                                  style: "currency",
-                                  currency: "USD",
-                                })}
-                              </p>
-                              <p className="text-[12px] text-gray-600">
-                                Expires:{" "}
-                                {new Date(
-                                  coupon.expiryDate
-                                ).toLocaleDateString()}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
+
+                  </div>
+
+
+                </div>
+
+
+
+
+              </div>
+
+              {availableCoupons.length > 0 && (
+                <div className="coupon-list card p-3 rounded-md bg-white shadow-md mt-3">
+                  <h4 className="text-[16px] font-[500] mb-2">
+                    Available Coupons
+                  </h4>
+                  <div className="flex flex-col gap-2">
+                    {availableCoupons.map((coupon) => (
+                      <div
+                        key={coupon._id}
+                        className={` ${appliedCoupon?.couponId === coupon._id
+                            ? "bg-[#fff2f2]"
+                            : ""
+                          }`}
+                        onClick={() => handleCouponSelect(coupon)}
+                      >
+                        <p className="text-[14px] font-[600]">
+                          {coupon.code}
+                        </p>
+                         <p className="text-[14px] text-gray-700 !my-0">
+                          {coupon.discountType === "percentage"
+                            ? `${coupon.discountValue}% off`
+                            : `${coupon.discountValue.toLocaleString(
+                              "en-US",
+                              {
+                                style: "currency",
+                                currency: "USD",
+                              }
+                            )} off`}{" "}
+                          {coupon.maxDiscountAmount
+                            ? `(up to ${coupon.maxDiscountAmount.toLocaleString(
+                              "en-US",
+                              {
+                                style: "currency",
+                                currency: "USD",
+                              }
+                            )})`
+                            : ""}
+                        </p>
+                       <p className="text-[14px] text-gray-700 !my-0">
+                          Min. order:{" "}
+                          {coupon.minOrderAmount.toLocaleString("en-US", {
+                            style: "currency",
+                            currency: "USD",
+                          })}
+                        </p>
+                        <p className="text-[14px] text-gray-700 !my-0">
+                          Expires:{" "}
+                          {new Date(
+                            coupon.expiryDate
+                          ).toLocaleDateString()}
+                        </p>
                       </div>
-                    )}
+                    ))}
                   </div>
                 </div>
-              </div>
+              )}
+
+
             </div>
           </div>
         </form>
@@ -1486,8 +1486,7 @@ const Checkout = () => {
           width: 100%;
         }
         .invoice-footer {
-          margin-top: 20px;
-          border-top: 2px solid #000;
+          border-top: 2px solid rgba(0,0,0,0.1);
           padding-top: 10px;
         }
         .invoice-footer h3 {
@@ -1501,6 +1500,7 @@ const Checkout = () => {
           max-height: 200px;
           overflow-y: auto;
         }
+          .coupon-list::-webkit-scrollbar-thumb{background:#ccc !important;}
       `}</style>
     </>
   );

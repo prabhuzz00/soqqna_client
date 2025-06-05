@@ -551,7 +551,7 @@ export const ProductDetailsComponent = (props) => {
   }
 
   return (
-    <>
+    <div>
       <h1 className="text-[18px] sm:text-[22px] font-[600] mb-2">
         {locale === "ar" ? props.item.arbName : props.item.name}
       </h1>
@@ -686,6 +686,6 @@ export const ProductDetailsComponent = (props) => {
           Compare
         </button>
       </div>
-    </>
+    </div>
   );
 };

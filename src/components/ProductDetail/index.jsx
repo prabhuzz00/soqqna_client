@@ -196,7 +196,7 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
     const initialImages =
       product?.variation?.length > 0
         ? product?.variation[0]?.color?.images ||
-          product?.images || ["/default-image.jpg"]
+        product?.images || ["/default-image.jpg"]
         : product?.images || ["/default-image.jpg"];
     setImages(initialImages);
 
@@ -248,30 +248,82 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
               <div className="productZoomContainer w-full lg:w-[40%]">
                 <ProductZoom images={images} />
               </div>
-              <div className="productContent w-full lg:w-[60%] pr-2 pl-2 lg:pr-10 lg:pl-10">
+              <div className="productContent w-full lg:w-[60%] pr-2 pl-2 lg:pl-5 flex gap-5">
                 <ProductDetailsComponent
                   item={productData}
                   reviewsCount={reviewsCount}
                   gotoReviews={gotoReviews}
                   setImages={setImages}
                 />
+
+
+                <div className="boxWrapper w-[300px]">
+                  <div className="bg-gray-200 p-4 rounded-lg flex flex-col gap-3">
+                    <div className="flex items-center gap-3 border-b border-gray-300 pb-2">
+                      <div className="img">
+                        <img src="/details-icon1.png" alt="img" />
+                      </div>
+
+                      <div className="info pl-2">
+                        <h3>Free Shipping</h3>
+                        <p className="mt-0 mb-0 text-gray-800">For all orders over $200</p>
+                      </div>
+                    </div>
+
+
+                     <div className="flex items-center gap-3  border-b border-gray-300 pb-2">
+                      <div className="img">
+                        <img src="/details-icon2.png" alt="img" />
+                      </div>
+
+                      <div className="info pl-2">
+                        <h3>1 & 1 Returns</h3>
+                        <p className="mt-0 mb-0 text-gray-800">Cancellation after 1 day</p>
+                      </div>
+                    </div>
+
+
+                     <div className="flex items-center gap-3 ">
+                      <div className="img">
+                        <img src="/details-icon3.png" alt="img" />
+                      </div>
+
+                      <div className="info pl-2">
+                        <h3>Secure Payment</h3>
+                        <p className="mt-0 mb-0 text-gray-800">Guarantee secure payments</p>
+                      </div>
+                    </div>
+
+
+                  </div>
+
+                  <br/>
+
+                   <div className="bg-gray-200 p-4 rounded-lg flex flex-col gap-1">
+                      <h4>Hotline Order:</h4>
+                      <p className="mt-0 mb-0">Mon - Fri: 07AM - 06PM</p>
+
+                      <h2 className="text-[20px]">+91 9876543210</h2>
+                   </div>
+
+                </div>
+
+
               </div>
             </div>
             <div className="container mx-auto px-4 pt-10">
               <div className="flex items-center gap-8 mb-5">
                 <button
-                  className={`text-[17px] font-[500] ${
-                    activeTab === 0 ? "text-primary" : "text-gray-700"
-                  } hover:text-primary transition-colors`}
+                  className={`text-[17px] font-[500] ${activeTab === 0 ? "text-primary" : "text-gray-700"
+                    } hover:text-primary transition-colors`}
                   onClick={() => setActiveTab(0)}
                   aria-label="View product description"
                 >
                   Description
                 </button>
                 <button
-                  className={`text-[17px] font-[500] ${
-                    activeTab === 1 ? "text-primary" : "text-gray-700"
-                  } hover:text-primary transition-colors`}
+                  className={`text-[17px] font-[500] ${activeTab === 1 ? "text-primary" : "text-gray-700"
+                    } hover:text-primary transition-colors`}
                   onClick={() => setActiveTab(1)}
                   ref={reviewRef}
                   aria-label={`View product reviews (${reviewsCount})`}

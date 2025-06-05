@@ -44,10 +44,10 @@ const Footer = () => {
 
   return (
     <>
-      <footer className="py-6">
+      <footer className="py-6 pb-0 bg-gray-900">
         <div className="container">
           <div className="footer flex px-3 lg:px-0 flex-col lg:flex-row py-8">
-            <div className="part1 w-full lg:w-[25%] border-r border-[rgba(0,0,0,0.1)]">
+            <div className="part1 w-full lg:w-[45%] border-r border-[rgba(255,255,255,0.1)] pr-5">
               {/* <h2 className="text-[18px] font-[600] mb-4">
                 {t("footer.contactUs")}
               </h2>
@@ -57,15 +57,19 @@ const Footer = () => {
                 {t("footer.address")}
               </p> */}
 
-              <Link className="link text-[13px]" href="mailto:info@soouqna.com">
+              <h3>Sooquna Shopping Platform</h3>
+              <p className="text-gray-200">SOOUQNA was founded in 2020 with a simple mission to create an online marketplace that connects customers with high-quality products...</p>
+
+              <Link className="link text-[13px] text-primary hover:text-white" href="mailto:info@soouqna.com">
                 info@soouqna.com
               </Link>
 
+              <br />
               {/* <span className="text-[22px] font-[600] block w-full mt-3 mb-5 text-primary">
                 (+91) 9876-543-210
               </span> */}
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 mt-3">
                 <IoChatboxOutline className="text-[40px] text-primary" />
                 <span className="text-[16px] font-[600]">
                   {t("footer.onlineChat")}
@@ -75,16 +79,15 @@ const Footer = () => {
               </div>
             </div>
 
-            <div className="part2  w-full lg:w-[40%] flex pl-0 lg:pl-8 mt-5 lg:mt-0">
+            <div className="part2  w-full lg:w-[55%] flex pl-0 lg:pl-8 mt-5 lg:mt-0">
               <div className="part2_col1 w-[50%]">
                 <h2 className="text-[18px] font-[600] mb-4">
                   {t("footer.products")}
                 </h2>
 
-                <ul className="list">
+                <ul className="list grid grid-cols-2">
                   {catData?.length !== 0 &&
                     catData
-                      ?.filter((cat, idx) => idx < 8)
                       ?.map((cat, index) => {
                         return (
                           <li
@@ -103,15 +106,15 @@ const Footer = () => {
                 </ul>
               </div>
 
-              <div className="part2_col2 w-[50%]">
+              <div className="part2_col2 w-[50%] pl-20">
                 <h2 className="text-[18px] font-[600] mb-4">
                   {t("footer.ourCompany")}
                 </h2>
                 {/* Contact Us
-About Us
-Terms & Conditions
-Privacy Policy
-Refund Policy */}
+              About Us
+              Terms & Conditions
+              Privacy Policy
+              Refund Policy */}
                 <ul className="list">
                   <li className="list-none text-[14px] w-full mb-2">
                     <Link href="/about-us" className="link">
@@ -168,11 +171,11 @@ Refund Policy */}
             </div> */}
           </div>
         </div>
-      </footer>
 
-      <div className="bottomStrip border-t border-[rgba(0,0,0,0.1)] pt-3 pb-[100px] lg:pb-3 bg-white">
-        <div className="container flex items-center justify-center flex-col lg:flex-row gap-4 lg:gap-0">
-          {/* <ul className="flex items-center gap-2">
+
+        <div className="bottomStrip border-t border-[rgba(0,0,0,0.1)] pb-[100px] lg:pb-3 bg-gray-950">
+          <div className="container flex items-center justify-center flex-col lg:flex-row gap-4 lg:gap-0">
+            {/* <ul className="flex items-center gap-2">
             <li className="list-none">
               <Link
                 href="/"
@@ -214,17 +217,21 @@ Refund Policy */}
             </li>
           </ul> */}
 
-          <p className="text-[13px] text-center mb-0">© 2025 - SOOUQNA</p>
+            <p className="text-[13px] text-center mb-0">© 2025 - SOOUQNA</p>
 
-          {/* <div className="flex items-center gap-1">
+            {/* <div className="flex items-center gap-1">
             <img src="/carte_bleue.png" alt="image" />
             <img src="/visa.png" alt="image" />
             <img src="/master_card.png" alt="image" />
             <img src="/american_express.png" alt="image" />
             <img src="/paypal.png" alt="image" />
           </div> */}
+          </div>
         </div>
-      </div>
+
+      </footer>
+
+
 
       {/* Cart Panel */}
       <Drawer
@@ -344,25 +351,25 @@ Refund Policy */}
             </Button>
             {Object.keys(context?.openProductDetailsModal?.item || {})
               .length !== 0 && (
-              <>
-                <div className="col1 w-[40%] px-3 py-8">
-                  <ProductZoom
-                    images={
-                      context?.openProductDetailsModal?.extraProps?.images ||
-                      context?.openProductDetailsModal?.item?.images
-                    }
-                  />
-                </div>
-                <div className="col2 w-[60%] py-8 px-8 pr-16 productContent">
-                  <ProductDetailsComponent
-                    item={context?.openProductDetailsModal?.item}
-                    setImages={
-                      context?.openProductDetailsModal?.extraProps?.setImages
-                    }
-                  />
-                </div>
-              </>
-            )}
+                <>
+                  <div className="col1 w-[40%] px-3 py-8">
+                    <ProductZoom
+                      images={
+                        context?.openProductDetailsModal?.extraProps?.images ||
+                        context?.openProductDetailsModal?.item?.images
+                      }
+                    />
+                  </div>
+                  <div className="col2 w-[60%] py-8 px-8 pr-16 productContent">
+                    <ProductDetailsComponent
+                      item={context?.openProductDetailsModal?.item}
+                      setImages={
+                        context?.openProductDetailsModal?.extraProps?.setImages
+                      }
+                    />
+                  </div>
+                </>
+              )}
           </div>
         </DialogContent>
       </Dialog>

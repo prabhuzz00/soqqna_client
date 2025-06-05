@@ -33,11 +33,11 @@ const WhatsAppChat = () => {
     return (
         <>
             {/* Floating Chat Button */}
-            <div className="fixed bottom-6 right-6 z-50">
+            <div className="fixed bottom-16 lg:bottom-6 right-6 z-[1005]">
                 {!isOpen ? (
                     <button
                         onClick={() => setIsOpen(true)}
-                        className="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110 animate-pulse"
+                        className="bg-primary hover:bg-primary/80 text-white rounded-full p-4 shadow-lg transition-all duration-300 hover:scale-110 animate-pulse"
                         aria-label="Open WhatsApp Chat"
                     >
                         <MessageCircle size={24} />
@@ -45,19 +45,19 @@ const WhatsAppChat = () => {
                 ) : (
                     <div className="bg-white rounded-lg shadow-2xl w-80 border border-gray-200 overflow-hidden">
                         {/* Header */}
-                        <div className="bg-green-500 text-white p-4 flex items-center justify-between">
+                        <div className="bg-primary text-white p-4 flex items-center justify-between">
                             <div className="flex items-center space-x-3">
                                 <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
                                     <MessageCircle size={16} className="text-green-500" />
                                 </div>
                                 <div>
                                         <h3 className="font-semibold">{t("whatsappChat.customerSupport")}</h3>
-                                        <p className="text-xs opacity-90">{t("whatsappChat.replyTime")}</p>
+                                        <p className="text-xs opacity-90 !mt-0 !mb-0">{t("whatsappChat.replyTime")}</p>
                                 </div>
                             </div>
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="text-white hover:bg-green-600 rounded-full p-1"
+                                className="text-white hover:bg-gray-900 rounded-full p-1"
                             >
                                 <X size={16} />
                             </button>
@@ -97,13 +97,13 @@ const WhatsAppChat = () => {
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
                                             placeholder={t("whatsappChat.inputPlaceholder")}
-                                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                                         onKeyPress={(e) => e.key === 'Enter' && message.trim() && sendToWhatsApp()}
                                     />
                                     <button
                                         onClick={() => sendToWhatsApp()}
                                         disabled={!message.trim()}
-                                        className="bg-green-500 hover:bg-green-600 disabled:bg-gray-300 text-white rounded-lg px-3 py-2 transition-colors duration-200"
+                                        className="bg-gray-700 hover:bg-gray-900 disabled:bg-gray-300 text-white rounded-lg px-3 py-2 transition-colors duration-200"
                                     >
                                         <Send size={16} />
                                     </button>

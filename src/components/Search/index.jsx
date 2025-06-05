@@ -9,6 +9,7 @@ import { MyContext } from "@/context/ThemeProvider";
 import { useTranslation } from "@/utils/useTranslation";
 import Image from "next/image";
 import { postData } from "@/utils/api";
+import { IoImageOutline } from "react-icons/io5";
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -118,7 +119,7 @@ const Search = () => {
   };
 
   return (
-    <div className="searchBox w-full h-[50px] bg-[#e5e5e5] rounded-[5px] relative p-2 flex items-center">
+    <div className="searchBox w-full h-[45px] bg-gray-200 rounded-[5px] relative p-2 pr-0 flex items-center">
       {/* Text Input */}
       <input
         type="text"
@@ -130,18 +131,27 @@ const Search = () => {
         onBlur={() => setTimeout(() => setIsOpenSuggestions(false), 200)}
       />
 
-      {/* Text Search Button */}
       <Button
-        className="!ml-2 !min-w-[37px] h-[37px] !rounded-full"
-        onClick={() => search()}
-        disabled={isLoading}
+        className="!mr-2 !min-w-[37px] h-[37px] !rounded-full"
       >
-        {isLoading ? (
-          <CircularProgress size={20} />
-        ) : (
-          <IoSearch size={20} className="text-gray-500" />
-        )}
+        <IoImageOutline size={20} className="text-gray-800" />
       </Button>
+
+
+      {/* Text Search Button */}
+      <div className="searchBtn w-[45px] h-[45px] bg-primary rounded-r-[5px] flex items-center justify-center">
+        <Button
+          className="!min-w-[37px] h-[37px] !rounded-full"
+          onClick={() => search()}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <CircularProgress size={20} />
+          ) : (
+            <IoSearch size={20} className="text-white" />
+          )}
+        </Button>
+      </div>
 
       {/* Suggestions Dropdown */}
       {isOpenSuggestions &&
@@ -153,7 +163,7 @@ const Search = () => {
               {popularCategories.map((cat) => (
                 <li key={cat}>
                   <Button
-                    className="!bg-gray-200 !capitalize !text-[13px] !py-1 !text-gray-900 hover:!bg-gray-300"
+                    className="!bg-gray-200 !capitalize !text-[12px] !py-1 !text-gray-900 hover:!bg-gray-300"
                     onClick={() => handleCategoryClick(cat)}
                   >
                     {cat}
