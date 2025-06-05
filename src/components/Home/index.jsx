@@ -1,7 +1,10 @@
 "use client";
 import { useContext, useEffect, useState, useMemo } from "react";
 import HomeCatSlider from "@/components/HomeCatSlider";
-import HomeSlider from "@/components/HomeSlider";
+import dynamic from "next/dynamic";
+const HomeSlider = dynamic(() => import("@/components/HomeSlider"), {
+  ssr: false,
+});
 import ProductsSlider from "@/components/ProductsSlider";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";

@@ -171,6 +171,14 @@ const ThemeProvider = ({ children }) => {
     return cart ? JSON.parse(cart) : [];
   };
 
+  const clearCart = () => {
+    // 1️⃣  Remove the cookie (path must match how it was set)
+    Cookies.remove("cart", { path: "/" }); // add domain: "example.com" if you set it earlier
+
+    // 2️⃣  Reset React state
+    setCartData([]);
+  };
+
   const getCartItems = () => {
     const cart = Cookies.get("cart");
     setCartData(cart ? JSON.parse(cart) : []);
@@ -232,6 +240,7 @@ const ThemeProvider = ({ children }) => {
     setCartData,
     getCartItems,
     getCart,
+    clearCart,
     updateCartItemQuantity,
     handleQuantityChange,
     myListData,
