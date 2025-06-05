@@ -118,9 +118,22 @@ const ThemeProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const cachedCats = localStorage.getItem("categories");
+      if (cachedCats) {
+        try {
+          setCatData(JSON.parse(cachedCats));
+        } catch (e) {
+          console.error("Failed to parse cached categories", e);
+        }
+      }
+    }
     fetchDataFromApi("/api/category").then((res) => {
       if (res?.error === false) {
         setCatData(res?.data);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("categories", JSON.stringify(res.data));
+        }
       }
     });
   }, []);

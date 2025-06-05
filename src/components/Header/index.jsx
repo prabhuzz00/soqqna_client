@@ -59,18 +59,16 @@ const Header = () => {
   const { data: session } = useSession(); // Get session for authenticated user
   const { userLocation } = useContext(MyContext); // Get userLocation from context
 
-
   const [lang, setlang] = useState(null);
   const openLang = Boolean(lang);
 
   const [selectedlang, setSelectedlang] = useState({
     img: "",
-    lang: ""
-  })
+    lang: "",
+  });
 
   const { locale, changeLanguage } = useLanguage();
   const { t } = useTranslation();
-
 
   useEffect(() => {
     setIsClient(true);
@@ -78,8 +76,8 @@ const Header = () => {
     const lang = localStorage.getItem("locale");
     setSelectedlang({
       img: lang === "en" ? "/flags/en.png" : "/flags/ar.png",
-      lang: lang === "en" ? "en" : "ar"
-    })
+      lang: lang === "en" ? "en" : "ar",
+    });
   }, [context?.windowWidth]);
 
   // Remove the useEffect that was reading from localStorage directly
@@ -98,7 +96,6 @@ const Header = () => {
     setlang(null);
   };
 
-
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -109,17 +106,30 @@ const Header = () => {
   const selectedlangFun = (lang) => {
     setSelectedlang({
       img: lang.img,
-      lang: lang.lang
-    })
+      lang: lang.lang,
+    });
     setlang(null);
-    changeLanguage(lang.lang)
-  }
-
-
+    changeLanguage(lang.lang);
+  };
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const cachedLogo = localStorage.getItem("logo");
+      if (cachedLogo) {
+        setLogoSrc(cachedLogo);
+      }
+    }
+
     fetchDataFromApi("/api/logo").then((res) => {
-      Cookies.set("logo", res?.logo[0]?.logo);
+      // Cookies.set("logo", res?.logo[0]?.logo);
+      const logo = res?.logo?.[0]?.logo;
+      if (logo) {
+        Cookies.set("logo", logo);
+        setLogoSrc(logo);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("logo", logo);
+        }
+      }
     });
 
     const token = Cookies.get("accessToken");
@@ -219,9 +229,6 @@ const Header = () => {
             </div>
             {/* logo wrapper ends here */}
 
-
-
-
             {/* location wrapper ends here */}
             {context?.windowWidth > 992 && (
               <div className="col1 flex items-center justify-center">
@@ -256,27 +263,24 @@ const Header = () => {
             {/* location wrapper ends here */}
           </div>
 
-
           <div className="headerPart2 w-[35%]">
             {/* search wrapper ends here */}
             <div
-              className={`col2 fixed top-0 left-0 w-full h-full lg:static p-2 lg:p-0 bg-white z-50 ${isClient &&
+              className={`col2 fixed top-0 left-0 w-full h-full lg:static p-2 lg:p-0 bg-white z-50 ${
+                isClient &&
                 clientWindowWidth !== undefined &&
                 clientWindowWidth > 992 &&
-                '!block'
-                } ${context?.openSearchPanel === true ? 'block' : 'hidden'}`}
+                "!block"
+              } ${context?.openSearchPanel === true ? "block" : "hidden"}`}
             >
               <Search />
             </div>
 
-
             {/* search wrapper ends here */}
           </div>
 
-
           <div className="headerPart3 flex items-center justify-end gap-5">
             <ul className="flex items-center justify-end gap-2 lg:gap-3 w-full">
-
               {context?.windowWidth < 992 && (
                 <li>
                   <HiOutlineLocationMarker
@@ -288,7 +292,10 @@ const Header = () => {
 
               <li className="list-none relative">
                 <div className="relative">
-                  <Button className="flex items-center gap-1" onClick={handleClickLang}>
+                  <Button
+                    className="flex items-center gap-1"
+                    onClick={handleClickLang}
+                  >
                     <Image
                       src={selectedlang.img}
                       alt="lang"
@@ -305,14 +312,19 @@ const Header = () => {
                     onClose={handleCloseLang}
                     slotProps={{
                       list: {
-                        'aria-labelledby': 'basic-button',
+                        "aria-labelledby": "basic-button",
                       },
                     }}
                   >
-                    <MenuItem onClick={() => selectedlangFun({
-                      img: "/flags/en.png",
-                      lang: "en"
-                    })} className="flex items-center gap-1">
+                    <MenuItem
+                      onClick={() =>
+                        selectedlangFun({
+                          img: "/flags/en.png",
+                          lang: "en",
+                        })
+                      }
+                      className="flex items-center gap-1"
+                    >
                       <Image
                         src="/flags/en.png"
                         alt="English"
@@ -322,10 +334,15 @@ const Header = () => {
                       <span className="text-gray-800 text-[15px]">EN</span>
                     </MenuItem>
 
-                    <MenuItem onClick={() => selectedlangFun({
-                      img: "/flags/ar.png",
-                      lang: "ar"
-                    })} className="flex items-center gap-1">
+                    <MenuItem
+                      onClick={() =>
+                        selectedlangFun({
+                          img: "/flags/ar.png",
+                          lang: "ar",
+                        })
+                      }
+                      className="flex items-center gap-1"
+                    >
                       <Image
                         src="/flags/ar.png"
                         alt="Arabic"
@@ -334,12 +351,9 @@ const Header = () => {
                       />
                       <span className="text-gray-800  text-[15px]">AR</span>
                     </MenuItem>
-
                   </Menu>
-
                 </div>
               </li>
-
 
               {context?.windowWidth > 992 && (
                 <li className="list-none px1">
@@ -354,11 +368,10 @@ const Header = () => {
                 </li>
               )}
 
-
               {context.isLogin === false &&
-                isClient &&
-                clientWindowWidth !== undefined &&
-                clientWindowWidth > 992 ? (
+              isClient &&
+              clientWindowWidth !== undefined &&
+              clientWindowWidth > 992 ? (
                 <li className="list-none px-1">
                   <Link
                     href="/login"
@@ -368,7 +381,6 @@ const Header = () => {
                       {t("header.login")}
                     </Button>
                   </Link>
-
                 </li>
               ) : (
                 <>
@@ -385,7 +397,7 @@ const Header = () => {
                             </div> */}
                           <div className="!w-[40px] !h-[40px] !min-w-[40px] !rounded-full !bg-gray-200 flex items-center justify-center overflow-hidden">
                             {context?.userData?.avatar !== "" &&
-                              context?.userData?.avatar !== undefined ? (
+                            context?.userData?.avatar !== undefined ? (
                               <Image
                                 src={context.userData.avatar}
                                 alt="User Avatar"
@@ -531,8 +543,6 @@ const Header = () => {
                 </>
               )}
 
-
-
               {context?.isLogin &&
                 clientWindowWidth !== undefined &&
                 clientWindowWidth > 992 && (
@@ -577,16 +587,8 @@ const Header = () => {
                   </IconButton>
                 </Tooltip>
               </li>
-
-
             </ul>
-
-
-
-
-
           </div>
-
         </div>
         <Navigation
           isOpenCatPanel={isOpenCatPanel}
@@ -594,12 +596,11 @@ const Header = () => {
           isOpenMobileMenu={isOpenMobileMenu}
           openMobileMenu={openMobileMenu}
         />
-      </header >
+      </header>
 
       {isOpenCatPanel === true && (
         <div className="overlay bg-[rgba(0,0,0,0.5)] w-full h-full fixed top-0 left-0 z-[1000]"></div>
-      )
-      }
+      )}
 
       <div className="afterHeader mt-[120px] lg:mt-0"></div>
     </>
