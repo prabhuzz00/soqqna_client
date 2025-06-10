@@ -808,8 +808,8 @@ const Checkout = () => {
   useEffect(() => {
     const amt = context.cartData?.length
       ? context.cartData
-        .map((i) => parseInt(i.price) * i.quantity)
-        .reduce((a, b) => a + b, 0)
+          .map((i) => parseInt(i.price) * i.quantity)
+          .reduce((a, b) => a + b, 0)
       : 0;
 
     setTotalAmount(amt);
@@ -825,7 +825,7 @@ const Checkout = () => {
     const fetchCoupons = async () => {
       try {
         const { data } = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_API_URL}/api/coupons?isActive=true`
+          `${process.env.NEXT_PUBLIC_APP_API_URL}/api/coupons?isActive=true&isAdmin=false`
         );
         const valid = data.coupons.filter(
           (c) => new Date(c.expiryDate) >= new Date()
@@ -841,7 +841,7 @@ const Checkout = () => {
   /* ---------- shipping + final calculations ---------- */
   const shippingCost =
     (appliedCoupon ? discountedAmount : totalAmount) >=
-      shippingSetting.FreeDeliveryFee
+    shippingSetting.FreeDeliveryFee
       ? 0
       : shippingSetting.deliveryFee; // NEW
 
@@ -1149,8 +1149,9 @@ const Checkout = () => {
                   {userData?.address_details?.length !== 0 ? (
                     userData?.address_details?.map((address, index) => (
                       <label
-                        className={`flex gap-3 p-4 border border-[rgba(0,0,0,0.1)] rounded-md relative ${isChecked === index && "bg-[#fff2f2]"
-                          }`}
+                        className={`flex gap-3 p-4 border border-[rgba(0,0,0,0.1)] rounded-md relative ${
+                          isChecked === index && "bg-[#fff2f2]"
+                        }`}
                         key={index}
                       >
                         <div>
@@ -1278,16 +1279,24 @@ const Checkout = () => {
                     {appliedCoupon && (
                       <h3 className="!text-[16px] flex items-center justify-between py-1">
                         <span className="font-[600]">Discount:</span>{" "}
-                        <span className="font-[500] text-[14px]"> {moneyFmt(appliedCoupon.discount)}</span>
+                        <span className="font-[500] text-[14px]">
+                          {" "}
+                          {moneyFmt(appliedCoupon.discount)}
+                        </span>
                       </h3>
                     )}
                     <h3 className="!text-[16px] flex items-center justify-between py-1">
                       <span className="font-[600]">Shipping:</span>{" "}
-                      <span className="font-[500] text-[14px]"> {shippingCost === 0 ? "FREE" : moneyFmt(shippingCost)}</span>
+                      <span className="font-[500] text-[14px]">
+                        {" "}
+                        {shippingCost === 0 ? "FREE" : moneyFmt(shippingCost)}
+                      </span>
                     </h3>
                     <h3 className="!text-[16px] flex items-center justify-between py-1">
                       <span className="font-[600]">Grand Total:</span>
-                      <span className="font-[500] text-[14px]">{moneyFmt(finalAmount)}</span>
+                      <span className="font-[500] text-[14px]">
+                        {moneyFmt(finalAmount)}
+                      </span>
                     </h3>
                   </div>
                 </div>
@@ -1349,15 +1358,8 @@ const Checkout = () => {
                         {couponError}
                       </p>
                     )}
-
                   </div>
-
-
                 </div>
-
-
-
-
               </div>
 
               {availableCoupons.length > 0 && (
@@ -1369,36 +1371,32 @@ const Checkout = () => {
                     {availableCoupons.map((coupon) => (
                       <div
                         key={coupon._id}
-                        className={` ${appliedCoupon?.couponId === coupon._id
+                        className={` ${
+                          appliedCoupon?.couponId === coupon._id
                             ? "bg-[#fff2f2]"
                             : ""
-                          }`}
+                        }`}
                         onClick={() => handleCouponSelect(coupon)}
                       >
-                        <p className="text-[14px] font-[600]">
-                          {coupon.code}
-                        </p>
-                         <p className="text-[14px] text-gray-700 !my-0">
+                        <p className="text-[14px] font-[600]">{coupon.code}</p>
+                        <p className="text-[14px] text-gray-700 !my-0">
                           {coupon.discountType === "percentage"
                             ? `${coupon.discountValue}% off`
-                            : `${coupon.discountValue.toLocaleString(
-                              "en-US",
-                              {
+                            : `${coupon.discountValue.toLocaleString("en-US", {
                                 style: "currency",
                                 currency: "USD",
-                              }
-                            )} off`}{" "}
+                              })} off`}{" "}
                           {coupon.maxDiscountAmount
                             ? `(up to ${coupon.maxDiscountAmount.toLocaleString(
-                              "en-US",
-                              {
-                                style: "currency",
-                                currency: "USD",
-                              }
-                            )})`
+                                "en-US",
+                                {
+                                  style: "currency",
+                                  currency: "USD",
+                                }
+                              )})`
                             : ""}
                         </p>
-                       <p className="text-[14px] text-gray-700 !my-0">
+                        <p className="text-[14px] text-gray-700 !my-0">
                           Min. order:{" "}
                           {coupon.minOrderAmount.toLocaleString("en-US", {
                             style: "currency",
@@ -1407,17 +1405,13 @@ const Checkout = () => {
                         </p>
                         <p className="text-[14px] text-gray-700 !my-0">
                           Expires:{" "}
-                          {new Date(
-                            coupon.expiryDate
-                          ).toLocaleDateString()}
+                          {new Date(coupon.expiryDate).toLocaleDateString()}
                         </p>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
-
-
             </div>
           </div>
         </form>
@@ -1436,7 +1430,7 @@ const Checkout = () => {
           width: 100%;
         }
         .invoice-footer {
-          border-top: 2px solid rgba(0,0,0,0.1);
+          border-top: 2px solid rgba(0, 0, 0, 0.1);
           padding-top: 10px;
         }
         .invoice-footer h3 {
@@ -1450,7 +1444,9 @@ const Checkout = () => {
           max-height: 200px;
           overflow-y: auto;
         }
-          .coupon-list::-webkit-scrollbar-thumb{background:#ccc !important;}
+        .coupon-list::-webkit-scrollbar-thumb {
+          background: #ccc !important;
+        }
       `}</style>
 
       {/* ---------- Pickup-point modal ---------- */}
