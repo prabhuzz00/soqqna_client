@@ -165,6 +165,7 @@ export const ProductDetailsComponent = (props) => {
         size: selectedTabName || "",
         barcode: product?.barcode,
         vendorId: product?.vendorId,
+        isReturn: product?.isReturn,
         selectedColor: selectedColor?.color?.label || "",
       };
 

@@ -190,6 +190,7 @@ const ProductItem = (props) => {
       ram: "",
       barcode: product?.barcode,
       vendorId: product?.vendorId,
+      isReturn: product?.isReturn,
       selectedColor: selectedColor?.color?.label || "",
     };
 
