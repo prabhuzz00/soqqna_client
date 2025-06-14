@@ -107,7 +107,7 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
               <div className="productZoomContainer w-full lg:w-[40%]">
                 <ProductZoom images={images} />
               </div>
-              <div className="productContent w-full lg:w-[60%] pr-2 pl-2 lg:pl-5 flex gap-5">
+              <div className="productContent w-full lg:w-[60%] pr-2 pl-2 lg:pl-5 flex flex-col sm:flex-row gap-5">
                 <ProductDetailsComponent
                   item={productData}
                   reviewsCount={reviewsCount}

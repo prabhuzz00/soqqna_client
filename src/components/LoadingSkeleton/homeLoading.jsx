@@ -24,7 +24,7 @@ const HomeLoading = () => {
             </div>
 
 
-            <div className="homeCatSlider pt-0 lg:pt-4 py-4 lg:py-8">
+            <div className="homeCatSlider homeCatSliderLoading pt-0 lg:pt-4 py-4 lg:py-8">
                 <div className="container grid grid-cols-8 gap-10">
                     <div className="item py-4 lg:py-7 px-3 bg-gray-300 rounbded-sm text-center flex items-center justify-center flex-col rounded-full w-[70px] h-[70px]  lg:w-[120px] lg:h-[120px] m-auto animate-pulse">
                         <FaRegImage size={40} className='text-gray-400 ' />

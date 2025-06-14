@@ -39,6 +39,10 @@
     .sidebarWrapper.open{bottom: 0px !important; opacity: 1 !important;}
 
     header .MuiSelect-select{padding-right: 0px !important;}
+
+    .homeCatSliderLoading .container{display: block !important; white-space: nowrap !important; overflow: scroll !important;}
+    .homeCatSliderLoading .container::-webkit-scrollbar{display: none !important;}
+    .homeCatSliderLoading .container .item{margin-right:10px !important; display: inline-block !important;}
     
 }
 
@@ -48,7 +52,7 @@
 
     .part2_col1 li a,.part2_col2 li a{font-size: 13px !important;} 
 
-    .sidebar{max-height: 100vh !important; overflow-y: scroll !important; overflow-x: hidden !important;}
+    .sidebar{max-height: 100vh !important; overflow-y: scroll !important; overflow-x: hidden !important; padding: 35px 0px !important;}
     .sidebar::-webkit-scrollbar{display: none !important;}
 
     .zoomProductSliderThumbs.space .swiper-wrapper{padding-top: 0px !important;}

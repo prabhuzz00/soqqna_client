@@ -154,6 +154,7 @@ export default function Home() {
 
   return (
     <>
+    <HomeLoading/>
       {homeSlidesData?.length === 0 &&   <HomeLoading/>}
       {homeSlidesData?.length > 0 && <>
         <HomeSlider data={homeSlidesData} />
