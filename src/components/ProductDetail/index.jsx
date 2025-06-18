@@ -5,6 +5,7 @@ import Skeleton from "@mui/material/Skeleton";
 import { useLanguage } from "@/context/LanguageContext";
 import Breadcrumb from "../Breadcrumb";
 import Image from "next/image";
+import Cookies from "js-cookie";
 
 // Lazy-load components
 const ProductZoom = dynamic(
@@ -41,6 +42,9 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [reviewsCount, setReviewsCount] = useState(reviewsCountProp || 0);
   const [relatedProductData, setRelatedProductData] = useState(relatedProducts);
+
+  const siteSettings = JSON.parse(Cookies.get("siteSettings") || "{}");
+  const shippingdt = JSON.parse(Cookies.get("shippingdt") || "{}");
 
   const { locale } = useLanguage();
   const reviewRef = useRef(null);
@@ -130,7 +134,7 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
                       <div className="info pl-2">
                         <h3>Free Shipping</h3>
                         <p className="mt-0 mb-0 text-gray-800">
-                          For all orders over $200
+                          For all orders over ${shippingdt.FreeDeliveryFee}
                         </p>
                       </div>
                     </div>
@@ -178,7 +182,7 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
                     <h4>Hotline Order:</h4>
                     <p className="mt-0 mb-0">Mon - Fri: 07AM - 06PM</p>
 
-                    <h2 className="text-[20px]">+91 9876543210</h2>
+                    <h2 className="text-[20px]">{siteSettings.contactNo}</h2>
                   </div>
                 </div>
               </div>

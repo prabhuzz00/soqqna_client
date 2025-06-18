@@ -26,6 +26,7 @@ import HomeBannerV2 from "@/components/HomeSliderV2";
 import { useTranslation } from "@/utils/useTranslation";
 import { useLanguage } from "@/context/LanguageContext";
 import HomeLoading from "../LoadingSkeleton/homeLoading";
+import Cookies from "js-cookie";
 
 export default function Home() {
   const [value, setValue] = useState(0);
@@ -88,6 +89,38 @@ export default function Home() {
       }
     };
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchSiteSettings = async () => {
+      try {
+        const res = await fetchDataFromApi("/api/site-settings");
+        const settings = res?.data || {};
+
+        // Save the whole object as JSON string in cookies (expires in 1 day)
+        Cookies.set("siteSettings", JSON.stringify(settings), { expires: 1 });
+      } catch (err) {
+        console.error("Error fetching site settings:", err);
+      }
+    };
+
+    fetchSiteSettings();
+  }, []);
+
+  useEffect(() => {
+    const fetchShipping = async () => {
+      try {
+        const res = await fetchDataFromApi("/api/shipping-cost");
+        const shippingdt = res?.data || {};
+
+        // Save the whole object as JSON string in cookies (expires in 1 day)
+        Cookies.set("shippingdt", JSON.stringify(shippingdt), { expires: 1 });
+      } catch (err) {
+        console.error("Error fetching site settings:", err);
+      }
+    };
+
+    fetchShipping();
   }, []);
 
   useEffect(() => {
@@ -154,15 +187,16 @@ export default function Home() {
 
   return (
     <>
-    <HomeLoading/>
-      {homeSlidesData?.length === 0 &&   <HomeLoading/>}
-      {homeSlidesData?.length > 0 && <>
-        <HomeSlider data={homeSlidesData} />
-        {context?.catData?.length > 0 && <HomeCatSlider data={context.catData} />}
+      {/* <HomeLoading /> */}
+      {homeSlidesData?.length === 0 && <HomeLoading />}
+      {homeSlidesData?.length > 0 && (
+        <>
+          <HomeSlider data={homeSlidesData} />
+          {context?.catData?.length > 0 && (
+            <HomeCatSlider data={context.catData} />
+          )}
         </>
-      }
-
-      
+      )}
 
       <section className="bg-white py-3 lg:py-8">
         <div className="container">
