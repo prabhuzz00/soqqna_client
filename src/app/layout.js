@@ -40,7 +40,7 @@
 // //   console.log("Google Maps API loaded.");
 // // };
 
-import { LanguageProvider } from "@/context/LanguageContext";
+import { LanguageProvider, useLanguage } from "@/context/LanguageContext";
 import ThemeProvider from "@/context/ThemeContext";
 import "./globals.css";
 import "./responsive.css";
