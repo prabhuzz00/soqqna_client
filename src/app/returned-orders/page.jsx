@@ -16,7 +16,7 @@ import { MyContext } from "@/context/ThemeProvider";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-const Orders = () => {
+const ReturnedOrders = () => {
   const context = useContext(MyContext);
   const router = useRouter();
   const [isOpenOrderdProduct, setIsOpenOrderdProduct] = useState(null);
@@ -46,7 +46,7 @@ const Orders = () => {
 
   useEffect(() => {
     fetchDataFromApi(
-      `/api/order/order-list/orders?page=${page}&limit=5&orderType=Normal`
+      `/api/order/order-list/orders?page=${page}&limit=5&orderType=Return`
     ).then((res) => {
       if (res?.error === false) {
         setOrders(res);
@@ -54,140 +54,12 @@ const Orders = () => {
     });
   }, [page]);
 
-  const isReturnEligible = (order, product) => {
-    if (!product?.isReturn) return false;
-
-    const deliveredStatus = order.statusHistory?.find(
-      (status) => status.status === "Delivered"
-    );
-
-    if (!deliveredStatus) return false;
-
-    const deliveredDate = new Date(deliveredStatus.updatedAt);
-    const currentDate = new Date();
-    const daysDifference = Math.floor(
-      (currentDate - deliveredDate) / (1000 * 60 * 60 * 24)
-    );
-
-    return daysDifference <= 7;
-  };
-
-  const cancelOrderHandler = async (orderId) => {
-    try {
-      const updatedData = {
-        id: orderId,
-        order_status: "Canceled",
-      };
-
-      const res = await editData(
-        `/api/order/order-status/${orderId}`,
-        updatedData
-      );
-
-      if (res.data?.success) {
-        context.alertBox("success", "Order canceled successfully.");
-        fetchDataFromApi(
-          `/api/order/order-list/orders?page=${page}&limit=5&orderType=Normal`
-        ).then((res) => {
-          if (res?.error === false) {
-            setOrders(res);
-          }
-        });
-      } else {
-        context.alertBox("error", res?.message || "Failed to cancel order.");
-      }
-    } catch (err) {
-      console.error(err);
-      context.alertBox("error", "An error occurred while canceling the order.");
-    }
-  };
-
-  const returnProductHandler = async (orderId, productId) => {
-    try {
-      const originalOrder = orders.data.find((order) => order._id === orderId);
-      const returnedProduct = originalOrder.products.find(
-        (product) => product._id === productId
-      );
-
-      if (!originalOrder || !returnedProduct) {
-        context.alertBox("error", "Order or product not found.");
-        return;
-      }
-
-      // Create return order data structure matching your controller format
-      const returnOrderData = {
-        userId: originalOrder.userId._id,
-        products: [
-          {
-            productId: returnedProduct.productId,
-            name: returnedProduct.name,
-            quantity: returnedProduct.quantity,
-            selectedColor: returnedProduct.selectedColor,
-            size: returnedProduct.size,
-            price: returnedProduct.price,
-            image: returnedProduct.image,
-            subTotal: returnedProduct.subTotal,
-            vendorId: returnedProduct.vendorId,
-            isReturn: returnedProduct?.isReturn,
-          },
-        ],
-        paymentId: originalOrder.paymentId
-          ? `RETURN_${originalOrder.paymentId}`
-          : "",
-        payment_status:
-          originalOrder.payment_status === "CASH ON DELIVERY"
-            ? "RETURN_COD"
-            : "return_processing",
-        delivery_address: originalOrder.delivery_address,
-        totalAmt: returnedProduct.subTotal,
-        couponCode: originalOrder.couponCode,
-        couponDiscount: originalOrder.couponDiscount,
-        barcode: `RETURN_${Date.now()}`,
-        date: new Date().toISOString(),
-        originalOrderId: orderId,
-        orderType: "Return",
-      };
-
-      const res = await postData(`/api/order/create-return`, returnOrderData);
-      if (res?.success) {
-        context.alertBox(
-          "success",
-          "Return request submitted successfully and return order created."
-        );
-
-        fetchDataFromApi(
-          `/api/order/order-list/orders?page=${page}&limit=5&orderType=Normal`
-        ).then((res) => {
-          if (res?.error === false) {
-            setOrders(res);
-          }
-        });
-      } else {
-        context.alertBox(
-          "error",
-          res?.message || "Failed to submit return request."
-        );
-      }
-    } catch (err) {
-      console.error(err);
-      context.alertBox(
-        "error",
-        "An error occurred while submitting return request."
-      );
-    }
-  };
-
-  const handleInvoiceDownload = (orderId) => {
-    const filename = `invoice-${orderId}.pdf`;
-    downloadFile(`/api/order/invoice/${orderId}`, filename);
-  };
-
   return (
     <>
       <Breadcrumb
         paths={[
           {
-            label: "My Orders",
+            label: "Returned Orders",
             href: `/`,
           },
         ]}
@@ -201,13 +73,13 @@ const Orders = () => {
           <div className="col2 w-full lg:w-[80%]">
             <div className="shadow-md rounded-md bg-white">
               <div className="py-5 px-5 border-b border-[rgba(0,0,0,0.1)]">
-                <h2>My Orders</h2>
+                <h2>My Returned Orders</h2>
                 <p className="mt-0 mb-0">
                   There are{" "}
                   <span className="font-bold text-primary">
                     {orders?.data?.length}
                   </span>{" "}
-                  orders
+                  returned orders
                 </p>
 
                 <div className="relative overflow-x-auto mt-5">
@@ -246,12 +118,6 @@ const Orders = () => {
                         </th>
                         <th scope="col" className="px-6 py-3 whitespace-nowrap">
                           Date
-                        </th>
-                        <th scope="col" className="px-6 py-3 whitespace-nowrap">
-                          Action
-                        </th>
-                        <th scope="col" className="px-6 py-3 whitespace-nowrap">
-                          Invoice
                         </th>
                       </tr>
                     </thead>
@@ -332,34 +198,6 @@ const Orders = () => {
                                 <td className="px-6 py-4 font-[500] whitespace-nowrap">
                                   {order?.createdAt?.split("T")[0]}
                                 </td>
-                                <td className="px-6 py-4 font-[500] whitespace-nowrap">
-                                  <button
-                                    onClick={() => setOpenModalOrder(order)}
-                                    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-                                  >
-                                    Track
-                                  </button>
-                                  {order?.order_status === "Pending" && (
-                                    <button
-                                      onClick={() =>
-                                        cancelOrderHandler(order._id)
-                                      }
-                                      className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded mt-2 ml-1"
-                                    >
-                                      Cancel
-                                    </button>
-                                  )}
-                                </td>
-                                <td className="px-6 py-4 font-[500] whitespace-nowrap">
-                                  <button
-                                    onClick={() =>
-                                      handleInvoiceDownload(order._id)
-                                    }
-                                    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-                                  >
-                                    Download
-                                  </button>
-                                </td>
                               </tr>
 
                               {isOpenOrderdProduct === index && (
@@ -420,12 +258,6 @@ const Orders = () => {
                                               className="px-6 py-3 whitespace-nowrap"
                                             >
                                               Sub Total
-                                            </th>
-                                            <th
-                                              scope="col"
-                                              className="px-6 py-3 whitespace-nowrap"
-                                            >
-                                              Action
                                             </th>
                                           </tr>
                                         </thead>
@@ -491,24 +323,6 @@ const Orders = () => {
                                                       style: "currency",
                                                       currency: "USD",
                                                     })}
-                                                  </td>
-                                                  <td className="px-6 py-4 font-[500] whitespace-nowrap">
-                                                    {isReturnEligible(
-                                                      order,
-                                                      item
-                                                    ) && (
-                                                      <button
-                                                        onClick={() =>
-                                                          returnProductHandler(
-                                                            order._id,
-                                                            item._id
-                                                          )
-                                                        }
-                                                        className="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-1 px-3 rounded text-sm"
-                                                      >
-                                                        Return
-                                                      </button>
-                                                    )}
                                                   </td>
                                                 </tr>
                                               );
@@ -649,4 +463,4 @@ const Orders = () => {
   );
 };
 
-export default Orders;
+export default ReturnedOrders;

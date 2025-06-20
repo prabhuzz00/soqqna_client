@@ -114,7 +114,7 @@ export default function ContactPage() {
                 {t("contact.needHelpText")}
               </p>
               <a
-                href={`https://wa.me/${settings.whatsapp}`}
+                href={`https://wa.me/${settings.phone}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow transition hover:shadow-lg"

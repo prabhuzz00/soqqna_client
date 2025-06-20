@@ -124,6 +124,7 @@ export const translations = {
       address: "Address",
       myList: "My List",
       myOrders: "My Orders",
+      rtOrders: "Returned Orders",
       logout: "Logout",
     },
     home: {
@@ -772,6 +773,7 @@ export const translations = {
       address: "العنوان",
       myList: "قائمتي",
       myOrders: "طلباتي",
+      rtOrders: "الطلبات المرتجعة",
       logout: "تسجيل الخروج",
     },
     home: {
