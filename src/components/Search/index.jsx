@@ -131,12 +131,9 @@ const Search = () => {
         onBlur={() => setTimeout(() => setIsOpenSuggestions(false), 200)}
       />
 
-      <Button
-        className="!mr-2 !min-w-[37px] h-[37px] !rounded-full"
-      >
+      <Button className="!mr-2 !min-w-[37px] h-[37px] !rounded-full">
         <IoImageOutline size={20} className="text-gray-800" />
       </Button>
-
 
       {/* Text Search Button */}
       <div className="searchBtn w-[45px] h-[45px] bg-primary rounded-r-[5px] flex items-center justify-center">
@@ -158,7 +155,7 @@ const Search = () => {
         suggestions.products.length === 0 &&
         suggestions.vendors.length === 0 && (
           <div className="absolute top-[50px] left-0 w-full bg-white rounded-b-md shadow-lg z-50 p-3">
-            <h3 className="text-[14px] font-semibold mb-2">Popular Searches</h3>
+            {/* <h3 className="text-[14px] font-semibold mb-2">Popular Searches</h3>
             <ul className="flex flex-wrap gap-2">
               {popularCategories.map((cat) => (
                 <li key={cat}>
@@ -170,7 +167,7 @@ const Search = () => {
                   </Button>
                 </li>
               ))}
-            </ul>
+            </ul> */}
           </div>
         )}
       {isOpenSuggestions &&
