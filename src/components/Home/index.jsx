@@ -41,6 +41,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRandomLoading, setIsRandomLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [freeDeliveryFee, setFreeDeliveryFee] = useState([]);
 
   const context = useContext(MyContext);
   const { locale } = useLanguage();
@@ -115,6 +116,8 @@ export default function Home() {
 
         // Save the whole object as JSON string in cookies (expires in 1 day)
         Cookies.set("shippingdt", JSON.stringify(shippingdt), { expires: 1 });
+
+        setFreeDeliveryFee(shippingdt.FreeDeliveryFee || 0);
       } catch (err) {
         console.error("Error fetching site settings:", err);
       }
@@ -274,11 +277,11 @@ export default function Home() {
             </div>
             <div className="col2">
               <p className="mb-0 mt-0 font-[500] text-center">
-                {t("home.freeShippingDesc")}
+                {t("home.freeShippingDesc")} ${freeDeliveryFee}
               </p>
             </div>
             <p className="font-bold text-[20px] lg:text-[25px]">
-              {t("home.onlyPrice")}
+              {t("home.onlyPrice")} ${freeDeliveryFee}
             </p>
           </div>
           {bannerV1Data?.length === 0 && <BannerLoading />}

@@ -231,7 +231,11 @@ export const ProductDetailsComponent = (props) => {
   );
 
   if (!props.item) {
-    return <div className="text-red-500">Product not found</div>;
+    return (
+      <div className="text-red-500">
+        {safeT("product.notfound", "PRODUCT NOT FOUND")}
+      </div>
+    );
   }
 
   return (
@@ -241,7 +245,7 @@ export const ProductDetailsComponent = (props) => {
       </h1>
       <div className="flex items-start sm:items-center lg:items-center flex-col sm:flex-row md:flex-row lg:flex-row gap-3 justify-start">
         <span className="text-gray-400 text-[13px]">
-          Brands:{" "}
+          {safeT("product.brands", "Brands")}:{" "}
           <span className="font-[500] text-black opacity-75">
             {props.item.brand}
           </span>
@@ -283,7 +287,9 @@ export const ProductDetailsComponent = (props) => {
       </p>
       {props.item.variation?.length > 0 && (
         <div className="flex items-center gap-3 mb-4">
-          <span className="text-[16px]">COLOR:</span>
+          <span className="text-[16px]">
+            {safeT("product.color", "Color")}:
+          </span>
           <div className="flex items-center gap-2">
             {props.item.variation.map((variation, index) => (
               <button
@@ -304,7 +310,7 @@ export const ProductDetailsComponent = (props) => {
       )}
       {selectedColor && selectedColor.sizes?.length > 0 && (
         <div className="flex items-center gap-3 mb-4">
-          <span className="text-[16px]">SIZE:</span>
+          <span className="text-[16px]">{safeT("product.size", "SIZE")}:</span>
           <div className="flex items-center gap-1 actions">
             {selectedColor.sizes.map((size, index) => (
               <Button
@@ -323,38 +329,13 @@ export const ProductDetailsComponent = (props) => {
       <p className="text-[14px] mt-5 mb-2 text-[#000]">
         {safeT("product.freeShipping", "Free Shipping")}
       </p>
-      {/* <div className="flex items-center gap-4 py-4">
-        <div className="qtyBoxWrapper w-[70px]">
-          <QtyBox handleSelecteQty={handleSelecteQty} />
-        </div>
-        <Button
-          className="btn-org flex gap-2 !min-w-[150px]"
-          onClick={() =>
-            addToCart(props.item, context?.userData?._id, quantity)
-          }
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <CircularProgress size={24} />
-          ) : isAdded ? (
-            <>
-              <FaCheckDouble /> Added
-            </>
-          ) : (
-            <>
-              <MdOutlineShoppingCart className="text-[22px]" />
-              {safeT("product.addToCart", "Add to Cart")}
-            </>
-          )}
-        </Button>
-      </div> */}
       <div className="flex items-center gap-4 py-4">
         <div className="qtyBoxWrapper w-[70px]">
           <QtyBox handleSelecteQty={handleSelecteQty} />
         </div>
         {currentStock === 0 ? (
           <div className="text-red-500 font-semibold text-[14px]">
-            Out of Stock
+            {safeT("product.outofstock", "OUT OF STOCK")}
           </div>
         ) : (
           <Button

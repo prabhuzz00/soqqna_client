@@ -1,7 +1,9 @@
+import { useTranslation } from "@/utils/useTranslation";
 import Link from "next/link";
 import { HiHome } from "react-icons/hi";
 
 const Breadcrumb = ({ paths }) => {
+  const { t } = useTranslation();
   return (
     <div className="w-full bg-[#f8f9fa] border-b">
       <div className="container mx-auto px-4 py-3 text-sm text-gray-700">
@@ -11,7 +13,7 @@ const Breadcrumb = ({ paths }) => {
               href="/"
               className="text-blue-600 hover:underline flex items-center"
             >
-              <HiHome className="mr-1" /> Home
+              <HiHome className="mr-1" /> {t("header.home")}
             </Link>
           </li>
           {paths.map((path, index) => (

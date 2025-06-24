@@ -6,6 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import Breadcrumb from "../Breadcrumb";
 import Image from "next/image";
 import Cookies from "js-cookie";
+import { useTranslation } from "@/utils/useTranslation";
 
 // Lazy-load components
 const ProductZoom = dynamic(
@@ -47,6 +48,7 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
   const shippingdt = JSON.parse(Cookies.get("shippingdt") || "{}");
 
   const { locale } = useLanguage();
+  const { t } = useTranslation();
   const reviewRef = useRef(null);
 
   useEffect(() => {
@@ -132,9 +134,10 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
                       </div>
 
                       <div className="info pl-2">
-                        <h3>Free Shipping</h3>
+                        <h3>{t("product.shippingHeading")}</h3>
                         <p className="mt-0 mb-0 text-gray-800">
-                          For all orders over ${shippingdt.FreeDeliveryFee}
+                          {t("product.shippingDesc")} $
+                          {shippingdt.FreeDeliveryFee}
                         </p>
                       </div>
                     </div>
@@ -150,9 +153,9 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
                       </div>
 
                       <div className="info pl-2">
-                        <h3>1 & 1 Returns</h3>
+                        <h3>{t("product.returnHeading")}</h3>
                         <p className="mt-0 mb-0 text-gray-800">
-                          Cancellation after 1 day
+                          {t("product.returnDesc")}
                         </p>
                       </div>
                     </div>
@@ -168,9 +171,9 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
                       </div>
 
                       <div className="info pl-2">
-                        <h3>Secure Payment</h3>
+                        <h3> {t("product.paymentHeading")}</h3>
                         <p className="mt-0 mb-0 text-gray-800">
-                          Guarantee secure payments
+                          {t("product.paymentDesc")}
                         </p>
                       </div>
                     </div>
@@ -179,8 +182,10 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
                   <br />
 
                   <div className="bg-gray-200 p-4 rounded-lg flex flex-col gap-1">
-                    <h4>Hotline Order:</h4>
-                    <p className="mt-0 mb-0">Mon - Fri: 07AM - 06PM</p>
+                    <h4>{t("product.hotlineHeading")}</h4>
+                    <p className="mt-0 mb-0">
+                      {t("product.hotlineDesc")} 07AM - 06PM
+                    </p>
 
                     <h2 className="text-[20px]">{siteSettings.contactNo}</h2>
                   </div>

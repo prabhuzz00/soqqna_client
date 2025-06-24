@@ -51,9 +51,9 @@ const HomeCatSlider = (props) => {
                   <div className="item py-4 lg:py-7 px-3 bg-white rounbded-sm text-center flex items-center justify-center flex-col rounded-full w-[70px] h-[70px]  lg:w-[120px] lg:h-[120px] m-auto">
                     <Image
                       src={cat?.images[0]}
-                      width={50}
+                      width={72}
                       height={50}
-                      className="w-[35px] lg:w-[50px] transition-all"
+                      className="w-[55px] lg:w-[68px] transition-all"
                       alt=""
                     />
                   </div>
