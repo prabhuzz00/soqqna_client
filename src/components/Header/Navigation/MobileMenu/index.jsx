@@ -39,7 +39,7 @@ const MobileMenu = ({ catData = [], isOpenMobileMenu, openMobileMenu }) => {
         {/* logo */}
         <div className="p-3">
           <Image
-            src={Cookies.get("logo") || "/logo.png"}
+            src={Cookies.get("logo") || "/sooqna.svg"}
             width={100}
             height={40}
             alt="logo"

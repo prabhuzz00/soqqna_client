@@ -16,10 +16,12 @@ import { ProductDetailsComponent } from "../ProductDetails";
 import AddAddress from "@/app/my-account/addAddress";
 import { useTranslation } from "@/utils/useTranslation";
 import { useLanguage } from "@/context/LanguageContext";
+import Cookies from "js-cookie";
 
 const Footer = () => {
   const [catData, setCatData] = useState([]);
   const context = useContext(MyContext);
+  const siteSettings = JSON.parse(Cookies.get("siteSettings") || "{}");
 
   const { locale } = useLanguage();
 
@@ -40,9 +42,9 @@ const Footer = () => {
 
               <Link
                 className="link text-[13px] text-primary hover:text-white"
-                href="mailto:info@soouqna.com"
+                href={`mailto:${siteSettings.email}`}
               >
-                info@soouqna.com
+                {siteSettings.email}
               </Link>
 
               <br />
