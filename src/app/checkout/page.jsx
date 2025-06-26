@@ -24,33 +24,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import Breadcrumb from "@/components/Breadcrumb";
 import { MyContext } from "@/context/ThemeProvider";
-// import { SERVICE_ZONES } from "@/context/serviceZones";
-
-// export const validateCOD = (addr) => {
-//   if (!addr) return { ok: false }; // no address at all
-
-//   const city = (addr.city || "").toLowerCase();
-//   const state = (addr.state || "").toLowerCase();
-//   const line1 = (addr.address_line1 || "").toLowerCase();
-
-//   const cityKey = Object.keys(SERVICE_ZONES).find((k) => {
-//     const low = k.toLowerCase();
-//     return city.includes(low) || state.includes(low);
-//   });
-
-//   if (cityKey) {
-//     const match = SERVICE_ZONES[cityKey].find((a) =>
-//       line1.includes(a.toLowerCase())
-//     );
-//     if (match) return { ok: true, pickup: match }; // fully served street
-//   }
-//   // otherwise: need a manual pick-up selection
-//   return {
-//     ok: false,
-//     cityKey,
-//     areas: cityKey ? SERVICE_ZONES[cityKey] : [],
-//   };
-// };
+import { useTranslation } from "@/utils/useTranslation";
 
 const useServiceZones = () => {
   const [zones, setZones] = useState({});
@@ -104,8 +78,31 @@ const Checkout = () => {
 
   /* ---------- hooks ---------- */
   const context = useContext(MyContext);
+  const { t } = useTranslation();
   const router = useRouter();
   const invoiceRef = useRef();
+
+  // const validateCOD = (addr) => {
+  //   if (!addr || Object.keys(serviceZones).length === 0) return { ok: false };
+
+  //   const city = (addr.city || "").toLowerCase();
+  //   const state = (addr.state || "").toLowerCase();
+  //   const line1 = (addr.address_line1 || "").toLowerCase();
+
+  //   const cityKey = Object.keys(serviceZones).find((key) => {
+  //     const k = key.toLowerCase();
+  //     return city.includes(k) || state.includes(k);
+  //   });
+
+  //   if (cityKey) {
+  //     const match = serviceZones[cityKey].find((a) =>
+  //       line1.includes(a.toLowerCase())
+  //     );
+  //     if (match) return { ok: true, pickup: match };
+  //   }
+
+  //   return { ok: false, cityKey, areas: cityKey ? serviceZones[cityKey] : [] };
+  // };
 
   const validateCOD = (addr) => {
     if (!addr || Object.keys(serviceZones).length === 0) return { ok: false };
@@ -120,13 +117,24 @@ const Checkout = () => {
     });
 
     if (cityKey) {
-      const match = serviceZones[cityKey].find((a) =>
-        line1.includes(a.toLowerCase())
-      );
-      if (match) return { ok: true, pickup: match };
+      const zone = serviceZones[cityKey];
+      const match = zone.areas.find((a) => line1.includes(a.toLowerCase()));
+
+      // ✅ Must match AND doorstep delivery allowed
+      if (match && zone.doorStepService) {
+        return { ok: true, pickup: match };
+      }
+
+      // ❌ No doorstep or no area match
+      return {
+        ok: false,
+        cityKey,
+        areas: zone.areas,
+        doorStepService: zone.doorStepService,
+      };
     }
 
-    return { ok: false, cityKey, areas: cityKey ? serviceZones[cityKey] : [] };
+    return { ok: false };
   };
 
   /* ---------- helper for money ---------- */
@@ -400,13 +408,12 @@ const Checkout = () => {
 
     const v = validateCOD(addr);
     if (!v.ok) {
-      // open the modal instead of proceeding
       setSelectedCity(v.cityKey || "");
       setPickupChoices(v.cityKey ? v.areas : []);
       setSelectedPickup("");
       setShowPickupModal(true);
-      setPendingCOD({ addr, finalAmount }); // stash payload pieces
-      return; // stop here; wait for modal
+      setPendingCOD({ addr, finalAmount });
+      return;
     }
 
     const pickupPoint = v.pickup || null;
@@ -462,7 +469,7 @@ const Checkout = () => {
   /* ---------- JSX ---------- */
   return (
     <>
-      <Breadcrumb paths={[{ label: "Checkout", href: "/" }]} />
+      <Breadcrumb paths={[{ label: `${t("cartPage.checkout")}`, href: "/" }]} />
 
       <section className="py-3 lg:py-10 px-3">
         <form onSubmit={checkout}>
@@ -472,7 +479,7 @@ const Checkout = () => {
             <div className="leftCol w-full md:w-[60%]">
               <div className="card bg-white shadow-md p-5 rounded-md w-full">
                 <div className="flex items-center justify-between">
-                  <h2>Select Delivery Address</h2>
+                  <h2>{t("checkout.selectAddress")}</h2>
                   {userData?.address_details?.length !== 0 && (
                     <Button
                       variant="outlined"
@@ -483,7 +490,7 @@ const Checkout = () => {
                       }}
                     >
                       <FaPlus />
-                      ADD {context?.windowWidth < 767 ? "" : " NEW ADDRESS"}
+                      {t("checkout.addNew")}
                     </Button>
                   )}
                 </div>
@@ -537,7 +544,7 @@ const Checkout = () => {
                           size="small"
                           onClick={() => editAddress(address?._id)}
                         >
-                          EDIT
+                          {t("checkout.edit")}
                         </Button>
                       </label>
                     ))
@@ -551,9 +558,9 @@ const Checkout = () => {
                           alt="map"
                         />
                         <h2 className="text-center">
-                          No Addresses found in your account!
+                          {t("checkout.noAddress")}
                         </h2>
-                        <p className="mt-0">Add a delivery address.</p>
+                        <p className="mt-0">{t("checkout.addAddressText")}</p>
                         <Button
                           className="btn-org"
                           onClick={() => {
@@ -561,7 +568,7 @@ const Checkout = () => {
                             context?.setAddressMode("add");
                           }}
                         >
-                          ADD ADDRESS
+                          {t("checkout.addAddress")}
                         </Button>
                       </div>
                     </>
@@ -573,11 +580,15 @@ const Checkout = () => {
             {/* ---------- RIGHT column (order summary) ---------- */}
             <div className="rightCol w-full md:w-[40%]">
               <div className="card shadow-md bg-white p-5 rounded-md">
-                <h2 className="mb-4">Your Order</h2>
+                <h2 className="mb-4">{t("checkout.order")}</h2>
 
                 <div className="flex items-center justify-between py-3 border-t border-b border-[rgba(0,0,0,0.1)]">
-                  <span className="text-[14px] font-[600]">Product</span>
-                  <span className="text-[14px] font-[600]">Subtotal</span>
+                  <span className="text-[14px] font-[600]">
+                    {t("checkout.product")}
+                  </span>
+                  <span className="text-[14px] font-[600]">
+                    {t("checkout.subtotal")}
+                  </span>
                 </div>
 
                 <div
@@ -608,7 +619,7 @@ const Checkout = () => {
                               {item?.productTitle}
                             </h4>
                             <span className="text-[13px]">
-                              Qty: {item?.quantity}
+                              {t("checkout.qty")}: {item?.quantity}
                             </span>
                           </div>
                         </div>
@@ -622,7 +633,9 @@ const Checkout = () => {
                   <div className="invoice-footer">
                     {appliedCoupon && (
                       <h3 className="!text-[16px] flex items-center justify-between py-1">
-                        <span className="font-[600]">Discount:</span>{" "}
+                        <span className="font-[600]">
+                          {t("checkout.discount")}
+                        </span>{" "}
                         <span className="font-[500] text-[14px]">
                           {" "}
                           {moneyFmt(appliedCoupon.discount)}
@@ -630,14 +643,16 @@ const Checkout = () => {
                       </h3>
                     )}
                     <h3 className="!text-[16px] flex items-center justify-between py-1">
-                      <span className="font-[600]">Shipping:</span>{" "}
+                      <span className="font-[600]">
+                        {t("checkout.shipping")}
+                      </span>{" "}
                       <span className="font-[500] text-[14px]">
                         {" "}
                         {shippingCost === 0 ? "FREE" : moneyFmt(shippingCost)}
                       </span>
                     </h3>
                     <h3 className="!text-[16px] flex items-center justify-between py-1">
-                      <span className="font-[600]">Grand Total:</span>
+                      <span className="font-[600]">{t("checkout.total")}:</span>
                       <span className="font-[500] text-[14px]">
                         {moneyFmt(finalAmount)}
                       </span>
@@ -663,7 +678,7 @@ const Checkout = () => {
                     ) : (
                       <>
                         <BsFillBagCheckFill className="text-[20px]" />
-                        Cash on Delivery
+                        {t("checkout.cod")}
                       </>
                     )}
                   </Button>
@@ -671,7 +686,7 @@ const Checkout = () => {
                   {/* ---------- Coupon UI remains unchanged ---------- */}
                   <div className="coupon-section mt-4 w-full">
                     <h3 className="text-[14px] font-[600] mb-2">
-                      Apply Coupon
+                      {t("checkout.coupon")}
                     </h3>
                     <div className="flex gap-2">
                       <input
@@ -680,7 +695,7 @@ const Checkout = () => {
                         onChange={(e) =>
                           setCouponCode(e.target.value.toUpperCase())
                         }
-                        placeholder="Enter coupon code"
+                        placeholder={t("checkout.couponInput")}
                         className="border border-[rgba(0,0,0,0.1)] rounded-sm p-2 w-full h-[35px] focus:outline-none text-[14px] focus:border-[rgba(0,0,0,0.3)]"
                       />
                       <Button
@@ -689,7 +704,7 @@ const Checkout = () => {
                         onClick={() => applyCoupon(couponCode)}
                         disabled={isLoading}
                       >
-                        Apply
+                        {t("checkout.apply")}
                       </Button>
                     </div>
                     {couponMessage && (
@@ -709,7 +724,7 @@ const Checkout = () => {
               {availableCoupons.length > 0 && (
                 <div className="coupon-list card p-3 rounded-md bg-white shadow-md mt-3">
                   <h4 className="text-[16px] font-[500] mb-2">
-                    Available Coupons
+                    {t("checkout.coupons")}
                   </h4>
                   <div className="flex flex-col gap-2">
                     {availableCoupons.map((coupon) => (
@@ -741,14 +756,14 @@ const Checkout = () => {
                             : ""}
                         </p>
                         <p className="text-[14px] text-gray-700 !my-0">
-                          Min. order:{" "}
+                          {t("checkout.minOrder")}{" "}
                           {coupon.minOrderAmount.toLocaleString("en-US", {
                             style: "currency",
                             currency: "USD",
                           })}
                         </p>
                         <p className="text-[14px] text-gray-700 !my-0">
-                          Expires:{" "}
+                          {t("checkout.expires")}{" "}
                           {new Date(coupon.expiryDate).toLocaleDateString()}
                         </p>
                       </div>
@@ -802,12 +817,12 @@ const Checkout = () => {
           setSelectedPickup("");
         }}
       >
-        <DialogTitle>Select a pickup point</DialogTitle>
+        <DialogTitle>{t("checkout.pickupPoint")}</DialogTitle>
 
         <DialogContent sx={{ pt: 2, minWidth: 320 }}>
           {/* Step 1 – City */}
           <FormLabel sx={{ mb: 1, fontWeight: 500 }}>
-            City / Governorate
+            {t("checkout.city")}
           </FormLabel>
           <Select
             size="small"
@@ -831,7 +846,7 @@ const Checkout = () => {
           {pickupChoices.length > 0 && (
             <>
               <FormLabel sx={{ mt: 3, mb: 1, fontWeight: 500 }}>
-                Area / Street
+                {t("checkout.area")}
               </FormLabel>
               <Select
                 size="small"
@@ -903,7 +918,7 @@ const Checkout = () => {
               });
             }}
           >
-            Confirm
+            {t("checkout.confirm")}
           </Button>
         </DialogActions>
       </Dialog>
