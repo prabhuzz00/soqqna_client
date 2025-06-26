@@ -73,6 +73,7 @@ const Checkout = () => {
   const [selectedCity, setSelectedCity] = useState(""); // modal step 1
   const [pickupChoices, setPickupChoices] = useState([]); // modal step 2
   const [selectedPickup, setSelectedPickup] = useState(""); // user’s choice
+  const [pickupLocation, setPickupLocation] = useState("");
   const [pendingCOD, setPendingCOD] = useState(null); // remembers addr & amt
   const { zones: serviceZones, loaded: zonesLoaded } = useServiceZones();
 
@@ -831,7 +832,7 @@ const Checkout = () => {
             onChange={(e) => {
               const city = e.target.value;
               setSelectedCity(city);
-              setPickupChoices(serviceZones[city]);
+              setPickupChoices(serviceZones[city]?.areas || []);
               setSelectedPickup("");
             }}
           >
@@ -852,7 +853,10 @@ const Checkout = () => {
                 size="small"
                 fullWidth
                 value={selectedPickup}
-                onChange={(e) => setSelectedPickup(e.target.value)}
+                onChange={(e) => {
+                  setSelectedPickup(e.target.value);
+                  setPickupLocation(`${selectedCity},${e.target.value}`);
+                }}
               >
                 {pickupChoices.map((a) => (
                   <MenuItem key={a} value={a}>
@@ -885,7 +889,7 @@ const Checkout = () => {
                 barcode: genBarcode,
                 delivery_address: addr?._id,
                 totalAmt: finalAmount,
-                pickupPoint: selectedPickup, // ★ new field ★
+                pickupPoint: pickupLocation, // ★ new field ★
                 couponId: appliedCoupon?.couponId || null,
                 couponCode: appliedCoupon?.code || null,
                 couponDiscount: appliedCoupon?.discount || null,
