@@ -191,6 +191,7 @@ const ProductItem = (props) => {
       barcode: product?.barcode,
       vendorId: product?.vendorId,
       isReturn: product?.isReturn,
+      servicezone: product?.serviceZone,
       selectedColor: selectedColor?.color?.label || "",
     };
 

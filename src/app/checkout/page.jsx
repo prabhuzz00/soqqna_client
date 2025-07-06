@@ -83,61 +83,6 @@ const Checkout = () => {
   const router = useRouter();
   const invoiceRef = useRef();
 
-  // const validateCOD = (addr) => {
-  //   if (!addr || Object.keys(serviceZones).length === 0) return { ok: false };
-
-  //   const city = (addr.city || "").toLowerCase();
-  //   const state = (addr.state || "").toLowerCase();
-  //   const line1 = (addr.address_line1 || "").toLowerCase();
-
-  //   const cityKey = Object.keys(serviceZones).find((key) => {
-  //     const k = key.toLowerCase();
-  //     return city.includes(k) || state.includes(k);
-  //   });
-
-  //   if (cityKey) {
-  //     const match = serviceZones[cityKey].find((a) =>
-  //       line1.includes(a.toLowerCase())
-  //     );
-  //     if (match) return { ok: true, pickup: match };
-  //   }
-
-  //   return { ok: false, cityKey, areas: cityKey ? serviceZones[cityKey] : [] };
-  // };
-
-  const validateCOD = (addr) => {
-    if (!addr || Object.keys(serviceZones).length === 0) return { ok: false };
-
-    const city = (addr.city || "").toLowerCase();
-    const state = (addr.state || "").toLowerCase();
-    const line1 = (addr.address_line1 || "").toLowerCase();
-
-    const cityKey = Object.keys(serviceZones).find((key) => {
-      const k = key.toLowerCase();
-      return city.includes(k) || state.includes(k);
-    });
-
-    if (cityKey) {
-      const zone = serviceZones[cityKey];
-      const match = zone.areas.find((a) => line1.includes(a.toLowerCase()));
-
-      // ✅ Must match AND doorstep delivery allowed
-      if (match && zone.doorStepService) {
-        return { ok: true, pickup: match };
-      }
-
-      // ❌ No doorstep or no area match
-      return {
-        ok: false,
-        cityKey,
-        areas: zone.areas,
-        doorStepService: zone.doorStepService,
-      };
-    }
-
-    return { ok: false };
-  };
-
   /* ---------- helper for money ---------- */
   const moneyFmt = (v) =>
     v.toLocaleString("en-US", { style: "currency", currency: "USD" });
@@ -399,28 +344,103 @@ const Checkout = () => {
   };
 
   /* ---------- Cash on Delivery ---------- */
+  // const cashOnDelivery = () => {
+  //   if (!userData?.address_details?.length)
+  //     return context.alertBox("error", "Please add address");
+
+  //   const addr = userData?.address_details?.find(
+  //     (a) => a._id === selectedAddress
+  //   );
+
+  //   const v = validateCOD(addr);
+  //   if (!v.ok) {
+  //     setSelectedCity(v.cityKey || "");
+  //     setPickupChoices(v.cityKey ? v.areas : []);
+  //     setSelectedPickup("");
+  //     setShowPickupModal(true);
+  //     setPendingCOD({ addr, finalAmount });
+  //     return;
+  //   }
+
+  //   const pickupPoint = v.pickup || null;
+
+  //   setIsLoading(true);
+
+  //   const stamp = Date.now().toString();
+  //   const rand = Math.floor(1e8 + Math.random() * 9e8).toString();
+  //   const genBarcode = (stamp + rand).slice(0, 20);
+  //   setBarcode(genBarcode);
+
+  //   const payLoad = {
+  //     userId: context?.userData?._id,
+  //     products: context?.cartData,
+  //     paymentId: "",
+  //     payment_status: "CASH ON DELIVERY",
+  //     delivery_address: selectedAddress,
+  //     totalAmt: finalAmount, // MOD
+  //     barcode: genBarcode,
+  //     couponId: appliedCoupon?.couponId || null,
+  //     couponCode: appliedCoupon?.code || null,
+  //     couponDiscount: appliedCoupon?.discount || null,
+  //     pickupPoint: "DoorStep",
+  //     date: new Date().toLocaleString("en-US", {
+  //       month: "short",
+  //       day: "2-digit",
+  //       year: "numeric",
+  //     }),
+  //   };
+
+  //   postData(`/api/order/create`, payLoad).then((res) => {
+  //     setIsLoading(false);
+  //     if (res.error) return context.alertBox("error", res.message);
+
+  //     context.alertBox("success", res.message);
+  //     if (appliedCoupon?.couponId) {
+  //       axios.post(
+  //         `${process.env.NEXT_PUBLIC_APP_API_URL}/api/coupons/${appliedCoupon.couponId}/use`,
+  //         {},
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${Cookies.get("accessToken")}`,
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
+  //     }
+  //     context.clearCart();
+  //     router.push("/my-orders/success");
+  //   });
+  // };
+
   const cashOnDelivery = () => {
     if (!userData?.address_details?.length)
       return context.alertBox("error", "Please add address");
 
-    const addr = userData?.address_details?.find(
+    const addr = userData.address_details.find(
       (a) => a._id === selectedAddress
     );
+    if (!addr)
+      return context.alertBox("error", "Please select a valid address");
 
-    const v = validateCOD(addr);
-    if (!v.ok) {
-      setSelectedCity(v.cityKey || "");
-      setPickupChoices(v.cityKey ? v.areas : []);
-      setSelectedPickup("");
-      setShowPickupModal(true);
-      setPendingCOD({ addr, finalAmount });
-      return;
+    const city = addr.city?.trim();
+
+    // ✅ Loop through cart items and validate city match
+    for (const item of context.cartData) {
+      const productZone = item.servicezone?.trim();
+
+      // ✅ Skip validation if productZone is null or empty
+      if (!productZone) continue;
+
+      if (productZone !== city) {
+        return context.alertBox(
+          "error",
+          `${item.name} is only available in ${productZone}. \nPlease Select a different city or pickup point.`
+        );
+      }
     }
 
-    const pickupPoint = v.pickup || null;
-
+    // ✅ Proceed to create order
     setIsLoading(true);
-
     const stamp = Date.now().toString();
     const rand = Math.floor(1e8 + Math.random() * 9e8).toString();
     const genBarcode = (stamp + rand).slice(0, 20);
@@ -432,12 +452,13 @@ const Checkout = () => {
       paymentId: "",
       payment_status: "CASH ON DELIVERY",
       delivery_address: selectedAddress,
-      totalAmt: finalAmount, // MOD
+      totalAmt: finalAmount,
       barcode: genBarcode,
       couponId: appliedCoupon?.couponId || null,
       couponCode: appliedCoupon?.code || null,
       couponDiscount: appliedCoupon?.discount || null,
-      pickupPoint: "DoorStep",
+      pickupPoint:
+        addr.addressType === "Home Delivery" ? "DoorStep" : "PickupPoint",
       date: new Date().toLocaleString("en-US", {
         month: "short",
         day: "2-digit",
@@ -462,6 +483,7 @@ const Checkout = () => {
           }
         );
       }
+
       context.clearCart();
       router.push("/my-orders/success");
     });
@@ -523,8 +545,6 @@ const Checkout = () => {
                             {address?.address_line1 +
                               " " +
                               address?.city +
-                              " " +
-                              address?.country +
                               " " +
                               address?.state +
                               " " +
@@ -808,124 +828,6 @@ const Checkout = () => {
           background: #ccc !important;
         }
       `}</style>
-
-      {/* ---------- Pickup-point modal ---------- */}
-      <Dialog
-        open={showPickupModal}
-        onClose={() => {
-          setShowPickupModal(false);
-          setSelectedCity("");
-          setSelectedPickup("");
-        }}
-      >
-        <DialogTitle>{t("checkout.pickupPoint")}</DialogTitle>
-
-        <DialogContent sx={{ pt: 2, minWidth: 320 }}>
-          {/* Step 1 – City */}
-          <FormLabel sx={{ mb: 1, fontWeight: 500 }}>
-            {t("checkout.city")}
-          </FormLabel>
-          <Select
-            size="small"
-            fullWidth
-            value={selectedCity}
-            onChange={(e) => {
-              const city = e.target.value;
-              setSelectedCity(city);
-              setPickupChoices(serviceZones[city]?.areas || []);
-              setSelectedPickup("");
-            }}
-          >
-            {Object.keys(serviceZones).map((c) => (
-              <MenuItem key={c} value={c}>
-                {c}
-              </MenuItem>
-            ))}
-          </Select>
-
-          {/* Step 2 – Area */}
-          {pickupChoices.length > 0 && (
-            <>
-              <FormLabel sx={{ mt: 3, mb: 1, fontWeight: 500 }}>
-                {t("checkout.area")}
-              </FormLabel>
-              <Select
-                size="small"
-                fullWidth
-                value={selectedPickup}
-                onChange={(e) => {
-                  setSelectedPickup(e.target.value);
-                  setPickupLocation(`${selectedCity},${e.target.value}`);
-                }}
-              >
-                {pickupChoices.map((a) => (
-                  <MenuItem key={a} value={a}>
-                    {a}
-                  </MenuItem>
-                ))}
-              </Select>
-            </>
-          )}
-        </DialogContent>
-
-        <DialogActions sx={{ pr: 3, pb: 2 }}>
-          <Button
-            variant="contained"
-            disabled={!selectedCity || !selectedPickup}
-            onClick={() => {
-              setShowPickupModal(false);
-
-              const stamp = Date.now().toString();
-              const rand = Math.floor(1e8 + Math.random() * 9e8).toString();
-              const genBarcode = (stamp + rand).slice(0, 20);
-              setBarcode(genBarcode);
-
-              const { addr, finalAmount } = pendingCOD;
-              const payLoad = {
-                userId: context?.userData?._id,
-                products: context?.cartData,
-                paymentId: "",
-                payment_status: "CASH ON DELIVERY",
-                barcode: genBarcode,
-                delivery_address: addr?._id,
-                totalAmt: finalAmount,
-                pickupPoint: pickupLocation, // ★ new field ★
-                couponId: appliedCoupon?.couponId || null,
-                couponCode: appliedCoupon?.code || null,
-                couponDiscount: appliedCoupon?.discount || null,
-                date: new Date().toLocaleString("en-US", {
-                  month: "short",
-                  day: "2-digit",
-                  year: "numeric",
-                }),
-              };
-
-              postData(`/api/order/create`, payLoad).then((res) => {
-                setIsLoading(false);
-                if (res.error) return context.alertBox("error", res.message);
-
-                context.alertBox("success", res.message);
-                if (appliedCoupon?.couponId) {
-                  axios.post(
-                    `${process.env.NEXT_PUBLIC_APP_API_URL}/api/coupons/${appliedCoupon.couponId}/use`,
-                    {},
-                    {
-                      headers: {
-                        Authorization: `Bearer ${Cookies.get("accessToken")}`,
-                        "Content-Type": "application/json",
-                      },
-                    }
-                  );
-                }
-                context.clearCart();
-                router.push("/my-orders/success");
-              });
-            }}
-          >
-            {t("checkout.confirm")}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 };

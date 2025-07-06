@@ -21,277 +21,278 @@ import { useTranslation } from "@/utils/useTranslation";
 import Cookies from "js-cookie";
 
 const ProductItem = (props) => {
- const [quantity, setQuantity] = useState(1);
-   const [isAdded, setIsAdded] = useState(false);
-   const [isAddedInMyList, setIsAddedInMyList] = useState(false);
-   const [cartItem, setCartItem] = useState([]);
-   const [isShowTabs, setIsShowTabs] = useState(false);
-   const [isLoading, setIsLoading] = useState(false);
-   const [images, setImages] = useState([]);
-   const [selectedColor, setSelectedColor] = useState(null);
-   const [selectedSize, setSelectedSize] = useState(null);
-   const [currentPrice, setCurrentPrice] = useState(props?.item?.price);
-   const [currentStock, setCurrentStock] = useState(props?.item?.countInStock);
- 
-   const context = useContext(MyContext);
-   const { locale } = useLanguage();
-   const { t } = useTranslation();
-   const isUpdatingRef = useRef(false);
- 
-   // Initialize images, color, price, and stock
-   useEffect(() => {
-     const initialImages =
-       props?.item?.variation?.length > 0
-         ? props?.item?.variation[0]?.color?.images || props?.item?.images
-         : props?.item?.images;
-     setImages(initialImages || []);
- 
-     if (props?.item?.variation?.length > 0) {
-       const defaultVariation = props?.item?.variation[0];
-       setSelectedColor(defaultVariation);
-       setCurrentPrice(props?.item?.price);
-       setCurrentStock(props?.item?.countInStock);
-     }
-   }, [
-     props?.item?.images,
-     props?.item?.variation,
-     props?.item?.price,
-     props?.item?.countInStock,
-   ]);
- 
-   // Update context for modal
-   useEffect(() => {
-     if (
-       context?.openProductDetailsModal?.open &&
-       context?.openProductDetailsModal?.productId === props?.item?._id &&
-       !isUpdatingRef.current
-     ) {
-       isUpdatingRef.current = true;
-       context.handleOpenProductDetailsModal(true, props?.item, {
-         images,
-         setImages,
-       });
-       isUpdatingRef.current = false;
-     }
-   }, [
-     images,
-     props?.item?._id,
-     context.openProductDetailsModal?.open,
-     context.openProductDetailsModal?.productId,
-     context.handleOpenProductDetailsModal,
-   ]);
- 
-   // Check cart and myList status
-   useEffect(() => {
-     const item = context?.cartData?.filter((cartItem) =>
-       cartItem.productId.includes(props?.item?._id)
-     );
- 
-     const myListItem = context?.myListData?.filter((item) =>
-       item.productId.includes(props?.item?._id)
-     );
- 
-     if (item?.length !== 0) {
-       setCartItem(item);
-       setIsAdded(true);
-       setQuantity(item[0]?.quantity);
-       // Optionally, restore selectedColor and selectedSize from cartItem if stored
-       if (item[0]?.selectedColor) {
-         const variation = props?.item?.variation?.find(
-           (v) => v.color.label === item[0].selectedColor
-         );
-         if (variation) {
-           setSelectedColor(variation);
-           setImages(variation?.color?.images || props?.item?.images || []);
-           const sizeData = variation?.sizes?.find(
-             (s) => s.label === item[0].size
-           );
-           if (sizeData) {
-             setSelectedSize(item[0].size);
-             setCurrentPrice(sizeData.price || props?.item?.price);
-             setCurrentStock(sizeData.countInStock || props?.item?.countInStock);
-           }
-         }
-       }
-     } else {
-       setIsAdded(false);
-       setQuantity(1);
-       // Reset selections when item is not in cart
-       if (props?.item?.variation?.length > 0) {
-         const defaultVariation = props?.item?.variation[0];
-         setSelectedColor(defaultVariation);
-         setSelectedSize(null);
-         setImages(defaultVariation?.color?.images || props?.item?.images || []);
-         setCurrentPrice(props?.item?.price);
-         setCurrentStock(props?.item?.countInStock);
-       }
-     }
- 
-     if (myListItem?.length !== 0) {
-       setIsAddedInMyList(true);
-     } else {
-       setIsAddedInMyList(false);
-     }
-   }, [
-     context?.cartData,
-     context?.myListData,
-     props?.item?._id,
-     props?.item?.variation,
-     props?.item?.images,
-     props?.item?.price,
-     props?.item?.countInStock,
-   ]);
- 
-   // Handle color selection
-   const handleColorClick = (variation) => {
-     setSelectedColor(variation);
-     setSelectedSize(null); // Reset size selection
-     setCurrentPrice(props?.item?.price);
-     setCurrentStock(props?.item?.countInStock);
-     setImages(variation?.color?.images || props?.item?.images || []);
-   };
- 
-   // Handle size selection
-   const handleSizeClick = (sizeLabel) => {
-     setSelectedSize(sizeLabel);
-     const sizeData = selectedColor?.sizes?.find(
-       (size) => size.label === sizeLabel
-     );
-     if (sizeData) {
-       setCurrentPrice(sizeData.price || props?.item?.price);
-       setCurrentStock(sizeData.countInStock || props?.item?.countInStock);
-     }
-   };
- 
-   // Add to cart function
-   const addToCart = (product, userId, quantity) => {
-     const discountPercentage =
-       product?.oldPrice && currentPrice
-         ? Math.round(
-             ((product.oldPrice - currentPrice) / product.oldPrice) * 100
-           )
-         : 0;
- 
-     const productItem = {
-       _id: product?._id,
-       name: product?.name,
-       arName: product?.arbName,
-       image: selectedColor?.color?.images?.[0] || product?.images?.[0] || "",
-       rating: product?.rating,
-       price: currentPrice,
-       oldPrice: product?.oldPrice,
-       discount: discountPercentage,
-       quantity: quantity,
-       subTotal: parseInt(currentPrice * quantity),
-       productId: product?._id,
-       countInStock: currentStock,
-       brand: product?.brand,
-       size: selectedSize || "",
-       weight: "",
-       ram: "",
-       barcode: product?.barcode,
-       vendorId: product?.vendorId,
-       isReturn: product?.isReturn,
-       selectedColor: selectedColor?.color?.label || "",
-     };
- 
-     setIsLoading(true);
- 
-     if (props?.item?.variation?.length > 0) {
-       if (!selectedColor || !selectedSize) {
-         setIsShowTabs(true);
-         setTimeout(() => {
-           setIsLoading(false);
-         }, 500);
-       } else {
-         context?.addToCart(productItem, userId, quantity);
-         context?.getCartItems();
-         setIsAdded(true);
-         setIsShowTabs(false);
-         setTimeout(() => {
-           setIsLoading(false);
-         }, 500);
-       }
-     } else {
-       setIsAdded(true);
-       setIsShowTabs(false);
-       context?.addToCart(productItem, userId, quantity);
-       context?.getCartItems();
-       setTimeout(() => {
-         setIsLoading(false);
-       }, 500);
-     }
-   };
- 
-   const minusQty = () => {
-     if (quantity !== 1 && quantity > 1) {
-       setQuantity(quantity - 1);
-       context?.updateCartItemQuantity(cartItem[0]?._id, quantity - 1);
-       context?.getCartItems();
-     } else {
-       setQuantity(1);
-       const cart = context?.cartData?.filter(
-         (item) => item._id !== cartItem[0]?._id
-       );
-       Cookies.set("cart", JSON.stringify(cart));
-       context?.getCartItems();
-       setIsAdded(false);
-       context.alertBox("success", "Item Removed");
-       setIsShowTabs(false);
-       // Reset selections when item is removed
-       if (props?.item?.variation?.length > 0) {
-         const defaultVariation = props?.item?.variation[0];
-         setSelectedColor(defaultVariation);
-         setSelectedSize(null);
-         setImages(defaultVariation?.color?.images || props?.item?.images || []);
-         setCurrentPrice(props?.item?.price);
-         setCurrentStock(props?.item?.countInStock);
-       } else {
-         setSelectedColor(null);
-         setSelectedSize(null);
-         setImages(props?.item?.images || []);
-         setCurrentPrice(props?.item?.price);
-         setCurrentStock(props?.item?.countInStock);
-       }
-     }
-   };
- 
-   const addQty = () => {
-     setQuantity(quantity + 1);
-     context?.updateCartItemQuantity(cartItem[0]?._id, quantity + 1);
-     context?.getCartItems();
-   };
- 
-   const handleAddToMyList = (item) => {
-     if (context?.userData === null) {
-       context?.alertBox("error", "you are not login please login first");
-       return false;
-     } else {
-       const obj = {
-         productId: item?._id,
-         userId: context?.userData?._id,
-         productTitle: item?.name,
-         image: item?.images[0],
-         rating: item?.rating,
-         price: currentPrice,
-         oldPrice: item?.oldPrice,
-         brand: item?.brand,
-         barcode: item?.barcode,
-         vendorId: item?.vendorId,
-         discount: item?.discount,
-       };
- 
-       postData("/api/myList/add", obj).then((res) => {
-         if (res?.error === false) {
-           context?.alertBox("success", res?.message);
-           setIsAddedInMyList(true);
-           context?.getMyListData();
-         } else {
-           context?.alertBox("error", res?.message);
-         }
-       });
-     }
-   };
+  const [quantity, setQuantity] = useState(1);
+  const [isAdded, setIsAdded] = useState(false);
+  const [isAddedInMyList, setIsAddedInMyList] = useState(false);
+  const [cartItem, setCartItem] = useState([]);
+  const [isShowTabs, setIsShowTabs] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [images, setImages] = useState([]);
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [currentPrice, setCurrentPrice] = useState(props?.item?.price);
+  const [currentStock, setCurrentStock] = useState(props?.item?.countInStock);
+
+  const context = useContext(MyContext);
+  const { locale } = useLanguage();
+  const { t } = useTranslation();
+  const isUpdatingRef = useRef(false);
+
+  // Initialize images, color, price, and stock
+  useEffect(() => {
+    const initialImages =
+      props?.item?.variation?.length > 0
+        ? props?.item?.variation[0]?.color?.images || props?.item?.images
+        : props?.item?.images;
+    setImages(initialImages || []);
+
+    if (props?.item?.variation?.length > 0) {
+      const defaultVariation = props?.item?.variation[0];
+      setSelectedColor(defaultVariation);
+      setCurrentPrice(props?.item?.price);
+      setCurrentStock(props?.item?.countInStock);
+    }
+  }, [
+    props?.item?.images,
+    props?.item?.variation,
+    props?.item?.price,
+    props?.item?.countInStock,
+  ]);
+
+  // Update context for modal
+  useEffect(() => {
+    if (
+      context?.openProductDetailsModal?.open &&
+      context?.openProductDetailsModal?.productId === props?.item?._id &&
+      !isUpdatingRef.current
+    ) {
+      isUpdatingRef.current = true;
+      context.handleOpenProductDetailsModal(true, props?.item, {
+        images,
+        setImages,
+      });
+      isUpdatingRef.current = false;
+    }
+  }, [
+    images,
+    props?.item?._id,
+    context.openProductDetailsModal?.open,
+    context.openProductDetailsModal?.productId,
+    context.handleOpenProductDetailsModal,
+  ]);
+
+  // Check cart and myList status
+  useEffect(() => {
+    const item = context?.cartData?.filter((cartItem) =>
+      cartItem.productId.includes(props?.item?._id)
+    );
+
+    const myListItem = context?.myListData?.filter((item) =>
+      item.productId.includes(props?.item?._id)
+    );
+
+    if (item?.length !== 0) {
+      setCartItem(item);
+      setIsAdded(true);
+      setQuantity(item[0]?.quantity);
+      // Optionally, restore selectedColor and selectedSize from cartItem if stored
+      if (item[0]?.selectedColor) {
+        const variation = props?.item?.variation?.find(
+          (v) => v.color.label === item[0].selectedColor
+        );
+        if (variation) {
+          setSelectedColor(variation);
+          setImages(variation?.color?.images || props?.item?.images || []);
+          const sizeData = variation?.sizes?.find(
+            (s) => s.label === item[0].size
+          );
+          if (sizeData) {
+            setSelectedSize(item[0].size);
+            setCurrentPrice(sizeData.price || props?.item?.price);
+            setCurrentStock(sizeData.countInStock || props?.item?.countInStock);
+          }
+        }
+      }
+    } else {
+      setIsAdded(false);
+      setQuantity(1);
+      // Reset selections when item is not in cart
+      if (props?.item?.variation?.length > 0) {
+        const defaultVariation = props?.item?.variation[0];
+        setSelectedColor(defaultVariation);
+        setSelectedSize(null);
+        setImages(defaultVariation?.color?.images || props?.item?.images || []);
+        setCurrentPrice(props?.item?.price);
+        setCurrentStock(props?.item?.countInStock);
+      }
+    }
+
+    if (myListItem?.length !== 0) {
+      setIsAddedInMyList(true);
+    } else {
+      setIsAddedInMyList(false);
+    }
+  }, [
+    context?.cartData,
+    context?.myListData,
+    props?.item?._id,
+    props?.item?.variation,
+    props?.item?.images,
+    props?.item?.price,
+    props?.item?.countInStock,
+  ]);
+
+  // Handle color selection
+  const handleColorClick = (variation) => {
+    setSelectedColor(variation);
+    setSelectedSize(null); // Reset size selection
+    setCurrentPrice(props?.item?.price);
+    setCurrentStock(props?.item?.countInStock);
+    setImages(variation?.color?.images || props?.item?.images || []);
+  };
+
+  // Handle size selection
+  const handleSizeClick = (sizeLabel) => {
+    setSelectedSize(sizeLabel);
+    const sizeData = selectedColor?.sizes?.find(
+      (size) => size.label === sizeLabel
+    );
+    if (sizeData) {
+      setCurrentPrice(sizeData.price || props?.item?.price);
+      setCurrentStock(sizeData.countInStock || props?.item?.countInStock);
+    }
+  };
+
+  // Add to cart function
+  const addToCart = (product, userId, quantity) => {
+    const discountPercentage =
+      product?.oldPrice && currentPrice
+        ? Math.round(
+            ((product.oldPrice - currentPrice) / product.oldPrice) * 100
+          )
+        : 0;
+
+    const productItem = {
+      _id: product?._id,
+      name: product?.name,
+      arName: product?.arbName,
+      image: selectedColor?.color?.images?.[0] || product?.images?.[0] || "",
+      rating: product?.rating,
+      price: currentPrice,
+      oldPrice: product?.oldPrice,
+      discount: discountPercentage,
+      quantity: quantity,
+      subTotal: parseInt(currentPrice * quantity),
+      productId: product?._id,
+      countInStock: currentStock,
+      brand: product?.brand,
+      size: selectedSize || "",
+      weight: "",
+      ram: "",
+      barcode: product?.barcode,
+      vendorId: product?.vendorId,
+      isReturn: product?.isReturn,
+      servicezone: product?.serviceZone,
+      selectedColor: selectedColor?.color?.label || "",
+    };
+
+    setIsLoading(true);
+
+    if (props?.item?.variation?.length > 0) {
+      if (!selectedColor || !selectedSize) {
+        setIsShowTabs(true);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 500);
+      } else {
+        context?.addToCart(productItem, userId, quantity);
+        context?.getCartItems();
+        setIsAdded(true);
+        setIsShowTabs(false);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 500);
+      }
+    } else {
+      setIsAdded(true);
+      setIsShowTabs(false);
+      context?.addToCart(productItem, userId, quantity);
+      context?.getCartItems();
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 500);
+    }
+  };
+
+  const minusQty = () => {
+    if (quantity !== 1 && quantity > 1) {
+      setQuantity(quantity - 1);
+      context?.updateCartItemQuantity(cartItem[0]?._id, quantity - 1);
+      context?.getCartItems();
+    } else {
+      setQuantity(1);
+      const cart = context?.cartData?.filter(
+        (item) => item._id !== cartItem[0]?._id
+      );
+      Cookies.set("cart", JSON.stringify(cart));
+      context?.getCartItems();
+      setIsAdded(false);
+      context.alertBox("success", "Item Removed");
+      setIsShowTabs(false);
+      // Reset selections when item is removed
+      if (props?.item?.variation?.length > 0) {
+        const defaultVariation = props?.item?.variation[0];
+        setSelectedColor(defaultVariation);
+        setSelectedSize(null);
+        setImages(defaultVariation?.color?.images || props?.item?.images || []);
+        setCurrentPrice(props?.item?.price);
+        setCurrentStock(props?.item?.countInStock);
+      } else {
+        setSelectedColor(null);
+        setSelectedSize(null);
+        setImages(props?.item?.images || []);
+        setCurrentPrice(props?.item?.price);
+        setCurrentStock(props?.item?.countInStock);
+      }
+    }
+  };
+
+  const addQty = () => {
+    setQuantity(quantity + 1);
+    context?.updateCartItemQuantity(cartItem[0]?._id, quantity + 1);
+    context?.getCartItems();
+  };
+
+  const handleAddToMyList = (item) => {
+    if (context?.userData === null) {
+      context?.alertBox("error", "you are not login please login first");
+      return false;
+    } else {
+      const obj = {
+        productId: item?._id,
+        userId: context?.userData?._id,
+        productTitle: item?.name,
+        image: item?.images[0],
+        rating: item?.rating,
+        price: currentPrice,
+        oldPrice: item?.oldPrice,
+        brand: item?.brand,
+        barcode: item?.barcode,
+        vendorId: item?.vendorId,
+        discount: item?.discount,
+      };
+
+      postData("/api/myList/add", obj).then((res) => {
+        if (res?.error === false) {
+          context?.alertBox("success", res?.message);
+          setIsAddedInMyList(true);
+          context?.getMyListData();
+        } else {
+          context?.alertBox("error", res?.message);
+        }
+      });
+    }
+  };
 
   return (
     <div className="productItem p-4 shadow-md bg-[#f1f1f1] rounded-md overflow-hidden border-1 border-[rgba(0,0,0,0.1)] flex items-center flex-col lg:flex-row">
@@ -332,10 +333,11 @@ const ProductItem = (props) => {
                 {props?.item?.variation?.map((variation, index) => (
                   <button
                     key={index}
-                    className={`w-8 h-8 rounded-full border-2 transition-all duration-200 ${selectedColor?.color?.label === variation?.color?.label
+                    className={`w-8 h-8 rounded-full border-2 transition-all duration-200 ${
+                      selectedColor?.color?.label === variation?.color?.label
                         ? "border-white scale-110"
                         : "border-gray-300"
-                      }`}
+                    }`}
                     style={{
                       backgroundColor: variation?.color?.label.toLowerCase(),
                     }}
@@ -352,8 +354,9 @@ const ProductItem = (props) => {
                 {selectedColor?.sizes?.map((size, index) => (
                   <span
                     key={index}
-                    className={`flex items-center justify-center p-1 px-2 bg-[rgba(255,255,255,0.8)] max-w-[45px] h-[25px] rounded-sm cursor-pointer hover:bg-white ${selectedSize === size.label && "!bg-primary text-white"
-                      }`}
+                    className={`flex items-center justify-center p-1 px-2 bg-[rgba(255,255,255,0.8)] max-w-[45px] h-[25px] rounded-sm cursor-pointer hover:bg-white ${
+                      selectedSize === size.label && "!bg-primary text-white"
+                    }`}
                     onClick={() => handleSizeClick(size.label)}
                   >
                     {size.label}
@@ -367,10 +370,10 @@ const ProductItem = (props) => {
         <span className="discount flex items-center absolute top-[10px] left-[10px] z-50 bg-primary text-white rounded-lg p-1 text-[12px] font-[500]">
           {props?.item?.oldPrice && currentPrice
             ? Math.round(
-              ((props?.item?.oldPrice - currentPrice) /
-                props?.item?.oldPrice) *
-              100
-            )
+                ((props?.item?.oldPrice - currentPrice) /
+                  props?.item?.oldPrice) *
+                  100
+              )
             : props?.item?.discount}
           %
         </span>
@@ -438,7 +441,7 @@ const ProductItem = (props) => {
 
         <div className="flex items-center gap-4">
           <span className="oldPrice line-through text-gray-500 text-[15px] font-[500]">
-           {props?.item?.oldPrice?.toLocaleString("en-US", {
+            {props?.item?.oldPrice?.toLocaleString("en-US", {
               style: "currency",
               currency: "USD",
             })}

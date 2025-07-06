@@ -22,7 +22,7 @@ const Register = () => {
   const [formFields, setFormFields] = useState({
     name: "",
     email: "",
-    phone: "",
+    // phone: "",
     password: "",
   });
 
@@ -192,9 +192,34 @@ const Register = () => {
                       )}
                     </Button>
                   </div>
+
+                  <div className="form-group mb-4 text-[14px]">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={formFields.terms || false}
+                        onChange={(e) =>
+                          setFormFields((prev) => ({
+                            ...prev,
+                            terms: e.target.checked,
+                          }))
+                        }
+                      />
+                      <span>
+                        I agree to the{" "}
+                        <Link
+                          href="/terms-condition"
+                          className="text-blue-600 underline"
+                        >
+                          terms and conditions
+                        </Link>
+                        .
+                      </span>
+                    </label>
+                  </div>
                   <Button
                     type="submit"
-                    disabled={!valideValue}
+                    disabled={!valideValue || !formFields.terms}
                     className="btn-org btn-lg w-full flex gap-3"
                   >
                     {isLoading ? (
@@ -233,29 +258,6 @@ const Register = () => {
                   </Button>
                 </div>
               )}
-              {/* {otpSent && (
-                <>
-                  <div className="form-group w-full mb-5">
-                    <TextField
-                      type="text"
-                      value={otp}
-                      label="Enter OTP"
-                      onChange={(e) => setOtp(e.target.value)}
-                      className="w-full mb-5"
-                    />
-                  </div>
-                  <Button
-                    onClick={handleOtpVerify}
-                    className="btn-org btn-lg w-full"
-                  >
-                    {isLoading ? (
-                      <CircularProgress color="inherit" />
-                    ) : (
-                      "Verify OTP"
-                    )}
-                  </Button>
-                </>
-              )} */}
               <p className="text-center mt-3">
                 {t("register.alreadyHaveAccount")}{" "}
                 <Link

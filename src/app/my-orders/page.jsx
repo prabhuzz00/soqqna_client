@@ -232,9 +232,7 @@ const Orders = () => {
                         <th scope="col" className="px-6 py-3 whitespace-nowrap">
                           Address
                         </th>
-                        <th scope="col" className="px-6 py-3 whitespace-nowrap">
-                          Pincode
-                        </th>
+
                         <th scope="col" className="px-6 py-3 whitespace-nowrap">
                           Total Amount
                         </th>
@@ -300,7 +298,7 @@ const Orders = () => {
                                   {order?.delivery_address?.mobile}
                                 </td>
                                 <td className="px-6 py-4 font-[500]">
-                                  <span className="inline-block text-[13px] font-[500] p-1 bg-[#f1f1f1] rounded-md">
+                                  <span className="inline-block text-[13px] font-[500] p-1 bg-primary rounded-md text-white">
                                     {order?.delivery_address?.addressType}
                                   </span>
                                   <span className="block w-[400px]">
@@ -308,16 +306,12 @@ const Orders = () => {
                                       " " +
                                       order?.delivery_address?.city +
                                       " " +
-                                      order?.delivery_address?.landmark +
+                                      order?.delivery_address?.area +
                                       " " +
-                                      order?.delivery_address?.state +
-                                      " " +
-                                      order?.delivery_address?.country}
+                                      order?.delivery_address?.landmark}
                                   </span>
                                 </td>
-                                <td className="px-6 py-4 font-[500]">
-                                  {order?.delivery_address?.pincode}
-                                </td>
+
                                 <td className="px-6 py-4 font-[500]">
                                   {order?.totalAmt}
                                 </td>
