@@ -67,7 +67,7 @@ const Register = () => {
     setIsLoading(true);
     try {
       const res = await postData("/api/user/verifyEmail", {
-        phone: formFields.phone,
+        email: formFields.email,
         otp,
       });
       setIsLoading(false);
@@ -92,14 +92,14 @@ const Register = () => {
       setIsProcessing(true);
       const fields = {
         name: sessionData.user.name,
-        phone: sessionData.user.phone,
+        email: sessionData.user.email,
         password: null,
         avatar: sessionData.user.image,
       };
       try {
         const res = await postData("/api/user/authWithGoogle", fields);
         Cookies.set("token", res.token, { expires: 30 });
-        Cookies.set("userphone", fields.phone);
+        Cookies.set("useremail", fields.email);
         Cookies.set("accessToken", res?.data?.accesstoken);
         Cookies.set("refreshToken", res?.data?.refreshToken);
         context.setIsLogin(true);
@@ -158,18 +158,7 @@ const Register = () => {
                       disabled={isLoading}
                     />
                   </div>
-                  <div className="form-group w-full mb-5">
-                    <TextField
-                      type="number"
-                      id="phone"
-                      name="phone"
-                      value={formFields.phone}
-                      label={t("register.phone")}
-                      onChange={onChangeInput}
-                      className="w-full mb-5"
-                      disabled={isLoading}
-                    />
-                  </div>
+                 
                   <div className="relative form-group w-full mb-5">
                     <TextField
                       type={isPasswordShow ? "text" : "password"}
