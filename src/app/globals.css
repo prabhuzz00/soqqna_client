@@ -147,8 +147,10 @@ nav ul button:hover {
   transition: all 0.2s;
 }
 
-.sliderHome:hover .swiper-button-prev, .productsSlider :hover  .swiper-button-prev,
-.sliderHome:hover .swiper-button-next, .productsSlider :hover  .swiper-button-next {
+.sliderHome:hover .swiper-button-prev,
+.productsSlider :hover .swiper-button-prev,
+.sliderHome:hover .swiper-button-next,
+.productsSlider :hover .swiper-button-next {
   display: flex !important;
 }
 
@@ -222,8 +224,9 @@ nav ul button:hover {
   margin-right: -15px;
 }
 
-footer .MuiFormControlLabel-root *{color: #fff !important;}
-
+footer .MuiFormControlLabel-root * {
+  color: #fff !important;
+}
 
 footer form input::placeholder {
   font-size: 14px;
@@ -502,4 +505,10 @@ table td {
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+.flag.sy {
+  background-image: url("/flags/ar.png") !important;
+  background-size: cover !important;
+  background-position: center !important;
 }

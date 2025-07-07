@@ -422,19 +422,23 @@ const Checkout = () => {
     if (!addr)
       return context.alertBox("error", "Please select a valid address");
 
-    const city = addr.city?.trim();
+    const city = addr.city?.trim().toLowerCase();
 
     // ✅ Loop through cart items and validate city match
     for (const item of context.cartData) {
-      const productZone = item.servicezone?.trim();
+      const productZone = item.servicezone;
 
       // ✅ Skip validation if productZone is null or empty
       if (!productZone) continue;
 
-      if (productZone !== city) {
+      const allowedCities = productZone
+        .split(",")
+        .map((c) => c.trim().toLowerCase());
+
+      if (!allowedCities.includes(city)) {
         return context.alertBox(
           "error",
-          `${item.name} is only available in ${productZone}. \nPlease Select a different city or pickup point.`
+          `${item.name} is not available in ${city}. \nPlease select a different city or pickup point.`
         );
       }
     }
