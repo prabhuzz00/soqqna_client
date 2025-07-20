@@ -34,6 +34,10 @@ const ForgotPassword = () => {
     });
   };
 
+  const isStrongPassword = (password) => {
+    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
+  };
+
   const valideValue = Object.values(formFields).every((el) => el);
 
   const handleSubmit = (e) => {
@@ -57,6 +61,15 @@ const ForgotPassword = () => {
       context.alertBox("error", "Password and confirm password not match");
       setIsLoading(false);
       return false;
+    }
+
+    if (!isStrongPassword(formFields.newPassword)) {
+      context.alertBox(
+        "error",
+        "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character"
+      );
+      setIsLoading(false);
+      return;
     }
 
     console.log(formFields);
@@ -94,6 +107,7 @@ const ForgotPassword = () => {
                 variant="outlined"
                 className="w-full"
                 name="newPassword"
+                autoComplete="off"
                 value={formFields.newPassword}
                 disabled={isLoading === true ? true : false}
                 onChange={onChangeInput}
@@ -121,6 +135,7 @@ const ForgotPassword = () => {
                 variant="outlined"
                 className="w-full"
                 name="confirmPassword"
+                autoComplete="off"
                 value={formFields.confirmPassword}
                 disabled={isLoading === true ? true : false}
                 onChange={onChangeInput}

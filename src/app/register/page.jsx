@@ -31,6 +31,10 @@ const Register = () => {
   const { t } = useTranslation();
   const { data: session, status } = useSession();
 
+  const isStrongPassword = (password) => {
+    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
+  };
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.scrollTo(0, 0);
@@ -47,6 +51,15 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
+    if (!isStrongPassword(formFields.password)) {
+      context.alertBox(
+        "error",
+        "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character"
+      );
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const res = await postData("/api/user/register", formFields);
@@ -158,7 +171,7 @@ const Register = () => {
                       disabled={isLoading}
                     />
                   </div>
-                 
+
                   <div className="relative form-group w-full mb-5">
                     <TextField
                       type={isPasswordShow ? "text" : "password"}
@@ -167,6 +180,7 @@ const Register = () => {
                       value={formFields.password}
                       label={t("register.password")}
                       onChange={onChangeInput}
+                      autoComplete="off"
                       className="w-full"
                       disabled={isLoading}
                     />
