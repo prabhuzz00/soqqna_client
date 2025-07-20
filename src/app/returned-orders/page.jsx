@@ -15,8 +15,10 @@ import Breadcrumb from "@/components/Breadcrumb";
 import { MyContext } from "@/context/ThemeProvider";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useCurrency } from "@/context/CurrencyContext";
 
 const ReturnedOrders = () => {
+  const { convertPrice, getSymbol } = useCurrency();
   const context = useContext(MyContext);
   const router = useRouter();
   const [isOpenOrderdProduct, setIsOpenOrderdProduct] = useState(null);
@@ -307,22 +309,24 @@ const ReturnedOrders = () => {
                                                     {item?.quantity}
                                                   </td>
                                                   <td className="px-6 py-4 font-[500]">
-                                                    {item?.price?.toLocaleString(
+                                                    {/* {item?.price?.toLocaleString(
                                                       "en-US",
                                                       {
                                                         style: "currency",
                                                         currency: "USD",
                                                       }
-                                                    )}
+                                                    )} */}
+                                                    {getSymbol()}{convertPrice(item?.price)}
                                                   </td>
                                                   <td className="px-6 py-4 font-[500]">
-                                                    {(
+                                                    {/* {(
                                                       item?.price *
                                                       item?.quantity
                                                     )?.toLocaleString("en-US", {
                                                       style: "currency",
                                                       currency: "USD",
-                                                    })}
+                                                    })} */}
+                                                    {getSymbol()}{convertPrice(item?.price * item?.quantity)}
                                                   </td>
                                                 </tr>
                                               );

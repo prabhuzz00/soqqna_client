@@ -2,8 +2,10 @@ import React from "react";
 import "../bannerBoxV2/style.css";
 import Link from "next/link";
 import Image from "next/image";
+import { useCurrency } from "@/context/CurrencyContext";
 
 const BannerBoxV2 = (props) => {
+  const { convertPrice, getSymbol } = useCurrency();
   return (
     <div className="bannerBoxV2 box w-full overflow-hidden rounded-md group relative">
       <Image
@@ -22,7 +24,8 @@ const BannerBoxV2 = (props) => {
         <h2 className="text-[14px] md:text-[18px] font-[600]">{props?.item?.bannerTitle}</h2>
 
         <span className="text-[20px] text-primary font-[600] w-full">
-        {props?.item?.price?.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+        {/* {props?.item?.price?.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} */}
+          {getSymbol()}{convertPrice(props?.item?.price)}
         </span>
 
         <div className="w-full">

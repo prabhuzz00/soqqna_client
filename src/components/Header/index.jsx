@@ -34,6 +34,7 @@ import Select from "@mui/material/Select";
 import Image from "next/image";
 import LocationModal from "../Location";
 import { HiOutlineLocationMarker } from "react-icons/hi";
+import { useCurrency } from "@/context/CurrencyContext";
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -45,6 +46,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 const Header = () => {
+  const { currency, changeCurrency } = useCurrency();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [locationModalOpen, setLocationModalOpen] = useState(false);
@@ -353,6 +355,29 @@ const Header = () => {
                   </Menu>
                 </div>
               </li>
+
+              {/* Currency selector */}
+              <li className="list-none">
+                <FormControl variant="standard" sx={{ minWidth: 80 }}>
+                  <Select
+                    value={currency}
+                    onChange={(e) => changeCurrency(e.target.value)}
+                    displayEmpty
+                    inputProps={{ "aria-label": "Currency Selector" }}
+                    sx={{ fontSize: "14px" }}
+                  >
+                    <MenuItem value="USD">Dollar</MenuItem>
+                    <MenuItem value="EUR">Euro</MenuItem>
+                    <MenuItem value="SAR">Saudi Riyal</MenuItem>
+                    <MenuItem value="AED">UAE Dirham</MenuItem>
+                    <MenuItem value="QAR">Qatari Riyal</MenuItem>
+                    <MenuItem value="BHD">Bahraini Dinar</MenuItem>
+                    <MenuItem value="KWD">Kuwaiti Dinar</MenuItem>
+                    <MenuItem value="SYP">Syrian Pound</MenuItem>
+                  </Select>
+                </FormControl>
+              </li>
+
 
               {context?.windowWidth > 992 && (
                 <li className="list-none px1">

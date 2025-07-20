@@ -27,8 +27,10 @@ import { useTranslation } from "@/utils/useTranslation";
 import { useLanguage } from "@/context/LanguageContext";
 import HomeLoading from "../LoadingSkeleton/homeLoading";
 import Cookies from "js-cookie";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export default function Home() {
+  const { convertPrice, getSymbol } = useCurrency();
   const [value, setValue] = useState(0);
   const [homeSlidesData, setHomeSlidesData] = useState([]);
   const [popularProductsData, setPopularProductsData] = useState([]);
@@ -277,11 +279,11 @@ export default function Home() {
             </div>
             <div className="col2">
               <p className="mb-0 mt-0 font-[500] text-center">
-                {t("home.freeShippingDesc")} ${freeDeliveryFee}
+                {t("home.freeShippingDesc")} {getSymbol()}{convertPrice(freeDeliveryFee)}
               </p>
             </div>
             <p className="font-bold text-[20px] lg:text-[25px]">
-              {t("home.onlyPrice")} ${freeDeliveryFee}
+              {t("home.onlyPrice")} {getSymbol()}{convertPrice(freeDeliveryFee)}
             </p>
           </div>
           {bannerV1Data?.length === 0 && <BannerLoading />}

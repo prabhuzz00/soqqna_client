@@ -441,16 +441,18 @@ const ProductItem = (props) => {
 
         <div className="flex items-center gap-4">
           <span className="oldPrice line-through text-gray-500 text-[15px] font-[500]">
-            {props?.item?.oldPrice?.toLocaleString("en-US", {
+            {/* {props?.item?.oldPrice?.toLocaleString("en-US", {
               style: "currency",
               currency: "USD",
-            })}
+            })} */}
+            {getSymbol()} {convertPrice(props?.item?.oldPrice)}
           </span>
           <span className="price text-primary text-[15px]  font-[600]">
-            {currentPrice?.toLocaleString("en-US", {
+            {/* {currentPrice?.toLocaleString("en-US", {
               style: "currency",
               currency: "USD",
-            })}
+            })} */}
+            {getSymbol()} {convertPrice(currentPrice)}
           </span>
         </div>
 

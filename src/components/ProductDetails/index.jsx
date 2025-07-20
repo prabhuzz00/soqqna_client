@@ -18,8 +18,10 @@ import { MyContext } from "@/context/ThemeProvider";
 import { postData } from "@/utils/api";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTranslation } from "@/utils/useTranslation";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export const ProductDetailsComponent = (props) => {
+  const { convertPrice, getSymbol } = useCurrency();
   const [productActionIndex, setProductActionIndex] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedTabName, setSelectedTabName] = useState(null);
@@ -268,10 +270,10 @@ export const ProductDetailsComponent = (props) => {
       <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row items-start sm:items-center gap-4 mt-4">
         <div className="flex items-center gap-4">
           <span className="oldPrice line-through text-gray-500 text-[20px] font-[500]">
-            ${props.item.oldPrice}
+            {getSymbol()}{convertPrice(props.item.oldPrice)}
           </span>
           <span className="price text-primary text-[20px] font-[600]">
-            ${currentPrice}
+            {getSymbol()}{convertPrice(currentPrice)}
           </span>
         </div>
         <div className="flex items-center gap-4">

@@ -12,9 +12,10 @@ Link
 import { MyContext } from "@/context/ThemeProvider";
 import Link from "next/link";
 import Image from "next/image";
+import { useCurrency } from "@/context/CurrencyContext";
 
 const HomeBannerV2 = (props) => {
-
+  const { convertPrice, getSymbol } = useCurrency();
   const context = useContext(MyContext);
 
   const filteredData = props?.data?.filter(item => item?.isDisplayOnHomeBanner === true && item?.bannerimages?.length !== 0);
@@ -71,7 +72,8 @@ const HomeBannerV2 = (props) => {
                         className="text-primary text-[16px] lg:text-[30px] 
                         font-[700] block lg:inline w-full lg:w-max"
                       >
-                        {item?.price?.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                        {/* {item?.price?.toLocaleString('en-US', { style: 'currency', currency: 'USD' })} */}
+                        {getSymbol()}{convertPrice(item?.price)}
                       </span>
                     </h3>
 

@@ -18,8 +18,10 @@ import { deleteData, editData, postData } from "@/utils/api";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTranslation } from "@/utils/useTranslation";
 import Cookies from "js-cookie";
+import { useCurrency } from "@/context/CurrencyContext";
 
 const ProductItem = (props) => {
+  const { convertPrice, getSymbol } = useCurrency();
   const [quantity, setQuantity] = useState(1);
   const [isAdded, setIsAdded] = useState(false);
   const [isAddedInMyList, setIsAddedInMyList] = useState(false);
@@ -415,16 +417,18 @@ const ProductItem = (props) => {
 
         <div className="flex items-center gap-4 justify-between">
           <span className="oldPrice line-through text-gray-500 text-[12px] lg:text-[14px] font-[500]">
-            {props?.item?.oldPrice?.toLocaleString("en-US", {
+            {/* {props?.item?.oldPrice?.toLocaleString("en-US", {
               style: "currency",
               currency: "USD",
-            })}
+            })} */}
+            {getSymbol()} {convertPrice(props?.item?.oldPrice)}
           </span>
           <span className="price text-primary text-[12px] lg:text-[14px] font-[600]">
-            {currentPrice?.toLocaleString("en-US", {
+            {/* {currentPrice?.toLocaleString("en-US", {
               style: "currency",
               currency: "USD",
-            })}
+            })} */}
+            {getSymbol()} {convertPrice(currentPrice)}
           </span>
         </div>
         <div className="!absolute bottom-[15px] left-0 pl-3 pr-3 w-full">

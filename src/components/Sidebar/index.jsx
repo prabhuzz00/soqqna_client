@@ -12,6 +12,7 @@ import { MdOutlineFilterAlt } from "react-icons/md";
 import { MyContext } from "@/context/ThemeProvider";
 import { usePathname, useSearchParams } from "next/navigation";
 import { postData } from "@/utils/api";
+import { useCurrency } from "@/context/CurrencyContext";
 
 export const Sidebar = ({
   productsData,
@@ -23,6 +24,7 @@ export const Sidebar = ({
   initialCatId,
   initialSubCatId,
 }) => {
+  const { convertPrice, getSymbol } = useCurrency();
   const [isOpenCategoryFilter, setIsOpenCategoryFilter] = useState(true);
   const [filters, setFilters] = useState({
     catId: initialCatId ? [initialCatId] : [],
@@ -175,10 +177,10 @@ export const Sidebar = ({
           />
           <div className="flex pt-4 pb-2 priceRange">
             <span className="text-[13px]">
-              From: <strong className="text-dark">Rs: {price[0]}</strong>
+              From: <strong className="text-dark"> {getSymbol()} {convertPrice(price[0])}</strong>
             </span>
             <span className="ml-auto text-[13px]">
-              From: <strong className="text-dark">Rs: {price[1]}</strong>
+              From: <strong className="text-dark">{getSymbol()} {convertPrice(price[1])}</strong>
             </span>
           </div>
         </div>

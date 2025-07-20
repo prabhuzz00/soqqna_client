@@ -398,6 +398,7 @@ import Image from "next/image";
 import Cookies from "js-cookie";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTranslation } from "@/utils/useTranslation";
+import { useCurrency } from "@/context/CurrencyContext";
 
 const CartItems = (props) => {
   const [qtyAnchorEl, setQtyAnchorEl] = useState(null);
@@ -405,6 +406,7 @@ const CartItems = (props) => {
   const openQty = Boolean(qtyAnchorEl);
 
   const context = useContext(MyContext);
+  const { convertPrice, getSymbol } = useCurrency();
   const { locale } = useLanguage();
   const { t } = useTranslation();
 
@@ -512,11 +514,11 @@ const CartItems = (props) => {
 
         <div className="flex items-center gap-4 mt-2">
           <span className="price text-[14px] font-[600]">
-            ${props?.item?.price}
+            {getSymbol()}{convertPrice(props?.item?.price)}
           </span>
 
           <span className="oldPrice line-through text-gray-500 text-[14px] font-[500]">
-            ${props?.item?.oldPrice}
+            {getSymbol()}{convertPrice(props?.item?.oldPrice)}
           </span>
 
           <span className="price text-primary text-[14px] font-[600]">

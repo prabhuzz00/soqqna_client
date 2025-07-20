@@ -9,7 +9,9 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/utils/useTranslation";
 import { useLanguage } from "@/context/LanguageContext";
+import { useCurrency } from "@/context/CurrencyContext";
 const CartPanel = (props) => {
+  const { convertPrice, getSymbol } = useCurrency();
   const context = useContext(MyContext);
   const { t } = useTranslation();
   const { locale } = useLanguage();
@@ -73,10 +75,11 @@ const CartPanel = (props) => {
                     {t("cartPage.qty")} : <span>{item?.quantity}</span>
                   </span>
                   <span className="text-primary font-bold">
-                    {parseInt(item?.price * item?.quantity)?.toLocaleString(
+                    {/* {parseInt(item?.price * item?.quantity)?.toLocaleString(
                       "en-US",
                       { style: "currency", currency: "USD" }
-                    )}
+                    )} */}
+                    {getSymbol()}{convertPrice(item?.price * item?.quantity)}
                   </span>
                 </p>
 
@@ -99,15 +102,15 @@ const CartPanel = (props) => {
               {props?.data?.length} {t("cartPage.item")}
             </span>
             <span className="text-primary font-bold">
-              {(props?.data?.length !== 0
-                ? props?.data
-                    ?.map((item) => parseInt(item.price) * item.quantity)
-                    .reduce((total, value) => total + value, 0)
+              {props?.data?.length !== 0
+                ? (
+                  <>
+                    {getSymbol()}
+                    {convertPrice(props?.data?.map((item) => parseInt(item.price) * item.quantity).reduce((total, value) => total + value, 0))}
+                  </>
+                )
                 : 0
-              )?.toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-              })}
+              }
             </span>
           </div>
         </div>
@@ -119,14 +122,18 @@ const CartPanel = (props) => {
             </span>
             <span className="text-primary font-bold">
               {(props?.data?.length !== 0
-                ? props?.data
-                    ?.map((item) => parseInt(item.price) * item.quantity)
-                    .reduce((total, value) => total + value, 0)
-                : 0
-              )?.toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-              })}
+                // ? props?.data
+                //     ?.map((item) => parseInt(item.price) * item.quantity)
+                //     .reduce((total, value) => total + value, 0)
+                // : 0
+                  ? (
+                    <>
+                      {getSymbol()}
+                      {convertPrice(props?.data?.map((item) => parseInt(item.price) * item.quantity).reduce((total, value) => total + value, 0))}
+                    </>
+                  )
+                  : 0
+              )}
             </span>
           </div>
 

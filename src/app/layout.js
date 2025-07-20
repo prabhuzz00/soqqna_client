@@ -48,6 +48,7 @@ import dynamic from "next/dynamic";
 import Script from "next/script";
 import AuthProvider from "@/components/AuthProvider/AuthProvider";
 import Header from "@/components/Header";
+import { CurrencyProvider } from "@/context/CurrencyContext";
 // const Header = dynamic(() => import("@/components/Header"), {
 //   ssr: false,
 // });
@@ -77,14 +78,16 @@ export default function RootLayout({ children }) {
       </head>
       <body>
         <AuthProvider>
-          <ThemeProvider>
-            <LanguageProvider>
-              <Header />
-              {children}
-              <WhatsAppChat />
-              <Footer />
-            </LanguageProvider>
-          </ThemeProvider>
+          <CurrencyProvider>
+            <ThemeProvider>
+              <LanguageProvider>
+                <Header />
+                {children}
+                <WhatsAppChat />
+                <Footer />
+              </LanguageProvider>
+            </ThemeProvider>
+          </CurrencyProvider>
         </AuthProvider>
         <PWARegister />
         <Script

@@ -469,13 +469,14 @@ const Orders = () => {
                                                     {item?.quantity}
                                                   </td>
                                                   <td className="px-6 py-4 font-[500]">
-                                                    {item?.price?.toLocaleString(
+                                                    {/* {item?.price?.toLocaleString(
                                                       "en-US",
                                                       {
                                                         style: "currency",
                                                         currency: "USD",
                                                       }
-                                                    )}
+                                                    )} */}
+                                                    {getSymbol()}{convertPrice(item?.price)}
                                                   </td>
                                                   <td className="px-6 py-4 font-[500]">
                                                     {(

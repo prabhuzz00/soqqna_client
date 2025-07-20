@@ -25,8 +25,10 @@ import html2canvas from "html2canvas";
 import Breadcrumb from "@/components/Breadcrumb";
 import { MyContext } from "@/context/ThemeProvider";
 import { useTranslation } from "@/utils/useTranslation";
+import { useCurrency } from "@/context/CurrencyContext";
 
 const useServiceZones = () => {
+  
   const [zones, setZones] = useState({});
   const [loaded, setLoaded] = useState(false);
 
@@ -49,6 +51,7 @@ const useServiceZones = () => {
 };
 
 const Checkout = () => {
+  const { convertPrice, getSymbol } = useCurrency();
   /* ---------- state ---------- */
   const [userData, setUserData] = useState(null);
   const [isChecked, setIsChecked] = useState(0);
@@ -649,7 +652,8 @@ const Checkout = () => {
                           </div>
                         </div>
                         <span className="text-[14px] font-[500]">
-                          {moneyFmt(item.quantity * item.price)}
+                          {/* {moneyFmt()} */}
+                          {getSymbol()}{convertPrice(item.quantity * item.price)}
                         </span>
                       </div>
                     ))}
@@ -673,13 +677,13 @@ const Checkout = () => {
                       </span>{" "}
                       <span className="font-[500] text-[14px]">
                         {" "}
-                        {shippingCost === 0 ? "FREE" : moneyFmt(shippingCost)}
+                        {shippingCost === 0 ? "FREE" : `${getSymbol()}${convertPrice(shippingCost)}`}
                       </span>
                     </h3>
                     <h3 className="!text-[16px] flex items-center justify-between py-1">
                       <span className="font-[600]">{t("checkout.total")}:</span>
                       <span className="font-[500] text-[14px]">
-                        {moneyFmt(finalAmount)}
+                        {`${getSymbol()}${convertPrice(finalAmount)}`}
                       </span>
                     </h3>
                   </div>
