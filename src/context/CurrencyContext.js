@@ -8,6 +8,7 @@ const CurrencyContext = createContext();
 export const CurrencyProvider = ({ children }) => {
   const [currency, setCurrency] = useState("USD");
   const [rates, setRates] = useState({ USD: 1 });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storedCurrency = Cookies.get("currency") || "USD";
@@ -17,11 +18,25 @@ export const CurrencyProvider = ({ children }) => {
 
   const fetchRates = async () => {
     try {
-      const res = await fetch("/api/currency-rates"); // Or use a Next.js API route
+      setLoading(true);
+      // Add query parameter to get client-formatted response
+      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_API_URL}/api/currency-rates?format=client`);
       const data = await res.json();
-      setRates(data.rates || {});
+      console.log("currency rate ", data);
+
+      if (data.success && data.rates) {
+        setRates(data.rates);
+      } else {
+        // Fallback to default rates if API fails
+        setRates({ USD: 1 });
+        console.warn("Failed to fetch rates, using default USD rate");
+      }
     } catch (error) {
       console.error("Failed to fetch currency rates", error);
+      // Fallback to default rates
+      setRates({ USD: 1 });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -31,8 +46,19 @@ export const CurrencyProvider = ({ children }) => {
   };
 
   const convertPrice = (usdAmount) => {
+    // Convert to number and validate
+    const numAmount = parseFloat(usdAmount);
+
+    // Handle invalid inputs
+    if (isNaN(numAmount) || numAmount < 0) {
+      return "0.00";
+    }
+
+    // Handle loading state
+    if (loading) return numAmount.toFixed(2);
+
     const rate = rates[currency] || 1;
-    return (usdAmount * rate).toFixed(2);
+    return (numAmount * rate).toFixed(2);
   };
 
   const getSymbol = (code = currency) => {
@@ -49,9 +75,32 @@ export const CurrencyProvider = ({ children }) => {
     return symbols[code] || code;
   };
 
+  // Helper function to get available currencies
+  const getAvailableCurrencies = () => {
+    return Object.keys(rates).map((code) => ({
+      code,
+      symbol: getSymbol(code),
+      rate: rates[code],
+    }));
+  };
+
+  // Helper function to refresh rates (useful for admin updates)
+  const refreshRates = () => {
+    fetchRates();
+  };
+
   return (
     <CurrencyContext.Provider
-      value={{ currency, changeCurrency, convertPrice, getSymbol }}
+      value={{
+        currency,
+        changeCurrency,
+        convertPrice,
+        getSymbol,
+        rates,
+        loading,
+        getAvailableCurrencies,
+        refreshRates,
+      }}
     >
       {children}
     </CurrencyContext.Provider>
