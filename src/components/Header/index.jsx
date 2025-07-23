@@ -202,26 +202,40 @@ const Header = () => {
           </div>
         </div> */}
 
-        <div className="container flex items-center justify-between gap-2 lg:gap-3 py-4">
+        {/* <div className="container flex items-center justify-between gap-2 lg:gap-3 py-4"> */}
+        <div className="container flex items-center justify-between gap-1 sm:gap-2 lg:gap-3 py-3 lg:py-4">
           {isClient &&
             clientWindowWidth !== undefined &&
             clientWindowWidth < 992 && (
               <Button
-                className="!w-[35px] !min-w-[35px] !h-[35px] !rounded-full !text-gray-800"
+                // className="!w-[35px] !min-w-[35px] !h-[35px] !rounded-full !text-gray-800"
+              className="!w-[32px] !min-w-[32px] !h-[32px] sm:!w-[35px] sm:!min-w-[35px] sm:!h-[35px] !rounded-full !text-gray-800 !p-0"
                 onClick={() => openMobileMenu(true)}
               >
-                <HiOutlineMenu size={22} />
+              <HiOutlineMenu size={18} className="sm:!text-[22px]" />
               </Button>
             )}
 
           <div className="headerPart1 flex items-center  gap-5">
             {/* logo wrapper start here */}
-            <div className="logoWrapper">
+            {/* <div className="logoWrapper">
               <Link href="/">
                 <Image
                   src={logoSrc}
                   alt="logo"
                   className="max-w-[140px] lg:max-w-[120px]"
+                  width={140}
+                  height={60}
+                  priority
+                />
+              </Link>
+            </div> */}
+            <div className="logoWrapper">
+              <Link href="/">
+                <Image
+                  src={logoSrc}
+                  alt="logo"
+                  className="max-w-[100px] sm:max-w-[120px] lg:max-w-[140px]"
                   width={140}
                   height={60}
                   priority
@@ -264,7 +278,8 @@ const Header = () => {
             {/* location wrapper ends here */}
           </div>
 
-          <div className="headerPart2 w-[35%]">
+          {/* <div className="headerPart2 w-[35%]"> */}
+          <div className="headerPart2 w-[35%] lg:w-[40%]">
             {/* search wrapper ends here */}
             <div
               className={`col2 fixed top-0 left-0 w-full h-full lg:static p-2 lg:p-0 bg-white z-50 ${
@@ -280,8 +295,10 @@ const Header = () => {
             {/* search wrapper ends here */}
           </div>
 
-          <div className="headerPart3 flex items-center justify-end gap-5">
-            <ul className="flex items-center justify-end gap-2 lg:gap-3 w-full">
+          {/* <div className="headerPart3 flex items-center justify-end gap-5">
+            <ul className="flex items-center justify-end gap-2 lg:gap-3 w-full"> */}
+          <div className="headerPart3 flex items-center justify-end gap-2 lg:gap-5">
+            <ul className="flex items-center justify-end gap-1 sm:gap-2 lg:gap-3 w-full">
               {context?.windowWidth < 992 && (
                 <li>
                   <HiOutlineLocationMarker
@@ -294,16 +311,18 @@ const Header = () => {
               <li className="list-none relative">
                 <div className="relative">
                   <Button
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1 !min-w-[50px] !px-2"
                     onClick={handleClickLang}
                   >
                     <Image
                       src={selectedlang.img}
                       alt="lang"
-                      width={25}
-                      height={25}
+                      width={context?.windowWidth < 992 ? 20 : 25}
+                      height={context?.windowWidth < 992 ? 20 : 25}
                     />
-                    <span className="text-gray-800">{selectedlang.lang}</span>
+                    {context?.windowWidth > 992 && (
+                      <span className="text-gray-800 text-sm">{selectedlang.lang}</span>
+                    )}
                   </Button>
 
                   <Menu
@@ -357,7 +376,7 @@ const Header = () => {
               </li>
 
               {/* Currency selector */}
-              <li className="list-none">
+              {/* <li className="list-none">
                 <FormControl variant="standard" sx={{ minWidth: 80 }}>
                   <Select
                     value={currency}
@@ -374,6 +393,47 @@ const Header = () => {
                     <MenuItem value="BHD">Bahraini Dinar</MenuItem>
                     <MenuItem value="KWD">Kuwaiti Dinar</MenuItem>
                     <MenuItem value="SYP">Syrian Pound</MenuItem>
+                  </Select>
+                </FormControl>
+              </li> */}
+              <li className="list-none">
+                <FormControl variant="standard" sx={{ minWidth: context?.windowWidth < 992 ? 60 : 80 }}>
+                  <Select
+                    value={currency}
+                    onChange={(e) => changeCurrency(e.target.value)}
+                    displayEmpty
+                    inputProps={{ "aria-label": "Currency Selector" }}
+                    sx={{
+                      fontSize: context?.windowWidth < 992 ? "12px" : "14px",
+                      "& .MuiSelect-select": {
+                        padding: context?.windowWidth < 992 ? "4px 24px 4px 8px" : "4px 32px 4px 8px"
+                      }
+                    }}
+                  >
+                    <MenuItem value="USD" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                      {context?.windowWidth < 992 ? "$" : "Dollar"}
+                    </MenuItem>
+                    <MenuItem value="EUR" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                      {context?.windowWidth < 992 ? "€" : "Euro"}
+                    </MenuItem>
+                    <MenuItem value="SAR" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                      {context?.windowWidth < 992 ? "SAR" : "Saudi Riyal"}
+                    </MenuItem>
+                    <MenuItem value="AED" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                      {context?.windowWidth < 992 ? "AED" : "UAE Dirham"}
+                    </MenuItem>
+                    <MenuItem value="QAR" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                      {context?.windowWidth < 992 ? "QAR" : "Qatari Riyal"}
+                    </MenuItem>
+                    <MenuItem value="BHD" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                      {context?.windowWidth < 992 ? "BHD" : "Bahraini Dinar"}
+                    </MenuItem>
+                    <MenuItem value="KWD" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                      {context?.windowWidth < 992 ? "KWD" : "Kuwaiti Dinar"}
+                    </MenuItem>
+                    <MenuItem value="SYP" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                      {context?.windowWidth < 992 ? "SYP" : "Syrian Pound"}
+                    </MenuItem>
                   </Select>
                 </FormControl>
               </li>
@@ -567,10 +627,8 @@ const Header = () => {
                 </>
               )}
 
-              {context?.isLogin &&
-                clientWindowWidth !== undefined &&
-                clientWindowWidth > 992 && (
-                  <li>
+              {context?.isLogin && (
+                <li className={context?.windowWidth < 992 ? "hidden" : "block"}>
                     <Tooltip title={t("header.wishlist")}>
                       <span>
                         <Link href="/my-list">
@@ -611,6 +669,37 @@ const Header = () => {
                   </IconButton>
                 </Tooltip>
               </li>
+
+              {context.isLogin === false && context?.windowWidth < 992 && (
+                <li className="list-none">
+                  <Link href="/login">
+                    <Button className="!min-w-[35px] !w-[35px] !h-[35px] !rounded-full !text-gray-800 !p-0">
+                      <FaRegUser size={16} />
+                    </Button>
+                  </Link>
+                </li>
+              )}
+
+              {context.isLogin === true && context?.windowWidth < 992 && (
+                <li className="list-none">
+                  <Button
+                    className="!min-w-[35px] !w-[35px] !h-[35px] !rounded-full !text-gray-800 !p-0 overflow-hidden"
+                    onClick={handleClick}
+                  >
+                    {context?.userData?.avatar !== "" && context?.userData?.avatar !== undefined ? (
+                      <Image
+                        src={context.userData.avatar}
+                        alt="User Avatar"
+                        width={35}
+                        height={35}
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                    ) : (
+                      <FaRegUser size={16} />
+                    )}
+                  </Button>
+                </li>
+              )}
             </ul>
           </div>
         </div>
@@ -626,7 +715,8 @@ const Header = () => {
         <div className="overlay bg-[rgba(0,0,0,0.5)] w-full h-full fixed top-0 left-0 z-[1000]"></div>
       )}
 
-      <div className="afterHeader mt-[120px] lg:mt-0"></div>
+      {/* <div className="afterHeader mt-[120px] lg:mt-0"></div> */}
+      <div className="afterHeader mt-[70px] sm:mt-[80px] lg:mt-0"></div>
     </>
   );
 };
