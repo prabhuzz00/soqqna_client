@@ -232,6 +232,7 @@ const LoginPage = () => {
                   variant="outlined"
                   className="w-full"
                   name="password"
+                  autoComplete="off"
                   value={formFields.password}
                   disabled={isLoading === true ? true : false}
                   onChange={onChangeInput}
