@@ -33,6 +33,7 @@ const ThemeProvider = ({ children }) => {
 
   const [openSearchPanel, setOpenSearchPanel] = useState(false);
   const [userLocation, setUserLocation] = useState("Select Location"); // State for user location
+  const [siteSettings, setSiteSettings] = useState({});
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -154,6 +155,28 @@ const ThemeProvider = ({ children }) => {
     }
   }, []);
 
+  useEffect(() => {
+    const fetchSiteSettings = async () => {
+      try {
+        const res = await fetchDataFromApi("/api/site-settings");
+        const settings = res?.data || {};
+
+        Cookies.set("siteSettings", JSON.stringify(settings), { expires: 1 });
+        setSiteSettings(settings);
+      } catch (err) {
+        console.error("Error fetching site settings:", err);
+
+        // Fallback to cookie if available
+        const cookieData = Cookies.get("siteSettings");
+        if (cookieData) {
+          setSiteSettings(JSON.parse(cookieData));
+        }
+      }
+    };
+
+    fetchSiteSettings();
+  }, []);
+
   const alertBox = (type, msg) => {
     if (type === "success") {
       toast.success(msg);
@@ -246,6 +269,8 @@ const ThemeProvider = ({ children }) => {
     alertBox,
     setUserData,
     userData,
+    siteSettings,
+    setSiteSettings,
     setCatData,
     catData,
     addToCart,

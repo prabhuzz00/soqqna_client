@@ -44,6 +44,7 @@ export default function Home() {
   const [isRandomLoading, setIsRandomLoading] = useState(false);
   const [error, setError] = useState(null);
   const [freeDeliveryFee, setFreeDeliveryFee] = useState([]);
+  const [siteSettings, setSiteSettings] = useState(null);
 
   const context = useContext(MyContext);
   const { locale } = useLanguage();
@@ -94,16 +95,38 @@ export default function Home() {
     fetchData();
   }, []);
 
+  // useEffect(() => {
+  //   const fetchSiteSettings = async () => {
+  //     try {
+  //       const res = await fetchDataFromApi("/api/site-settings");
+  //       const settings = res?.data || {};
+
+  //       // Save the whole object as JSON string in cookies (expires in 1 day)
+  //       Cookies.set("siteSettings", JSON.stringify(settings), { expires: 1 });
+  //     } catch (err) {
+  //       console.error("Error fetching site settings:", err);
+  //     }
+  //   };
+
+  //   fetchSiteSettings();
+  // }, []);
+
   useEffect(() => {
     const fetchSiteSettings = async () => {
       try {
         const res = await fetchDataFromApi("/api/site-settings");
         const settings = res?.data || {};
 
-        // Save the whole object as JSON string in cookies (expires in 1 day)
         Cookies.set("siteSettings", JSON.stringify(settings), { expires: 1 });
+        setSiteSettings(settings); // Update state
       } catch (err) {
         console.error("Error fetching site settings:", err);
+
+        // Try to read from cookie if fetch fails
+        const cookieData = Cookies.get("siteSettings");
+        if (cookieData) {
+          setSiteSettings(JSON.parse(cookieData));
+        }
       }
     };
 
@@ -211,7 +234,9 @@ export default function Home() {
                 {t("home.popularProductsTitle")}
               </h2>
               <p className="text-[12px] sm:text-[14px] md:text-[13px] lg:text-[14px] font-[400] mt-0 mb-0">
-                {t("home.popularProductsDesc")}
+                {locale === "ar"
+                  ? siteSettings?.popularProductHeadingAr
+                  : siteSettings?.popularProductHeadingEn}
               </p>
             </div>
             <div className="rightSec w-full lg:w-[60%]">
@@ -279,11 +304,13 @@ export default function Home() {
             </div>
             <div className="col2">
               <p className="mb-0 mt-0 font-[500] text-center">
-                {t("home.freeShippingDesc")} {getSymbol()}{convertPrice(freeDeliveryFee)}
+                {t("home.freeShippingDesc")} {getSymbol()}
+                {convertPrice(freeDeliveryFee)}
               </p>
             </div>
             <p className="font-bold text-[20px] lg:text-[25px]">
-              {t("home.onlyPrice")} {getSymbol()}{convertPrice(freeDeliveryFee)}
+              {t("home.onlyPrice")} {getSymbol()}
+              {convertPrice(freeDeliveryFee)}
             </p>
           </div>
           {bannerV1Data?.length === 0 && <BannerLoading />}

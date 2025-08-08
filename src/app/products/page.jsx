@@ -3,15 +3,21 @@ import dynamic from "next/dynamic";
 import { MyContext } from "@/context/ThemeProvider";
 import React, { useContext, useEffect, useState } from "react";
 
-const Sidebar = dynamic(() => import("@/components/Sidebar").then(mod => mod.Sidebar), {
-  ssr: false,
-});
+const Sidebar = dynamic(
+  () => import("@/components/Sidebar").then((mod) => mod.Sidebar),
+  {
+    ssr: false,
+  }
+);
 const ProductItem = dynamic(() => import("@/components/ProductItem"), {
   ssr: false,
 });
-const ProductItemListView = dynamic(() => import("@/components/ProductItemListView"), {
-  ssr: false,
-});
+const ProductItemListView = dynamic(
+  () => import("@/components/ProductItemListView"),
+  {
+    ssr: false,
+  }
+);
 const ProductLoadingGrid = dynamic(
   () => import("@/components/ProductLoading/productLoadingGrid"),
   { ssr: false }
@@ -236,14 +242,14 @@ const ProductPage = () => {
 
               <div className="bg-[#f1f1f1] p-2 w-full mb-4 rounded-md flex items-center justify-between sticky top-[53px] z-[99]">
                 <div className="col1 flex items-center itemViewActions">
-                  <Button
+                  {/* <Button
                     className={`!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !text-[#000] ${
                       itemView === "list" && "active !bg-[#dfdfdf]"
                     }`}
                     onClick={() => setItemView("list")}
                   >
                     <LuMenu className="text-[rgba(0,0,0,0.7)] text-[16px]" />
-                  </Button>
+                  </Button> */}
                   <Button
                     className={`!w-[35px] !h-[35px] !min-w-[35px] !rounded-full !text-[#000] ${
                       itemView === "grid" && "active !bg-[#dfdfdf]"

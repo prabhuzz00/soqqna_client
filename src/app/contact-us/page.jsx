@@ -3,41 +3,33 @@ import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { Phone, Mail, MapPin, Clock, MessageCircle } from "lucide-react";
 import { useTranslation } from "@/utils/useTranslation";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function ContactPage() {
   const { t } = useTranslation();
-  const [settings, setSettings] = useState({
-    phone: "",
-    email: "",
-    addressLine1: "",
-    addressLine2: "",
-    addressLine3: "",
-    whatsapp: "",
-    hours1: "",
-    hours2: "",
-    hours3: "",
-  });
+  const { locale } = useLanguage();
+  const [siteSettings, setSiteSettings] = useState(null);
 
   useEffect(() => {
-    try {
-      const raw = Cookies.get("siteSettings");
-      if (raw) {
-        const data = JSON.parse(raw);
-        setSettings({
-          phone: data.contactNo || "+1 (555) 123-4567",
-          email: data.email || "contact@soouqna.com",
-          addressLine1: data.addressLine1 || "123 Commerce Street",
-          addressLine2: data.addressLine2 || "Business District",
-          addressLine3: data.addressLine3 || "City, Country",
-          whatsapp: data.whatsapp || "15551234567",
-          hours1: data.hours1 || "Monday – Friday 9:00 AM – 6:00 PM",
-          hours2: data.hours2 || "Saturday 10:00 AM – 4:00 PM",
-          hours3: data.hours3 || "Sunday Closed",
-        });
+    const fetchSiteSettings = async () => {
+      try {
+        const res = await fetchDataFromApi("/api/site-settings");
+        const settings = res?.data || {};
+
+        Cookies.set("siteSettings", JSON.stringify(settings), { expires: 1 });
+        setSiteSettings(settings); // Update state
+      } catch (err) {
+        console.error("Error fetching site settings:", err);
+
+        // Try to read from cookie if fetch fails
+        const cookieData = Cookies.get("siteSettings");
+        if (cookieData) {
+          setSiteSettings(JSON.parse(cookieData));
+        }
       }
-    } catch (err) {
-      console.error("Failed to parse siteSettings cookie", err);
-    }
+    };
+
+    fetchSiteSettings();
   }, []);
 
   return (
@@ -61,12 +53,12 @@ export default function ContactPage() {
           <InfoCard
             icon={<Phone className="h-8 w-8 text-primary" />}
             title={t("contact.callUs")}
-            text={settings.phone}
+            text={siteSettings?.contactNo}
           />
           <InfoCard
             icon={<Mail className="h-8 w-8 text-primary" />}
             title={t("contact.email")}
-            text={settings.email}
+            text={siteSettings?.email}
           />
           <InfoCard
             icon={<MessageCircle className="h-8 w-8 text-primary" />}
@@ -85,22 +77,34 @@ export default function ContactPage() {
               <div className="flex items-start gap-4">
                 <MapPin className="h-6 w-6 text-primary" />
                 <p className="text-muted-foreground">
-                  {settings.addressLine1}
+                  {locale === "ar"
+                    ? siteSettings?.addressLine1ar
+                    : siteSettings?.addressLine1}
                   <br />
-                  {settings.addressLine2}
+                  {locale === "ar"
+                    ? siteSettings?.addressLine2ar
+                    : siteSettings?.addressLine2}
                   <br />
-                  {settings.addressLine3}
+                  {locale === "ar"
+                    ? siteSettings?.addressLine3ar
+                    : siteSettings?.addressLine3}
                 </p>
               </div>
 
               <div className="flex items-start gap-4">
                 <Clock className="h-6 w-6 text-primary" />
                 <p className="text-muted-foreground">
-                  {settings.hours1}
+                  {locale === "ar"
+                    ? siteSettings?.workingHourL1ar
+                    : siteSettings?.workingHourL1}
                   <br />
-                  {settings.hours2}
+                  {locale === "ar"
+                    ? siteSettings?.workingHourL2ar
+                    : siteSettings?.workingHourL2}
                   <br />
-                  {settings.hours3}
+                  {locale === "ar"
+                    ? siteSettings?.workingHourL3ar
+                    : siteSettings?.workingHourL3}
                 </p>
               </div>
             </div>
@@ -114,7 +118,7 @@ export default function ContactPage() {
                 {t("contact.needHelpText")}
               </p>
               <a
-                href={`https://wa.me/${settings.phone}`}
+                href={`https://wa.me/${siteSettings?.contactNo}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow transition hover:shadow-lg"

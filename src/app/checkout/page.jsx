@@ -28,7 +28,6 @@ import { useTranslation } from "@/utils/useTranslation";
 import { useCurrency } from "@/context/CurrencyContext";
 
 const useServiceZones = () => {
-  
   const [zones, setZones] = useState({});
   const [loaded, setLoaded] = useState(false);
 
@@ -346,29 +345,53 @@ const Checkout = () => {
     new window.Razorpay(opts).open();
   };
 
-  /* ---------- Cash on Delivery ---------- */
   // const cashOnDelivery = () => {
   //   if (!userData?.address_details?.length)
   //     return context.alertBox("error", "Please add address");
 
-  //   const addr = userData?.address_details?.find(
+  //   const addr = userData.address_details.find(
   //     (a) => a._id === selectedAddress
   //   );
+  //   if (!addr)
+  //     return context.alertBox("error", "Please select a valid address");
 
-  //   const v = validateCOD(addr);
-  //   if (!v.ok) {
-  //     setSelectedCity(v.cityKey || "");
-  //     setPickupChoices(v.cityKey ? v.areas : []);
-  //     setSelectedPickup("");
-  //     setShowPickupModal(true);
-  //     setPendingCOD({ addr, finalAmount });
-  //     return;
+  //   const city = addr.city?.trim().toLowerCase();
+  //   const area = addr.area?.trim().toLowerCase(); // assuming `area` field is present
+  //   const isDoorStep = addr.addressType === "Home Delivery";
+
+  //   for (const item of context.cartData) {
+  //     const zone = serviceZones.find(
+  //       (z) => z.city?.trim().toLowerCase() === city
+  //     );
+
+  //     if (!zone) {
+  //       return context.alertBox(
+  //         "error",
+  //         `${item.name} is not available in ${city}.`
+  //       );
+  //     }
+
+  //     const matchedArea = zone.areas.find(
+  //       (a) => a.name?.trim().toLowerCase() === area
+  //     );
+
+  //     if (!matchedArea) {
+  //       return context.alertBox(
+  //         "error",
+  //         `${item.name} is not available in ${area}, ${city}.`
+  //       );
+  //     }
+
+  //     if (isDoorStep && !matchedArea.doorStep) {
+  //       return context.alertBox(
+  //         "error",
+  //         `${item.name} cannot be delivered to your area (${area}) via Home Delivery. Please choose Pickup Point.`
+  //       );
+  //     }
   //   }
 
-  //   const pickupPoint = v.pickup || null;
-
+  //   // ✅ Proceed to create order
   //   setIsLoading(true);
-
   //   const stamp = Date.now().toString();
   //   const rand = Math.floor(1e8 + Math.random() * 9e8).toString();
   //   const genBarcode = (stamp + rand).slice(0, 20);
@@ -380,12 +403,12 @@ const Checkout = () => {
   //     paymentId: "",
   //     payment_status: "CASH ON DELIVERY",
   //     delivery_address: selectedAddress,
-  //     totalAmt: finalAmount, // MOD
+  //     totalAmt: finalAmount,
   //     barcode: genBarcode,
   //     couponId: appliedCoupon?.couponId || null,
   //     couponCode: appliedCoupon?.code || null,
   //     couponDiscount: appliedCoupon?.discount || null,
-  //     pickupPoint: "DoorStep",
+  //     pickupPoint: isDoorStep ? "DoorStep" : "PickupPoint",
   //     date: new Date().toLocaleString("en-US", {
   //       month: "short",
   //       day: "2-digit",
@@ -410,6 +433,7 @@ const Checkout = () => {
   //         }
   //       );
   //     }
+
   //     context.clearCart();
   //     router.push("/my-orders/success");
   //   });
@@ -426,22 +450,20 @@ const Checkout = () => {
       return context.alertBox("error", "Please select a valid address");
 
     const city = addr.city?.trim().toLowerCase();
+    const isDoorStep = addr.addressType === "Home Delivery";
 
-    // ✅ Loop through cart items and validate city match
     for (const item of context.cartData) {
-      const productZone = item.servicezone;
-
-      // ✅ Skip validation if productZone is null or empty
-      if (!productZone) continue;
+      const productZone = item.serviceZone;
+      if (!productZone) continue; // skip if no zone restriction
 
       const allowedCities = productZone
         .split(",")
-        .map((c) => c.trim().toLowerCase());
+        .map((z) => z.trim().toLowerCase());
 
       if (!allowedCities.includes(city)) {
         return context.alertBox(
           "error",
-          `${item.name} is not available in ${city}. \nPlease select a different city or pickup point.`
+          `${item.name} is only available in ${productZone}.\nPlease select a different city or pickup point.`
         );
       }
     }
@@ -464,8 +486,7 @@ const Checkout = () => {
       couponId: appliedCoupon?.couponId || null,
       couponCode: appliedCoupon?.code || null,
       couponDiscount: appliedCoupon?.discount || null,
-      pickupPoint:
-        addr.addressType === "Home Delivery" ? "DoorStep" : "PickupPoint",
+      pickupPoint: isDoorStep ? "DoorStep" : "PickupPoint",
       date: new Date().toLocaleString("en-US", {
         month: "short",
         day: "2-digit",
@@ -653,7 +674,8 @@ const Checkout = () => {
                         </div>
                         <span className="text-[14px] font-[500]">
                           {/* {moneyFmt()} */}
-                          {getSymbol()}{convertPrice(item.quantity * item.price)}
+                          {getSymbol()}
+                          {convertPrice(item.quantity * item.price)}
                         </span>
                       </div>
                     ))}
@@ -677,7 +699,9 @@ const Checkout = () => {
                       </span>{" "}
                       <span className="font-[500] text-[14px]">
                         {" "}
-                        {shippingCost === 0 ? "FREE" : `${getSymbol()}${convertPrice(shippingCost)}`}
+                        {shippingCost === 0
+                          ? "FREE"
+                          : `${getSymbol()}${convertPrice(shippingCost)}`}
                       </span>
                     </h3>
                     <h3 className="!text-[16px] flex items-center justify-between py-1">
@@ -690,13 +714,6 @@ const Checkout = () => {
                 </div>
 
                 <div className="flex items-center flex-col gap-3 mb-2">
-                  {/* <Button
-                    type="submit"
-                    className="btn-org btn-lg w-full flex gap-2 items-center"
-                  >
-                    <BsFillBagCheckFill className="text-[20px]" /> Checkout
-                  </Button> */}
-
                   <Button
                     type="button"
                     className="btn-dark btn-lg w-full flex gap-2 items-center"
