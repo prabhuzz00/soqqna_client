@@ -432,7 +432,7 @@ const Header = () => {
                       {context?.windowWidth < 992 ? "KWD" : "Kuwaiti Dinar"}
                     </MenuItem>
                     <MenuItem value="SYP" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
-                      {context?.windowWidth < 992 ? "SP" : "Syrian Pound"}
+                      {context?.windowWidth < 992 ? "SYP" : "Syrian Pound"}
                     </MenuItem>
                   </Select>
                 </FormControl>
