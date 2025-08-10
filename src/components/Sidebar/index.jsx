@@ -171,13 +171,13 @@ export const Sidebar = ({
           <RangeSlider
             value={price}
             onInput={setPrice}
-            min={100}
+            min={0}
             max={60000}
             step={5}
           />
           <div className="flex pt-4 pb-2 priceRange">
             <span className="text-[13px]">
-              From: <strong className="text-dark"> {getSymbol()} {convertPrice(price[0])}</strong>
+              To: <strong className="text-dark"> {getSymbol()} {convertPrice(price[0])}</strong>
             </span>
             <span className="ml-auto text-[13px]">
               From: <strong className="text-dark">{getSymbol()} {convertPrice(price[1])}</strong>
