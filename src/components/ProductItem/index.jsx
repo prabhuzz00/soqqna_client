@@ -43,7 +43,7 @@ const ProductItem = (props) => {
   useEffect(() => {
     const initialImages =
       props?.item?.variation?.length > 0
-        ? props?.item?.variation[0]?.color?.images || props?.item?.images
+        ? props?.item?.images || props?.item?.variation[0]?.color?.images
         : props?.item?.images;
     setImages(initialImages || []);
 
@@ -122,7 +122,7 @@ const ProductItem = (props) => {
         const defaultVariation = props?.item?.variation[0];
         setSelectedColor(defaultVariation);
         setSelectedSize(null);
-        setImages(defaultVariation?.color?.images || props?.item?.images || []);
+        setImages(props?.item?.images || defaultVariation?.color?.images || []);
         setCurrentPrice(props?.item?.price);
         setCurrentStock(props?.item?.countInStock);
       }
@@ -295,7 +295,7 @@ const ProductItem = (props) => {
     }
   };
 
-  console.log("producct pros ", props)
+  console.log("producct pros ", props);
 
   return (
     <div className="productItem shadow-lg rounded-md overflow-hidden border-1 border-[rgba(0,0,0,0.1)]">

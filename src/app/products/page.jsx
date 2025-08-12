@@ -31,6 +31,7 @@ import { IoGridSharp } from "react-icons/io5";
 import { fetchDataFromApi, postData } from "@/utils/api";
 import { Suspense } from "react";
 import Breadcrumb from "@/components/Breadcrumb";
+import { useTranslation } from "@/utils/useTranslation";
 
 // Global function to trigger query param updates (call this in Link components)
 export const triggerQueryUpdate = () => {
@@ -55,6 +56,8 @@ const ProductPage = () => {
   const [categoryName, setCategoryName] = useState("Products");
   const [subCategoryName, setSubCategoryName] = useState("");
   const [parentCatId, setParentCatId] = useState(null);
+
+  const { t } = useTranslation();
 
   // Parse URL query parameters and update on navigation
   useEffect(() => {
@@ -259,13 +262,15 @@ const ProductPage = () => {
                     <IoGridSharp className="text-[rgba(0,0,0,0.7)] text-[14px]" />
                   </Button>
                   <span className="text-[14px] hidden sm:block md:block lg:block font-[500] pl-3 text-[rgba(0,0,0,0.7)]">
-                    There are {productsData?.products?.length || 0} products.
+                    {t("productsPage.productsCount1")}{" "}
+                    {productsData?.products?.length || 0}{" "}
+                    {t("productsPage.productsCount2")}
                   </span>
                 </div>
 
                 <div className="col2 ml-auto flex items-center justify-end gap-3 pr-4">
                   <span className="text-[14px] font-[500] pl-3 text-[rgba(0,0,0,0.7)]">
-                    Sort By
+                    {t("productsPage.sortBy")}
                   </span>
                   <Button
                     id="basic-button"
@@ -290,12 +295,12 @@ const ProductPage = () => {
                           "name",
                           "asc",
                           productsData,
-                          "Name, A to Z"
+                          t("productsPage.nameAsc")
                         )
                       }
                       className="!text-[13px] !text-[#000] !capitalize"
                     >
-                      Name, A to Z
+                      {t("productsPage.nameAsc")}
                     </MenuItem>
                     <MenuItem
                       onClick={() =>
@@ -303,12 +308,12 @@ const ProductPage = () => {
                           "name",
                           "desc",
                           productsData,
-                          "Name, Z to A"
+                          t("productsPage.nameDesc")
                         )
                       }
                       className="!text-[13px] !text-[#000] !capitalize"
                     >
-                      Name, Z to A
+                      {t("productsPage.nameDesc")}
                     </MenuItem>
                     <MenuItem
                       onClick={() =>
@@ -316,12 +321,12 @@ const ProductPage = () => {
                           "price",
                           "asc",
                           productsData,
-                          "Price, low to high"
+                          t("productsPage.priceAsc")
                         )
                       }
                       className="!text-[13px] !text-[#000] !capitalize"
                     >
-                      Price, low to high
+                      {t("productsPage.priceAsc")}
                     </MenuItem>
                     <MenuItem
                       onClick={() =>
@@ -329,12 +334,12 @@ const ProductPage = () => {
                           "price",
                           "desc",
                           productsData,
-                          "Price, high to low"
+                          t("productsPage.priceDesc")
                         )
                       }
                       className="!text-[13px] !text-[#000] !capitalize"
                     >
-                      Price, high to low
+                      {t("productsPage.priceDesc")}
                     </MenuItem>
                   </Menu>
                 </div>

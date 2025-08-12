@@ -93,7 +93,7 @@ const Navigation = (props) => {
 
               <div className="categoryDropdownMwnu w-full h-auto bg-white absolute top-[100%] left-0 z-[100] shadow-md">
                 <Collapse isOpened={isOpenCatPanel}>
-                  <div className="flex gap-4 py-4">
+                  <div className="flex gap-4 py-4 h-[40vh]">
                     <ul className="mb-0 p-2 pl-8 w-[300px]">
                       {catData?.length !== 0 &&
                         catData

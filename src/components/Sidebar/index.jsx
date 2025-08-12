@@ -13,6 +13,8 @@ import { MyContext } from "@/context/ThemeProvider";
 import { usePathname, useSearchParams } from "next/navigation";
 import { postData } from "@/utils/api";
 import { useCurrency } from "@/context/CurrencyContext";
+import { useTranslation } from "@/utils/useTranslation";
+import { useLanguage } from "@/context/LanguageContext";
 
 export const Sidebar = ({
   productsData,
@@ -40,6 +42,9 @@ export const Sidebar = ({
   const context = useContext(MyContext);
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const { locale } = useLanguage();
+  const { t } = useTranslation();
 
   // Initialize filters based on URL query parameters
   useEffect(() => {
@@ -138,7 +143,7 @@ export const Sidebar = ({
       <div className="lg:overflow-visible overflow-auto w-full">
         <div className="box">
           <h3 className="w-full mb-3 text-[16px] font-[600] flex items-center pr-5">
-            Shop by Category
+            {t("sidebar.shopByCategory")}
             <Button
               className="!w-[30px] !h-[30px] !min-w-[30px] !rounded-full !ml-auto !text-[#000]"
               onClick={() => setIsOpenCategoryFilter(!isOpenCategoryFilter)}
@@ -155,7 +160,7 @@ export const Sidebar = ({
                     value={item?._id}
                     control={<Checkbox />}
                     checked={filters?.catId?.includes(item?._id)}
-                    label={item?.name}
+                    label={locale === "ar" ? item?.arName : item?.name}
                     onChange={() => handleCheckboxChange("catId", item?._id)}
                     className="w-full"
                   />
@@ -166,7 +171,7 @@ export const Sidebar = ({
 
         <div className="box mt-4">
           <h3 className="w-full mb-3 text-[16px] font-[600] flex items-center pr-5">
-            Filter By Price
+            {t("sidebar.filterByPrice")}
           </h3>
           <RangeSlider
             value={price}
@@ -177,17 +182,24 @@ export const Sidebar = ({
           />
           <div className="flex pt-4 pb-2 priceRange">
             <span className="text-[13px]">
-              To: <strong className="text-dark"> {getSymbol()} {convertPrice(price[0])}</strong>
+              {t("sidebar.to")}:{" "}
+              <strong className="text-dark">
+                {" "}
+                {getSymbol()} {convertPrice(price[0])}
+              </strong>
             </span>
             <span className="ml-auto text-[13px]">
-              From: <strong className="text-dark">{getSymbol()} {convertPrice(price[1])}</strong>
+              {t("sidebar.from")}:{" "}
+              <strong className="text-dark">
+                {getSymbol()} {convertPrice(price[1])}
+              </strong>
             </span>
           </div>
         </div>
 
         <div className="box mt-4">
           <h3 className="w-full mb-3 text-[16px] font-[600] flex items-center pr-5">
-            Filter By Rating
+            {t("sidebar.filterByRating")}
           </h3>
           {[5, 4, 3, 2, 1].map((rating) => (
             <div key={rating} className="flex items-center pl-2 lg:pl-1">

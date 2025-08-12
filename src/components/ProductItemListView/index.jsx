@@ -40,10 +40,10 @@ const ProductItem = (props) => {
 
   // Initialize images, color, price, and stock
   useEffect(() => {
-    const initialImages =
-      props?.item?.variation?.length > 0
-        ? props?.item?.variation[0]?.color?.images || props?.item?.images
-        : props?.item?.images;
+    const initialImages = props?.item?.images[0];
+    // props?.item?.variation?.length > 0
+    //   ? props?.item?.images || props?.item?.variation[0]?.color?.images
+    //   : props?.item?.images;
     setImages(initialImages || []);
 
     if (props?.item?.variation?.length > 0) {
@@ -102,7 +102,7 @@ const ProductItem = (props) => {
         );
         if (variation) {
           setSelectedColor(variation);
-          setImages(variation?.color?.images || props?.item?.images || []);
+          setImages(props?.item?.images || variation?.color?.images || []);
           const sizeData = variation?.sizes?.find(
             (s) => s.label === item[0].size
           );
@@ -121,7 +121,7 @@ const ProductItem = (props) => {
         const defaultVariation = props?.item?.variation[0];
         setSelectedColor(defaultVariation);
         setSelectedSize(null);
-        setImages(defaultVariation?.color?.images || props?.item?.images || []);
+        setImages(props?.item?.images || defaultVariation?.color?.images || []);
         setCurrentPrice(props?.item?.price);
         setCurrentStock(props?.item?.countInStock);
       }
@@ -148,7 +148,7 @@ const ProductItem = (props) => {
     setSelectedSize(null); // Reset size selection
     setCurrentPrice(props?.item?.price);
     setCurrentStock(props?.item?.countInStock);
-    setImages(variation?.color?.images || props?.item?.images || []);
+    setImages(props?.item?.images || variation?.color?.images || []);
   };
 
   // Handle size selection
@@ -245,7 +245,8 @@ const ProductItem = (props) => {
         const defaultVariation = props?.item?.variation[0];
         setSelectedColor(defaultVariation);
         setSelectedSize(null);
-        setImages(defaultVariation?.color?.images || props?.item?.images || []);
+        // setImages(defaultVariation?.color?.images || props?.item?.images || []);
+        setImages(props?.item?.images || defaultVariation?.color?.images || []);
         setCurrentPrice(props?.item?.price);
         setCurrentStock(props?.item?.countInStock);
       } else {
@@ -301,7 +302,7 @@ const ProductItem = (props) => {
         <Link href={`/product/${props?.item?._id}`}>
           <div className="img h-[200px] overflow-hidden">
             <Image
-              src={images[0] || props?.item?.images[0]}
+              src={props?.item?.images[0]}
               className="w-full"
               alt="image"
               width={400}
@@ -310,7 +311,7 @@ const ProductItem = (props) => {
             {images.length > 1 && (
               <Image
                 alt="image"
-                src={images[1] || props?.item?.images[1]}
+                src={props?.item?.images[1]}
                 className="w-full transition-all duration-700 absolute top-0 left-0 opacity-0 group-hover:opacity-100 group-hover:scale-105"
                 width={400}
                 height={300}
