@@ -88,10 +88,20 @@ const Navigation = (props) => {
               >
                 <RiMenu2Fill className="text-[18px]" />
                 {t("header.shopByCategories")}
-                <LiaAngleDownSolid className="text-[13px] ml-auto font-bold" />
+                {/* <LiaAngleDownSolid className="text-[13px] ml-auto font-bold" /> */}
+                <LiaAngleDownSolid
+                  className={`text-[13px] ${
+                    locale === "ar" ? "mr-auto" : "ml-auto"
+                  } font-bold`}
+                />
               </Button>
 
-              <div className="categoryDropdownMwnu w-full h-auto bg-white absolute top-[100%] left-0 z-[100] shadow-md">
+              {/* <div className="categoryDropdownMwnu w-full h-auto bg-white absolute top-[100%] left-0 z-[100] shadow-md"> */}
+              <div
+                className={`categoryDropdownMwnu w-full h-auto bg-white absolute top-[100%] ${
+                  locale === "ar" ? "right-0" : "left-0"
+                } z-[100] shadow-md`}
+              >
                 <Collapse isOpened={isOpenCatPanel}>
                   <div className="flex gap-4 py-4 h-[40vh]">
                     <ul className="mb-0 p-2 pl-8 w-[300px]">
@@ -126,13 +136,20 @@ const Navigation = (props) => {
 
                                 {cat?.children?.length !== 0 && (
                                   <div
-                                    className={`submenu absolute top-[0%] left-[22%] min-w-[78%] bg-white ${
+                                    className={`submenu absolute top-[0%] ${
+                                      locale === "ar"
+                                        ? "right-[22%]"
+                                        : "left-[22%]"
+                                    } min-w-[78%] bg-white ${
+                                      // className={`submenu absolute top-[0%] left-[22%] min-w-[78%] bg-white ${
                                       activeCategoryIndex === index
                                         ? "opacity-100 visible"
                                         : "opacity-0 invisible"
                                     } border-l [border-left-color:#ccc] h-[100%] p-4 py-6 text-orange overflow-y-scroll`}
                                   >
-                                    <h3 className="pl-5">SHOP BY CATEGORY</h3>
+                                    <h3 className="pl-5">
+                                      {t("header.shopByCategories")}
+                                    </h3>
 
                                     <div className="grid grid-cols-8 mt-4 gap-4">
                                       <Link
@@ -227,7 +244,12 @@ const Navigation = (props) => {
                         </Link>
 
                         {cat?.children?.length !== 0 && (
-                          <div className="submenu absolute top-[120%] left-[0%] min-w-[150px] bg-white shadow-md opacity-0 transition-all">
+                          // <div className="submenu absolute top-[120%] left-[0%] min-w-[150px] bg-white shadow-md opacity-0 transition-all">
+                          <div
+                            className={`submenu absolute top-[0%] ${
+                              locale === "ar" ? "right-[100%]" : "left-[100%]"
+                            } min-w-[150px] bg-white shadow-md ...`}
+                          >
                             <ul>
                               {cat?.children?.map((subCat, index_) => {
                                 return (
