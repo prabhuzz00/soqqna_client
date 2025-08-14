@@ -247,7 +247,7 @@ const Navigation = (props) => {
                           // <div className="submenu absolute top-[120%] left-[0%] min-w-[150px] bg-white shadow-md opacity-0 transition-all">
                           <div
                             className={`submenu absolute top-[0%] ${
-                              locale === "ar" ? "right-[100%]" : "left-[100%]"
+                              locale === "ar" ? "right-[0%]" : "left-[0%]"
                             } min-w-[150px] bg-white shadow-md ...`}
                           >
                             <ul>
