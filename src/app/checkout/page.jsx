@@ -450,20 +450,40 @@ const Checkout = () => {
       return context.alertBox("error", "Please select a valid address");
 
     const city = addr.city?.trim().toLowerCase();
+    const area = addr.area?.trim().toLowerCase();
     const isDoorStep = addr.addressType === "Home Delivery";
 
     for (const item of context.cartData) {
-      const productZone = item.serviceZone;
-      if (!productZone) continue; // skip if no zone restriction
+      // If serviceZone is null/empty, product is available everywhere
+      if (!item.serviceZone || item.serviceZone.trim() === "") continue;
 
-      const allowedCities = productZone
-        .split(",")
-        .map((z) => z.trim().toLowerCase());
-
-      if (!allowedCities.includes(city)) {
+      // Find the zone object for the address city
+      const zone = Object.values(serviceZones).find(
+        (z) => z.name?.trim().toLowerCase() === city
+      );
+      if (!zone) {
         return context.alertBox(
           "error",
-          `${item.name} is only available in ${productZone}.\nPlease select a different city or pickup point.`
+          `${item.name} is not available in ${city}.`
+        );
+      }
+
+      // Find the area object for the address area
+      const matchedArea = zone.areas?.find(
+        (a) => a.name?.trim().toLowerCase() === area
+      );
+      if (!matchedArea) {
+        return context.alertBox(
+          "error",
+          `${item.name} is not available in ${area}, ${city}.`
+        );
+      }
+
+      // If Home Delivery is selected, check if area supports doorstep
+      if (isDoorStep && !matchedArea.doorStep) {
+        return context.alertBox(
+          "error",
+          `${item.name} cannot be delivered to your area (${area}) via Home Delivery. Please choose Pickup Point.`
         );
       }
     }
