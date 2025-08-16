@@ -209,10 +209,10 @@ const Header = () => {
             clientWindowWidth < 992 && (
               <Button
                 // className="!w-[35px] !min-w-[35px] !h-[35px] !rounded-full !text-gray-800"
-              className="!w-[32px] !min-w-[32px] !h-[32px] sm:!w-[35px] sm:!min-w-[35px] sm:!h-[35px] !rounded-full !text-gray-800 !p-0"
+                className="!w-[32px] !min-w-[32px] !h-[32px] sm:!w-[35px] sm:!min-w-[35px] sm:!h-[35px] !rounded-full !text-gray-800 !p-0"
                 onClick={() => openMobileMenu(true)}
               >
-              <HiOutlineMenu size={18} className="sm:!text-[22px]" />
+                <HiOutlineMenu size={18} className="sm:!text-[22px]" />
               </Button>
             )}
 
@@ -321,7 +321,9 @@ const Header = () => {
                       height={context?.windowWidth < 992 ? 20 : 25}
                     />
                     {context?.windowWidth > 992 && (
-                      <span className="text-gray-800 text-sm">{selectedlang.lang}</span>
+                      <span className="text-gray-800 text-sm">
+                        {selectedlang.lang}
+                      </span>
                     )}
                   </Button>
 
@@ -397,7 +399,10 @@ const Header = () => {
                 </FormControl>
               </li> */}
               <li className="list-none">
-                <FormControl variant="standard" sx={{ minWidth: context?.windowWidth < 992 ? 60 : 80 }}>
+                <FormControl
+                  variant="standard"
+                  sx={{ minWidth: context?.windowWidth < 992 ? 60 : 80 }}
+                >
                   <Select
                     value={currency}
                     onChange={(e) => changeCurrency(e.target.value)}
@@ -406,38 +411,80 @@ const Header = () => {
                     sx={{
                       fontSize: context?.windowWidth < 992 ? "12px" : "14px",
                       "& .MuiSelect-select": {
-                        padding: context?.windowWidth < 992 ? "4px 24px 4px 8px" : "4px 32px 4px 8px"
-                      }
+                        padding:
+                          context?.windowWidth < 992
+                            ? "4px 24px 4px 8px"
+                            : "4px 32px 4px 8px",
+                      },
                     }}
                   >
-                    <MenuItem value="USD" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                    <MenuItem
+                      value="USD"
+                      sx={{
+                        fontSize: context?.windowWidth < 992 ? "12px" : "14px",
+                      }}
+                    >
                       {context?.windowWidth < 992 ? "$" : "Dollar"}
                     </MenuItem>
-                    <MenuItem value="EUR" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                    <MenuItem
+                      value="EUR"
+                      sx={{
+                        fontSize: context?.windowWidth < 992 ? "12px" : "14px",
+                      }}
+                    >
                       {context?.windowWidth < 992 ? "€" : "Euro"}
                     </MenuItem>
-                    <MenuItem value="SAR" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                    <MenuItem
+                      value="SAR"
+                      sx={{
+                        fontSize: context?.windowWidth < 992 ? "12px" : "14px",
+                      }}
+                    >
                       {context?.windowWidth < 992 ? "SAR" : "Saudi Riyal"}
                     </MenuItem>
-                    <MenuItem value="AED" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                    <MenuItem
+                      value="AED"
+                      sx={{
+                        fontSize: context?.windowWidth < 992 ? "12px" : "14px",
+                      }}
+                    >
                       {context?.windowWidth < 992 ? "AED" : "UAE Dirham"}
                     </MenuItem>
-                    <MenuItem value="QAR" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                    <MenuItem
+                      value="QAR"
+                      sx={{
+                        fontSize: context?.windowWidth < 992 ? "12px" : "14px",
+                      }}
+                    >
                       {context?.windowWidth < 992 ? "QAR" : "Qatari Riyal"}
                     </MenuItem>
-                    <MenuItem value="BHD" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                    <MenuItem
+                      value="BHD"
+                      sx={{
+                        fontSize: context?.windowWidth < 992 ? "12px" : "14px",
+                      }}
+                    >
                       {context?.windowWidth < 992 ? "BHD" : "Bahraini Dinar"}
                     </MenuItem>
-                    <MenuItem value="KWD" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                    <MenuItem
+                      value="KWD"
+                      sx={{
+                        fontSize: context?.windowWidth < 992 ? "12px" : "14px",
+                      }}
+                    >
                       {context?.windowWidth < 992 ? "KWD" : "Kuwaiti Dinar"}
                     </MenuItem>
-                    <MenuItem value="SYP" sx={{ fontSize: context?.windowWidth < 992 ? "12px" : "14px" }}>
+                    <MenuItem
+                      value="SYP"
+                      sx={{
+                        fontSize: context?.windowWidth < 992 ? "12px" : "14px",
+                      }}
+                    >
                       {context?.windowWidth < 992 ? "SYP" : "Syrian Pound"}
                     </MenuItem>
                   </Select>
                 </FormControl>
               </li>
-
 
               {context?.windowWidth > 992 && (
                 <li className="list-none px1">
@@ -629,26 +676,26 @@ const Header = () => {
 
               {context?.isLogin && (
                 <li className={context?.windowWidth < 992 ? "hidden" : "block"}>
-                    <Tooltip title={t("header.wishlist")}>
-                      <span>
-                        <Link href="/my-list">
-                          <IconButton aria-label="cart">
-                            <StyledBadge
-                              badgeContent={
-                                context?.myListData?.length !== 0
-                                  ? context?.myListData?.length
-                                  : 0
-                              }
-                              color="secondary"
-                            >
-                              <FaRegHeart />
-                            </StyledBadge>
-                          </IconButton>
-                        </Link>
-                      </span>
-                    </Tooltip>
-                  </li>
-                )}
+                  <Tooltip title={t("header.wishlist")}>
+                    <span>
+                      <Link href="/my-list">
+                        <IconButton aria-label="cart">
+                          <StyledBadge
+                            badgeContent={
+                              context?.myListData?.length !== 0
+                                ? context?.myListData?.length
+                                : 0
+                            }
+                            color="secondary"
+                          >
+                            <FaRegHeart />
+                          </StyledBadge>
+                        </IconButton>
+                      </Link>
+                    </span>
+                  </Tooltip>
+                </li>
+              )}
 
               <li>
                 <Tooltip title={t("header.cart")}>

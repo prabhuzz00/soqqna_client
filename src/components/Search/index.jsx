@@ -10,6 +10,7 @@ import { useTranslation } from "@/utils/useTranslation";
 import Image from "next/image";
 import { postData } from "@/utils/api";
 import { IoImageOutline } from "react-icons/io5";
+import { useLanguage } from "@/context/LanguageContext";
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,6 +22,7 @@ const Search = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { t } = useTranslation();
+  const { locale } = useLanguage();
 
   // Reset on navigation
   useEffect(() => {
@@ -187,12 +189,14 @@ const Search = () => {
                     <div className="w-[35px] h-[35px] rounded-sm border p-1 bg-white relative">
                       <Image
                         src={s.image || "/default-product-image.png"}
-                        alt={s.name}
+                        alt={locale === "ar" ? s.arbName : s.name}
                         fill
                         className="object-cover"
                       />
                     </div>
-                    <span className="text-[14px]">{s.name}</span>
+                    <span className="text-[14px]">
+                      {locale === "ar" ? s.arbName : s.name}
+                    </span>
                   </div>
                 ))}
               </div>
