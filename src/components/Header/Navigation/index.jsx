@@ -104,7 +104,7 @@ const Navigation = (props) => {
               >
                 <Collapse isOpened={isOpenCatPanel}>
                   <div className="flex gap-4 py-4 h-[40vh]">
-                    <ul className="mb-0 p-2 pl-8 w-[300px]">
+                    <ul className="mb-0 p-2 pl-8 w-[300px] overflow-scroll">
                       {catData?.length !== 0 &&
                         catData
                           ?.filter((cat, idx) => idx < 8)
