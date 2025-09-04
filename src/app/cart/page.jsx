@@ -63,7 +63,7 @@ const CartPage = () => {
   // 💰 money math
   const subtotal = context.cartData?.length
     ? context.cartData
-        .map((item) => parseInt(item.price) * item.quantity)
+        .map((item) => parseFloat(item.price) * item.quantity)
         .reduce((t, v) => t + v, 0)
     : 0;
 
@@ -75,7 +75,12 @@ const CartPage = () => {
   const total = subtotal + shippingCost;
 
   const moneyFmt = (val) =>
-    val.toLocaleString("en-US", { style: "currency", currency: "USD" });
+    val.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
 
   /* --------------------- JSX -------------------- */
   return (

@@ -88,14 +88,14 @@ const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     const token = Cookies.get("accessToken");
+
+    // Load cart from localStorage
     getCartItems();
+
     if (token !== undefined && token !== null && token !== "") {
       setIsLogin(true);
-
-      getCartItems();
       getMyListData();
       getUserDetails();
-      // getProdbyCat();
     } else {
       setIsLogin(false);
     }
@@ -186,50 +186,76 @@ const ThemeProvider = ({ children }) => {
     }
   };
 
-  const addToCart = (product, userId, quantity) => {
-    const cart = getCart();
-    const index = cart.findIndex((item) => item._id === product._id);
-
-    if (index !== -1) {
-      cart[index].quantity += quantity;
-    } else {
-      cart.push({ ...product, quantity });
-    }
-
-    Cookies.set("cart", JSON.stringify(cart));
-    alertBox("success", "Item added in the cart...");
-
-    getCartItems();
-  };
-
   const getCart = () => {
-    const cart = Cookies.get("cart");
-    return cart ? JSON.parse(cart) : [];
+    try {
+      const cart = localStorage.getItem("cart");
+      return cart ? JSON.parse(cart) : [];
+    } catch (error) {
+      console.error("Error getting cart:", error);
+      return [];
+    }
   };
 
-  const clearCart = () => {
-    // 1️⃣  Remove the cookie (path must match how it was set)
-    Cookies.remove("cart", { path: "/" }); // add domain: "example.com" if you set it earlier
+  const addToCart = (product, userId, quantity) => {
+    try {
+      const cart = getCart();
+      const index = cart.findIndex((item) => item._id === product._id);
 
-    // 2️⃣  Reset React state
-    setCartData([]);
+      if (index !== -1) {
+        // Update quantity if same variation exists
+        cart[index].quantity = quantity;
+      } else {
+        // Add new item
+        cart.push({ ...product, quantity });
+      }
+
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alertBox("success", "Item added in the cart...");
+      getCartItems();
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      alertBox("error", "Failed to add item to cart");
+    }
   };
 
   const getCartItems = () => {
-    const cart = Cookies.get("cart");
-    setCartData(cart ? JSON.parse(cart) : []);
-    return cart ? JSON.parse(cart) : [];
+    try {
+      const cart = localStorage.getItem("cart");
+      const parsedCart = cart ? JSON.parse(cart) : [];
+      setCartData(parsedCart);
+      return parsedCart;
+    } catch (error) {
+      console.error("Error getting cart items:", error);
+      setCartData([]);
+      return [];
+    }
+  };
+
+  const clearCart = () => {
+    try {
+      localStorage.removeItem("cart");
+      setCartData([]);
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+      alertBox("error", "Failed to clear cart");
+    }
   };
 
   const updateCartItemQuantity = (productId, quantity) => {
-    const cart = getCart();
-    const updatedCart = cart.map((item) => {
-      if (item._id === productId) {
-        return { ...item, quantity };
-      }
-      return item;
-    });
-    Cookies.set("cart", JSON.stringify(updatedCart));
+    try {
+      const cart = getCart();
+      const updatedCart = cart.map((item) => {
+        if (item._id === productId) {
+          return { ...item, quantity };
+        }
+        return item;
+      });
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      setCartData(updatedCart);
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+      alertBox("error", "Failed to update quantity");
+    }
   };
 
   const handleQuantityChange = (id, newQty) => {

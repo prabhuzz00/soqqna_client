@@ -758,7 +758,9 @@ export default function Home() {
               <section className="py-5 pt-0 bg-white" key={index}>
                 <div className="container">
                   <h2 className="text-[20px] font-[600]">
-                    {productRow.catName}
+                    {locale === "ar"
+                      ? productRow.catNameAr
+                      : productRow.catName}
                   </h2>
                   {productRow.data?.length === 0 && <ProductLoading />}
                   {productRow.data?.length > 0 && (

@@ -17,9 +17,26 @@ const CartPanel = (props) => {
   const { locale } = useLanguage();
 
   const removeItem = (id) => {
-    const cart = context?.getCartItems().filter((item) => item._id !== id);
-    Cookies.set("cart", JSON.stringify(cart));
-    context?.getCartItems();
+    try {
+      // Get current cart from localStorage
+      const currentCart = localStorage.getItem("cart");
+      const parsedCart = currentCart ? JSON.parse(currentCart) : [];
+
+      // Filter out the item to remove
+      const updatedCart = parsedCart.filter((item) => item._id !== id);
+
+      // Save updated cart back to localStorage
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+      // Update cart state through context
+      context?.getCartItems();
+
+      // Show success message
+      context?.alertBox("success", "Item removed from cart");
+    } catch (error) {
+      console.error("Error removing item from cart:", error);
+      context?.alertBox("error", "Failed to remove item");
+    }
   };
 
   const router = useRouter();
@@ -79,7 +96,8 @@ const CartPanel = (props) => {
                       "en-US",
                       { style: "currency", currency: "USD" }
                     )} */}
-                    {getSymbol()}{convertPrice(item?.price * item?.quantity)}
+                    {getSymbol()}
+                    {convertPrice(item?.price * item?.quantity)}
                   </span>
                 </p>
 
@@ -102,15 +120,18 @@ const CartPanel = (props) => {
               {props?.data?.length} {t("cartPage.item")}
             </span>
             <span className="text-primary font-bold">
-              {props?.data?.length !== 0
-                ? (
-                  <>
-                    {getSymbol()}
-                    {convertPrice(props?.data?.map((item) => parseInt(item.price) * item.quantity).reduce((total, value) => total + value, 0))}
-                  </>
-                )
-                : 0
-              }
+              {props?.data?.length !== 0 ? (
+                <>
+                  {getSymbol()}
+                  {convertPrice(
+                    props?.data
+                      ?.map((item) => parseInt(item.price) * item.quantity)
+                      .reduce((total, value) => total + value, 0)
+                  )}
+                </>
+              ) : (
+                0
+              )}
             </span>
           </div>
         </div>
@@ -121,18 +142,21 @@ const CartPanel = (props) => {
               {t("cartPage.totalex")}
             </span>
             <span className="text-primary font-bold">
-              {(props?.data?.length !== 0
+              {props?.data?.length !== 0 ? (
                 // ? props?.data
                 //     ?.map((item) => parseInt(item.price) * item.quantity)
                 //     .reduce((total, value) => total + value, 0)
                 // : 0
-                  ? (
-                    <>
-                      {getSymbol()}
-                      {convertPrice(props?.data?.map((item) => parseInt(item.price) * item.quantity).reduce((total, value) => total + value, 0))}
-                    </>
-                  )
-                  : 0
+                <>
+                  {getSymbol()}
+                  {convertPrice(
+                    props?.data
+                      ?.map((item) => parseInt(item.price) * item.quantity)
+                      .reduce((total, value) => total + value, 0)
+                  )}
+                </>
+              ) : (
+                0
               )}
             </span>
           </div>

@@ -19,6 +19,14 @@ import { postData } from "@/utils/api";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTranslation } from "@/utils/useTranslation";
 import { useCurrency } from "@/context/CurrencyContext";
+import {
+  FacebookShareButton,
+  TwitterShareButton,
+  WhatsappShareButton,
+  FacebookIcon,
+  TwitterIcon,
+  WhatsappIcon,
+} from "react-share";
 
 export const ProductDetailsComponent = (props) => {
   const { convertPrice, getSymbol } = useCurrency();
@@ -47,12 +55,21 @@ export const ProductDetailsComponent = (props) => {
     [t]
   );
 
+  // Modify the isInCart check to consider color and size
   const isInCart = useMemo(
     () =>
-      context?.cartData?.some((cartItem) =>
-        cartItem.productId.includes(props?.item?._id)
+      context?.cartData?.some(
+        (cartItem) =>
+          cartItem.productId === props?.item?._id &&
+          cartItem.selectedColor === (selectedColor?.color?.label || "") &&
+          cartItem.size === (selectedTabName || "")
       ),
-    [context?.cartData, props?.item?._id]
+    [
+      context?.cartData,
+      props?.item?._id,
+      selectedColor?.color?.label,
+      selectedTabName,
+    ]
   );
   const isInMyList = useMemo(
     () =>
@@ -131,6 +148,7 @@ export const ProductDetailsComponent = (props) => {
     ]
   );
 
+  // Update the addToCart function
   const addToCart = useCallback(
     (product, userId, quantity) => {
       if (quantity > currentStock) {
@@ -141,6 +159,18 @@ export const ProductDetailsComponent = (props) => {
         return;
       }
 
+      if (product?.variation?.length > 0) {
+        if (!selectedColor) {
+          context?.alertBox("error", "Please select a color");
+          return;
+        }
+        if (!selectedTabName) {
+          setTabError(true);
+          context?.alertBox("error", "Please select a size");
+          return;
+        }
+      }
+
       const discountPercentage =
         product?.oldPrice && currentPrice
           ? Math.round(
@@ -149,7 +179,9 @@ export const ProductDetailsComponent = (props) => {
           : 0;
 
       const productItem = {
-        _id: product?._id,
+        _id: `${product?._id}-${selectedColor?.color?.label || ""}-${
+          selectedTabName || ""
+        }`,
         name: product?.name,
         image:
           selectedColor?.color?.images?.[0] ||
@@ -172,12 +204,6 @@ export const ProductDetailsComponent = (props) => {
         selectedColor: selectedColor?.color?.label || "",
       };
 
-      if (product?.variation?.length > 0 && !selectedTabName) {
-        setTabError(true);
-        context?.alertBox("error", "Please select a size");
-        return;
-      }
-
       setIsLoading(true);
       context?.alertBox("success", "Item added");
       context?.addToCart(productItem, userId, quantity);
@@ -185,6 +211,8 @@ export const ProductDetailsComponent = (props) => {
       setTimeout(() => {
         setIsLoading(false);
         setIsAdded(true);
+        // Reset quantity after adding to cart
+        setQuantity(1);
       }, 500);
     },
     [currentPrice, currentStock, selectedColor, selectedTabName, context]
@@ -233,6 +261,8 @@ export const ProductDetailsComponent = (props) => {
     [context, currentPrice]
   );
 
+  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+
   if (!props.item) {
     return (
       <div className="text-red-500">
@@ -270,10 +300,12 @@ export const ProductDetailsComponent = (props) => {
       <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row items-start sm:items-center gap-4 mt-4">
         <div className="flex items-center gap-4">
           <span className="oldPrice line-through text-gray-500 text-[20px] font-[500]">
-            {getSymbol()}{convertPrice(props.item.oldPrice)}
+            {getSymbol()}
+            {convertPrice(props.item.oldPrice)}
           </span>
           <span className="price text-primary text-[20px] font-[600]">
-            {getSymbol()}{convertPrice(currentPrice)}
+            {getSymbol()}
+            {convertPrice(currentPrice)}
           </span>
         </div>
         <div className="flex items-center gap-4">
@@ -378,6 +410,19 @@ export const ProductDetailsComponent = (props) => {
           )}
           {safeT("product.addToWishlist", "Add to Wishlist")}
         </button>
+      </div>
+
+      {/* Social Share Buttons */}
+      <div className="flex items-center gap-2 mt-4">
+        <FacebookShareButton url={shareUrl} quote={props.item.name}>
+          <FacebookIcon size={32} round />
+        </FacebookShareButton>
+        <TwitterShareButton url={shareUrl} title={props.item.name}>
+          <TwitterIcon size={32} round />
+        </TwitterShareButton>
+        <WhatsappShareButton url={shareUrl} title={props.item.name}>
+          <WhatsappIcon size={32} round />
+        </WhatsappShareButton>
       </div>
     </div>
   );

@@ -37,6 +37,7 @@
     "react-phone-input-2": "^2.15.1",
     "react-range-slider-input": "^3.0.7",
     "react-router-dom": "^7.0.1",
+    "react-share": "^5.2.2",
     "styled-components": "^6.1.13",
     "swiper": "^11.1.15"
   },
