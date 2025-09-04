@@ -184,7 +184,10 @@ const ProductOverview = ({ reviewsCountProp, product, relatedProducts }) => {
                   <div className="bg-gray-200 p-4 rounded-lg flex flex-col gap-1">
                     <h4>{t("product.hotlineHeading")}</h4>
                     <p className="mt-0 mb-0">
-                      {t("product.hotlineDesc")} 07AM - 06PM
+                      {t("product.hotlineDesc")}{" "}
+                      {locale === "ar"
+                        ? siteSettings?.workingHourL1ar
+                        : siteSettings?.workingHourL1}
                     </p>
 
                     <h2 className="text-[20px]">{siteSettings.contactNo}</h2>

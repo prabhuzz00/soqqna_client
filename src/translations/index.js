@@ -65,6 +65,8 @@ export const translations = {
       location_error: "An error occurred while trying to get your location.",
       geolocation_not_supported:
         "Geolocation is not supported by this browser.",
+      or_continue_with: "Or continue with",
+      facebook: "Facebook",
     },
 
     register: {
@@ -716,6 +718,8 @@ export const translations = {
         "تم رفض إذن الموقع. يرجى تمكينه في إعدادات المتصفح إذا كنت ترغب في استخدام ميزات الموقع.",
       location_error: "حدث خطأ أثناء محاولة الحصول على موقعك.",
       geolocation_not_supported: "المتصفح لا يدعم تحديد الموقع الجغرافي.",
+      or_continue_with: "أو المتابعة باستخدام",
+      facebook: "فيسبوك",
     },
     register: {
       title: "أنشئ حساباً جديداً",
