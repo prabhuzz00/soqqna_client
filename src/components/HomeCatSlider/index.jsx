@@ -52,6 +52,7 @@ const HomeCatSlider = (props) => {
                     <Image
                       src={cat?.images[0]}
                       width={72}
+                      quality={50}
                       height={50}
                       className="w-[55px] lg:w-[68px] transition-all"
                       alt=""
