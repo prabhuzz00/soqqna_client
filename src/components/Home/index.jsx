@@ -2,9 +2,6 @@
 import { useContext, useEffect, useState, useMemo, useRef, useCallback } from "react";
 import HomeCatSlider from "@/components/HomeCatSlider";
 import dynamic from "next/dynamic";
-const HomeSlider = dynamic(() => import("@/components/HomeSlider"), {
-  ssr: false,
-});
 import ProductsSlider from "@/components/ProductsSlider";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -28,6 +25,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import HomeLoading from "../LoadingSkeleton/homeLoading";
 import Cookies from "js-cookie";
 import { useCurrency } from "@/context/CurrencyContext";
+import HomeSlider from "../HomeSlider";
 
 export default function Home() {
   const { convertPrice, getSymbol } = useCurrency();

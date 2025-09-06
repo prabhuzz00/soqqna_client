@@ -5,7 +5,7 @@ import AuthProvider from "@/components/AuthProvider/AuthProvider";
 import Header from "@/components/Header";
 import { CurrencyProvider } from "@/context/CurrencyContext";
 import DirectionWrapper from "@/components/DirectionWrapper";
-import ScriptLoader from "./scriptLoader";
+import ScriptLoader from "./ScriptLoader";
 import "./globals.css";
 import "./responsive.css";
 

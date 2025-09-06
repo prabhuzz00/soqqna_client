@@ -103,7 +103,7 @@ const HomeSlider = (props) => {
                     <Image
                       width={1343}
                       height={397}
-                      quality={60}
+                      quality={50}
                       src={item?.images[0]}
                       alt="Banner slide"
                       className="!w-full !h-auto"
