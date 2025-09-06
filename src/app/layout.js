@@ -24,13 +24,21 @@ export const metadata = {
   description: "Soouqna App - Your ultimate shopping platform",
 };
 
-// Critical CSS as a string (extract from your actual critical styles)
+// Critical CSS extracted from your main CSS file
 const criticalCSS = `
+  * {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+  }
+  
   body {
-    margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: #3e3e3e;
+    overflow-x: hidden;
+    background-color: #f9fafb;
+    margin: 0;
     line-height: 1.6;
-    color: #333;
   }
   
   .header {
@@ -38,7 +46,7 @@ const criticalCSS = `
     top: 0;
     z-index: 100;
     background: #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.1);
   }
   
   .skeleton {
@@ -51,6 +59,31 @@ const criticalCSS = `
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
   }
+  
+  .container {
+    width: 95%;
+    margin: auto;
+  }
+  
+  .btn-org {
+    background: #f7921c !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+    font-size: 16px;
+    padding: 7px 20px !important;
+    border: 1px solid transparent !important;
+  }
+  
+  ::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #f7921c;
+  }
+  ::-webkit-scrollbar-track {
+    background: #fff;
+  }
 `;
 
 export default function RootLayout({ children }) {
@@ -62,27 +95,45 @@ export default function RootLayout({ children }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
         
-        {/* Preload critical resources */}
+        {/* Preconnect to external domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
         
         {/* Inline critical CSS */}
         <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
         
-        {/* Preload CSS files for browsers that support it */}
+        {/* Load Google Fonts asynchronously with font-display: swap */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet"
+          media="print"
+          onLoad="this.media='all'"
+        />
+        
+        {/* Preload the font stylesheet */}
+        <link 
+          rel="preload" 
+          href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" 
+          as="style" 
+        />
+        
+        {/* Preload main CSS files */}
         <link 
           rel="preload" 
           href="/globals.css" 
           as="style" 
+          onLoad="this.onload=null;this.rel='stylesheet'"
         />
         <link 
           rel="preload" 
           href="/responsive.css" 
           as="style" 
+          onLoad="this.onload=null;this.rel='stylesheet'"
         />
         
-        {/* Fallback for browsers that don't support JavaScript */}
+        {/* Fallback for browsers without JavaScript */}
         <noscript>
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" />
           <link rel="stylesheet" href="/globals.css" />
           <link rel="stylesheet" href="/responsive.css" />
         </noscript>

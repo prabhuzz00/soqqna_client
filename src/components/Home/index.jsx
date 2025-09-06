@@ -394,7 +394,7 @@ export default function Home() {
       <section className="bg-white py-3 lg:py-8" ref={popularRef}>
         <div className="container">
           {!loadedSections.has('popular') ? (
-            <div className="h-[300px] bg-gray-50 animate-pulse rounded"></div>
+            <div className="h-[57px] bg-gray-50 animate-pulse rounded"></div>
           ) : (
             <>
               <div className="flex items-center justify-between flex-col lg:flex-row">
@@ -402,7 +402,7 @@ export default function Home() {
                   <h2 className="text-[14px] sm:text-[14px] md:text-[16px] lg:text-[20px] font-[600]">
                     {t("home.popularProductsTitle")}
                   </h2>
-                  <p className="text-[12px] sm:text-[14px] md:text-[13px] lg:text-[14px] font-[400] mt-0 mb-0">
+                  <p className="text-[12px] lg:min-h-[57px] sm:text-[14px] md:text-[13px] lg:text-[14px] font-[400] mt-0 mb-0">
                     {locale === "ar"
                       ? siteSettings?.popularProductHeadingAr
                       : siteSettings?.popularProductHeadingEn}

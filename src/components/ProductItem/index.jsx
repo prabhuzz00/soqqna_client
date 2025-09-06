@@ -307,6 +307,7 @@ const ProductItem = (props) => {
               className="w-full"
               alt="image"
               width={400}
+              quality={30}
               height={300}
             />
             {images.length > 1 && (
@@ -315,6 +316,7 @@ const ProductItem = (props) => {
                 src={images[1] || props?.item?.images[1]}
                 className="w-full transition-all duration-700 absolute top-0 left-0 opacity-0 group-hover:opacity-100 group-hover:scale-105"
                 width={400}
+                quality={30}
                 height={300}
               />
             )}
