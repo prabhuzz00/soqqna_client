@@ -26,6 +26,7 @@ const nextConfig = {
     optimizeCss: true,
     scrollRestoration: true,
   },
+
   // Add headers for caching
   async headers() {
     return [

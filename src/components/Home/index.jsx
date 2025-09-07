@@ -1,36 +1,38 @@
 "use client";
-import { useContext, useEffect, useState, useMemo, useRef, useCallback } from "react";
+import { useContext, useEffect, useState, useMemo, useRef, useCallback, lazy, Suspense } from "react";
 import HomeCatSlider from "@/components/HomeCatSlider";
-import dynamic from "next/dynamic";
-import ProductsSlider from "@/components/ProductsSlider";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import AdsBannerSliderV2 from "@/components/AdsBannerSliderV2";
-import AdsBannerSlider from "@/components/AdsBannerSlider";
 import { fetchDataFromApi } from "@/utils/api";
 import { MyContext } from "@/context/ThemeProvider";
 import BannerLoading from "@/components/LoadingSkeleton/bannerLoading";
 import ProductLoading from "@/components/ProductLoading";
-import BannerBoxV2 from "@/components/bannerBoxV2";
 import { LiaShippingFastSolid } from "react-icons/lia";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/free-mode";
 import { Navigation, FreeMode } from "swiper/modules";
-import BlogItem from "@/components/BlogItem";
-import HomeBannerV2 from "@/components/HomeSliderV2";
 import { useTranslation } from "@/utils/useTranslation";
 import { useLanguage } from "@/context/LanguageContext";
 import HomeLoading from "../LoadingSkeleton/homeLoading";
 import Cookies from "js-cookie";
 import { useCurrency } from "@/context/CurrencyContext";
-import HomeSlider from "../HomeSlider";
+
+// Lazy load heavy components
+const ProductsSlider = lazy(() => import("@/components/ProductsSlider"));
+const AdsBannerSliderV2 = lazy(() => import("@/components/AdsBannerSliderV2"));
+const AdsBannerSlider = lazy(() => import("@/components/AdsBannerSlider"));
+const BannerBoxV2 = lazy(() => import("@/components/bannerBoxV2"));
+const HomeBannerV2 = lazy(() => import("@/components/HomeSliderV2"));
+const BlogItem = lazy(() => import("@/components/BlogItem"));
+const HomeSlider = lazy(() => import("../HomeSlider"));
+
 
 export default function Home() {
   const { convertPrice, getSymbol } = useCurrency();
   const [value, setValue] = useState(0);
-  
+
   // All sections data
   const [homeSlidesData, setHomeSlidesData] = useState([]);
   const [popularProductsData, setPopularProductsData] = useState([]);
@@ -42,13 +44,13 @@ export default function Home() {
   const [randomCatProducts, setRandomCatProducts] = useState([]);
   const [freeDeliveryFee, setFreeDeliveryFee] = useState(0);
   const [siteSettings, setSiteSettings] = useState(null);
-  
+
   // Loading states - only for currently loading sections
   const [loadingStates, setLoadingStates] = useState({});
-  
+
   // Loaded flags - track what's been loaded
   const [loadedSections, setLoadedSections] = useState(new Set());
-  
+
   const [error, setError] = useState(null);
 
   const context = useContext(MyContext);
@@ -94,10 +96,10 @@ export default function Home() {
   // Async data loading functions
   const loadHeroData = useCallback(async () => {
     if (loadedSections.has('hero')) return;
-    
+
     setLoadingState('hero', true);
     markSectionLoaded('hero');
-    
+
     try {
       const homeSlides = await fetchDataFromApi("/api/homeSlides");
       setHomeSlidesData(homeSlides?.data || []);
@@ -110,9 +112,9 @@ export default function Home() {
 
   const loadSiteSettings = useCallback(async () => {
     if (loadedSections.has('settings')) return;
-    
+
     markSectionLoaded('settings');
-    
+
     try {
       const cookieData = Cookies.get("siteSettings");
       if (cookieData) {
@@ -131,9 +133,9 @@ export default function Home() {
 
   const loadShippingData = useCallback(async () => {
     if (loadedSections.has('shipping')) return;
-    
+
     markSectionLoaded('shipping');
-    
+
     try {
       const cookieData = Cookies.get("shippingdt");
       if (cookieData) {
@@ -153,10 +155,10 @@ export default function Home() {
 
   const loadPopularProducts = useCallback(async () => {
     if (loadedSections.has('popular') || !context?.catData?.length) return;
-    
+
     setLoadingState('popular', true);
     markSectionLoaded('popular');
-    
+
     try {
       const res = await fetchDataFromApi(
         `/api/product/getAllProductsByCatId/${context.catData[0]._id}`
@@ -173,10 +175,10 @@ export default function Home() {
 
   const loadLatestProducts = useCallback(async () => {
     if (loadedSections.has('latest')) return;
-    
+
     setLoadingState('latest', true);
     markSectionLoaded('latest');
-    
+
     try {
       const res = await fetchDataFromApi("/api/product/getAllProducts");
       setAllProductsData(res?.data || []);
@@ -189,10 +191,10 @@ export default function Home() {
 
   const loadFeaturedProducts = useCallback(async () => {
     if (loadedSections.has('featured')) return;
-    
+
     setLoadingState('featured', true);
     markSectionLoaded('featured');
-    
+
     try {
       const res = await fetchDataFromApi("/api/product/getAllFeaturedProducts");
       setFeaturedProducts(res?.products || []);
@@ -205,10 +207,10 @@ export default function Home() {
 
   const loadBannerV1Data = useCallback(async () => {
     if (loadedSections.has('bannerV1')) return;
-    
+
     setLoadingState('bannerV1', true);
     markSectionLoaded('bannerV1');
-    
+
     try {
       const res = await fetchDataFromApi("/api/bannerV1");
       setBannerV1Data(res?.data || []);
@@ -221,10 +223,10 @@ export default function Home() {
 
   const loadBannerList2Data = useCallback(async () => {
     if (loadedSections.has('bannerList2')) return;
-    
+
     setLoadingState('bannerList2', true);
     markSectionLoaded('bannerList2');
-    
+
     try {
       const res = await fetchDataFromApi("/api/bannerList2");
       setBannerList2Data(res?.data || []);
@@ -237,10 +239,10 @@ export default function Home() {
 
   const loadRandomProducts = useCallback(async () => {
     if (loadedSections.has('randomCat') || !context?.catData?.length) return;
-    
+
     setLoadingState('randomCat', true);
     markSectionLoaded('randomCat');
-    
+
     try {
       const maxCategories = Math.min(context.catData.length - 1, 8);
       const numbers = new Set();
@@ -248,15 +250,15 @@ export default function Home() {
         const number = Math.floor(1 + Math.random() * (context.catData.length - 1));
         numbers.add(number);
       }
-      
+
       const filterData = await Promise.all(
         Array.from(numbers).map(async (index) => {
           const catId = context.catData[index]?._id;
           const res = await fetchDataFromApi(`/api/product/getAllProductsByCatId/${catId}`);
-          return { 
-            catName: context.catData[index]?.name, 
+          return {
+            catName: context.catData[index]?.name,
             catNameAr: context.catData[index]?.arName,
-            data: res?.products || [] 
+            data: res?.products || []
           };
         })
       );
@@ -270,10 +272,10 @@ export default function Home() {
 
   const loadBlogData = useCallback(async () => {
     if (loadedSections.has('blog')) return;
-    
+
     setLoadingState('blog', true);
     markSectionLoaded('blog');
-    
+
     try {
       const res = await fetchDataFromApi("/api/blog");
       setBlogData(res?.blogs || []);
@@ -350,7 +352,7 @@ export default function Home() {
   const filterByCatId = (id) => {
     setPopularProductsData([]);
     setLoadingState('popular', true);
-    
+
     // Make this non-blocking
     setTimeout(async () => {
       try {
@@ -391,49 +393,41 @@ export default function Home() {
       </div>
 
       {/* Popular Products Section */}
-      <section className="bg-white py-3 lg:py-8" ref={popularRef}>
-        <div className="container">
-          {!loadedSections.has('popular') ? (
-            <div className="h-[57px] bg-gray-50 animate-pulse rounded"></div>
-          ) : (
-            <>
-              <div className="flex items-center justify-between flex-col lg:flex-row">
-                <div className="leftSec w-full lg:w-[40%]">
-                  <h2 className="text-[14px] sm:text-[14px] md:text-[16px] lg:text-[20px] font-[600]">
-                    {t("home.popularProductsTitle")}
-                  </h2>
-                  <p className="text-[12px] lg:min-h-[57px] sm:text-[14px] md:text-[13px] lg:text-[14px] font-[400] mt-0 mb-0">
-                    {locale === "ar"
-                      ? siteSettings?.popularProductHeadingAr
-                      : siteSettings?.popularProductHeadingEn}
-                  </p>
-                </div>
-                <div className="rightSec w-full lg:w-[60%]">
-                  <Tabs
-                    value={value}
-                    onChange={handleChange}
-                    variant="scrollable"
-                    scrollButtons="auto"
-                    aria-label="scrollable auto tabs example"
-                  >
-                    {context?.catData?.map((cat, index) => (
-                      <Tab
-                        label={locale === "ar" ? cat?.arName : cat?.name}
-                        className="!font-[600]"
-                        key={index}
-                        onClick={() => filterByCatId(cat?._id)}
-                      />
-                    ))}
-                  </Tabs>
-                </div>
-              </div>
-              <div className="min-h-max lg:min-h-[60vh]">
-                {(loadingStates.popular || memoizedPopularProducts?.length === 0) && <ProductLoading />}
-                {memoizedPopularProducts?.length > 0 && (
-                  <ProductsSlider items={6} data={memoizedPopularProducts} />
-                )}
-              </div>
-            </>
+      <section className="bg-white py-3 lg:py-8 " ref={popularRef}>
+        <div className="flex items-center justify-between flex-col lg:flex-row">
+          <div className="leftSec w-full lg:w-[40%]">
+            <h2 className="text-[14px] sm:text-[14px] md:text-[16px] lg:text-[20px] font-[600]">
+              {t("home.popularProductsTitle")}
+            </h2>
+            <p className="text-[12px] lg:min-h-[57px] sm:text-[14px] md:text-[13px] lg:text-[14px] font-[400] mt-0 mb-0">
+              {locale === "ar"
+                ? siteSettings?.popularProductHeadingAr
+                : siteSettings?.popularProductHeadingEn}
+            </p>
+          </div>
+          <div className="rightSec w-full lg:w-[60%]">
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              variant="scrollable"
+              scrollButtons="auto"
+              aria-label="scrollable auto tabs example"
+            >
+              {context?.catData?.map((cat, index) => (
+                <Tab
+                  label={locale === "ar" ? cat?.arName : cat?.name}
+                  className="!font-[600]"
+                  key={index}
+                  onClick={() => filterByCatId(cat?._id)}
+                />
+              ))}
+            </Tabs>
+          </div>
+        </div>
+        <div className="min-h-max lg:min-h-[60vh]">
+          {(loadingStates.popular || memoizedPopularProducts?.length === 0) && <ProductLoading />}
+          {memoizedPopularProducts?.length > 0 && (
+            <ProductsSlider items={6} data={memoizedPopularProducts} />
           )}
         </div>
       </section>
@@ -524,20 +518,30 @@ export default function Home() {
       </section>
 
       {/* Featured Products Section */}
-      <section className="py-2 lg:py-0 pt-0 bg-white" ref={featuredRef}>
-        <div className="container">
+      <section className="py-6 lg:py-8 bg-white" ref={featuredRef}>
+        <div className="container px-4 mx-auto">
           {!loadedSections.has('featured') ? (
-            <div className="h-[300px] bg-gray-50 animate-pulse rounded"></div>
+            <></>
           ) : (
-            <>
-              <h2 className="text-[20px] font-[600]">
+            <div className="featured-products-section">
+              <h2 className="text-2xl lg:text-3xl font-bold mb-6 text-gray-900 text-center lg:text-left">
                 {t("home.featuredProducts")}
               </h2>
-              {(loadingStates.featured || memoizedFeaturedProducts?.length === 0) && <ProductLoading />}
-              {memoizedFeaturedProducts?.length > 0 && (
-                <ProductsSlider items={6} data={memoizedFeaturedProducts} />
-              )}
-            </>
+
+              <div className="content-wrapper">
+                {(loadingStates.featured || memoizedFeaturedProducts?.length === 0) && (
+                  <div className="mt-2">
+                    <ProductLoading />
+                  </div>
+                )}
+
+                {memoizedFeaturedProducts?.length > 0 && (
+                  <div className="mt-1">
+                    <ProductsSlider items={6} data={memoizedFeaturedProducts} />
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
       </section>
