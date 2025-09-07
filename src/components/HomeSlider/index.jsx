@@ -55,6 +55,13 @@
 
 // export default HomeSlider;
 
+const banners = [
+  "https://res.cloudinary.com/duqoh8gf5/image/upload/v1757234583/1757234582896_image_5_11zon.webp",
+  "https://res.cloudinary.com/duqoh8gf5/image/upload/v1757234584/1757234582897_image_1_11zon.webp",
+  "https://res.cloudinary.com/duqoh8gf5/image/upload/v1757234585/1757234582898_image_2_11zon.webp"
+]
+
+
 import React, { useContext } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -103,7 +110,8 @@ const HomeSlider = (props) => {
                     <Image
                       width={1343}
                       height={397}
-                      src={item?.images[0]}
+                      quality={70}
+                      src={banners[index % banners.length]}
                       alt="Banner slide"
                       className="!w-full !h-auto"
                       priority={index === 0}

@@ -48,11 +48,14 @@ const HomeCatSlider = (props) => {
             return (
               <SwiperSlide key={index}>
                 <Link href={`/products?catId=${cat?._id}`} className="group">
-                  <div className="item py-4 lg:py-7 px-3 bg-white rounbded-sm text-center flex items-center justify-center flex-col rounded-full w-[70px] h-[70px]  lg:w-[120px] lg:h-[120px] m-auto">
+                  <div className="item py-4 lg:py-7 px-3 bg-white rounbded-sm text-center flex items-center justify-center flex-col rounded-full w-[70px] h-[70px] lg:w-[120px] lg:h-[120px] m-auto">
                     <Image
                       src={cat?.images[0]}
                       width={72}
+                      quality={40}
                       height={50}
+                      priority
+                      loading="eager"
                       className="w-[55px] lg:w-[68px] transition-all"
                       alt=""
                     />
