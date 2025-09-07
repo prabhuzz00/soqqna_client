@@ -18,6 +18,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import HomeLoading from "../LoadingSkeleton/homeLoading";
 import Cookies from "js-cookie";
 import { useCurrency } from "@/context/CurrencyContext";
+import { CloudCog } from "lucide-react";
 
 // Lazy load heavy components
 const ProductsSlider = lazy(() => import("@/components/ProductsSlider"));
@@ -174,20 +175,28 @@ export default function Home() {
   }, [loadedSections, context?.catData, setLoadingState, markSectionLoaded]);
 
   const loadLatestProducts = useCallback(async () => {
+    console.log("enterddddddddddddddddddd")
     if (loadedSections.has('latest')) return;
-
     setLoadingState('latest', true);
     markSectionLoaded('latest');
 
     try {
       const res = await fetchDataFromApi("/api/product/getAllProducts");
-      setAllProductsData(res?.data || []);
+      if (res && res.products) {
+        setAllProductsData(res.products);
+      } else {
+        console.error("Unexpected API response structure:", res);
+        setAllProductsData([]);
+      }
     } catch (err) {
       console.error("Error loading latest products:", err);
+      setError("Failed to load latest products");
     } finally {
       setLoadingState('latest', false);
     }
   }, [loadedSections, setLoadingState, markSectionLoaded]);
+
+  // console.log("aaaaaaaaaaaaaaaaaaaaaaaaa", loadLatestProducts)
 
   const loadFeaturedProducts = useCallback(async () => {
     if (loadedSections.has('featured')) return;
