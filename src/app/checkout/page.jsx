@@ -231,9 +231,14 @@ const Checkout = () => {
 
   /* ---------- payment helpers ---------- */
   const onApprovePayment = async (data) => {
+    // Transform cartData to ensure _id is a valid ObjectId and cartItemId is not sent to backend
+    const products = context?.cartData?.map(({ cartItemId, _id, productId, ...rest }) => ({
+      _id: productId,
+      ...rest
+    }));
     const info = {
       userId: context?.userData?._id,
-      products: context?.cartData,
+      products,
       payment_status: "COMPLETE",
       delivery_address: selectedAddress,
       totalAmount: finalAmount, // MOD
@@ -495,9 +500,14 @@ const Checkout = () => {
     const genBarcode = (stamp + rand).slice(0, 20);
     setBarcode(genBarcode);
 
+    // Transform cartData to ensure _id is a valid ObjectId and cartItemId is not sent to backend
+    const products = context?.cartData?.map(({ cartItemId, _id, productId, ...rest }) => ({
+      _id: productId,
+      ...rest
+    }));
     const payLoad = {
       userId: context?.userData?._id,
-      products: context?.cartData,
+      products,
       paymentId: "",
       payment_status: "CASH ON DELIVERY",
       delivery_address: selectedAddress,

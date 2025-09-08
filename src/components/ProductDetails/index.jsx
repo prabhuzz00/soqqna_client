@@ -60,9 +60,7 @@ export const ProductDetailsComponent = (props) => {
     () =>
       context?.cartData?.some(
         (cartItem) =>
-          cartItem.productId === props?.item?._id &&
-          cartItem.selectedColor === (selectedColor?.color?.label || "") &&
-          cartItem.size === (selectedTabName || "")
+          cartItem.cartItemId === `${props?.item?._id}-${selectedColor?.color?.label || ""}-${selectedTabName || ""}`
       ),
     [
       context?.cartData,
@@ -179,9 +177,8 @@ export const ProductDetailsComponent = (props) => {
           : 0;
 
       const productItem = {
-        _id: `${product?._id}-${selectedColor?.color?.label || ""}-${
-          selectedTabName || ""
-        }`,
+  _id: product?._id,
+  cartItemId: `${product?._id}-${selectedColor?.color?.label || ""}-${selectedTabName || ""}`,
         name: product?.name,
         image:
           selectedColor?.color?.images?.[0] ||
