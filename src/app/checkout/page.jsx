@@ -611,11 +611,11 @@ const Checkout = () => {
                               "+ " +
                               address?.mobile}
                           </p>
-                          <p className="mb-0 font-[500]">
+                          {/* <p className="mb-0 font-[500]">
                             {userData?.phone !== null
                               ? "+" + userData?.phone
                               : "+" + address?.mobile}
-                          </p>
+                          </p> */}
                         </div>
                         <Button
                           variant="text"
@@ -719,7 +719,8 @@ const Checkout = () => {
                         </span>{" "}
                         <span className="font-[500] text-[14px]">
                           {" "}
-                          {moneyFmt(appliedCoupon.discount)}
+                          {/* {moneyFmt(appliedCoupon.discount)} */}
+                         {` ${getSymbol()}${convertPrice(appliedCoupon.discount)}`}
                         </span>
                       </h3>
                     )}
@@ -822,21 +823,14 @@ const Checkout = () => {
                                 currency: "USD",
                               })} off`}{" "}
                           {coupon.maxDiscountAmount
-                            ? `(up to ${coupon.maxDiscountAmount.toLocaleString(
-                                "en-US",
-                                {
-                                  style: "currency",
-                                  currency: "USD",
-                                }
-                              )})`
+                            ? `(up to ${getSymbol()}${convertPrice(coupon.maxDiscountAmount)})`
                             : ""}
+                             
                         </p>
                         <p className="text-[14px] text-gray-700 !my-0">
                           {t("checkout.minOrder")}{" "}
-                          {coupon.minOrderAmount.toLocaleString("en-US", {
-                            style: "currency",
-                            currency: "USD",
-                          })}
+                          {`${getSymbol()}${convertPrice(coupon.minOrderAmount)}`}
+                          
                         </p>
                         <p className="text-[14px] text-gray-700 !my-0">
                           {t("checkout.expires")}{" "}

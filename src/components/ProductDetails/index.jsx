@@ -72,9 +72,9 @@ export const ProductDetailsComponent = (props) => {
   const isInMyList = useMemo(
     () =>
       context?.myListData?.some((item) =>
-        item.productId.includes(props?.item?._id)
+        item.productId.includes(props?.item?.id)
       ),
-    [context?.myListData, props?.item?._id]
+    [context?.myListData, props?.item?.id]
   );
 
   useEffect(() => {
@@ -202,7 +202,6 @@ export const ProductDetailsComponent = (props) => {
       };
 
       setIsLoading(true);
-      context?.alertBox("success", "Item added");
       context?.addToCart(productItem, userId, quantity);
       context?.getCartItems();
       setTimeout(() => {
