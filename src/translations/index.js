@@ -701,7 +701,7 @@ export const translations = {
     },
     login: {
       title: "تسجيل الدخول إلى حسابك",
-      phone_label: " الهاتف أو البريد الإلكتروني",
+      phone_label: " البريد الإلكتروني",
       password_label: "كلمة المرور",
       forgot_password: "هل نسيت كلمة المرور؟",
       login_button: "تسجيل الدخول",
