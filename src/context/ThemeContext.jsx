@@ -199,7 +199,9 @@ const ThemeProvider = ({ children }) => {
   const addToCart = (product, userId, quantity) => {
     try {
       const cart = getCart();
-      const index = cart.findIndex((item) => item._id === product._id);
+      // const index = cart.findIndex((item) => item._id === product._id);
+
+      const index = cart.findIndex((item) => item.cartItemId === product.cartItemId);
 
       if (index !== -1) {
         // Update quantity if same variation exists

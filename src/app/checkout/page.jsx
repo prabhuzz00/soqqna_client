@@ -231,9 +231,14 @@ const Checkout = () => {
 
   /* ---------- payment helpers ---------- */
   const onApprovePayment = async (data) => {
+    // Transform cartData to ensure _id is a valid ObjectId and cartItemId is not sent to backend
+    const products = context?.cartData?.map(({ cartItemId, _id, productId, ...rest }) => ({
+      _id: productId,
+      ...rest
+    }));
     const info = {
       userId: context?.userData?._id,
-      products: context?.cartData,
+      products,
       payment_status: "COMPLETE",
       delivery_address: selectedAddress,
       totalAmount: finalAmount, // MOD
@@ -495,9 +500,14 @@ const Checkout = () => {
     const genBarcode = (stamp + rand).slice(0, 20);
     setBarcode(genBarcode);
 
+    // Transform cartData to ensure _id is a valid ObjectId and cartItemId is not sent to backend
+    const products = context?.cartData?.map(({ cartItemId, _id, productId, ...rest }) => ({
+      _id: productId,
+      ...rest
+    }));
     const payLoad = {
       userId: context?.userData?._id,
-      products: context?.cartData,
+      products,
       paymentId: "",
       payment_status: "CASH ON DELIVERY",
       delivery_address: selectedAddress,
@@ -601,11 +611,11 @@ const Checkout = () => {
                               "+ " +
                               address?.mobile}
                           </p>
-                          <p className="mb-0 font-[500]">
+                          {/* <p className="mb-0 font-[500]">
                             {userData?.phone !== null
                               ? "+" + userData?.phone
                               : "+" + address?.mobile}
-                          </p>
+                          </p> */}
                         </div>
                         <Button
                           variant="text"
@@ -709,7 +719,8 @@ const Checkout = () => {
                         </span>{" "}
                         <span className="font-[500] text-[14px]">
                           {" "}
-                          {moneyFmt(appliedCoupon.discount)}
+                          {/* {moneyFmt(appliedCoupon.discount)} */}
+                         {` ${getSymbol()}${convertPrice(appliedCoupon.discount)}`}
                         </span>
                       </h3>
                     )}
@@ -812,21 +823,14 @@ const Checkout = () => {
                                 currency: "USD",
                               })} off`}{" "}
                           {coupon.maxDiscountAmount
-                            ? `(up to ${coupon.maxDiscountAmount.toLocaleString(
-                                "en-US",
-                                {
-                                  style: "currency",
-                                  currency: "USD",
-                                }
-                              )})`
+                            ? `(up to ${getSymbol()}${convertPrice(coupon.maxDiscountAmount)})`
                             : ""}
+                             
                         </p>
                         <p className="text-[14px] text-gray-700 !my-0">
                           {t("checkout.minOrder")}{" "}
-                          {coupon.minOrderAmount.toLocaleString("en-US", {
-                            style: "currency",
-                            currency: "USD",
-                          })}
+                          {`${getSymbol()}${convertPrice(coupon.minOrderAmount)}`}
+                          
                         </p>
                         <p className="text-[14px] text-gray-700 !my-0">
                           {t("checkout.expires")}{" "}

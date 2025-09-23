@@ -60,9 +60,7 @@ export const ProductDetailsComponent = (props) => {
     () =>
       context?.cartData?.some(
         (cartItem) =>
-          cartItem.productId === props?.item?._id &&
-          cartItem.selectedColor === (selectedColor?.color?.label || "") &&
-          cartItem.size === (selectedTabName || "")
+          cartItem.cartItemId === `${props?.item?._id}-${selectedColor?.color?.label || ""}-${selectedTabName || ""}`
       ),
     [
       context?.cartData,
@@ -74,9 +72,9 @@ export const ProductDetailsComponent = (props) => {
   const isInMyList = useMemo(
     () =>
       context?.myListData?.some((item) =>
-        item.productId.includes(props?.item?._id)
+        item.productId.includes(props?.item?.id)
       ),
-    [context?.myListData, props?.item?._id]
+    [context?.myListData, props?.item?.id]
   );
 
   useEffect(() => {
@@ -179,9 +177,8 @@ export const ProductDetailsComponent = (props) => {
           : 0;
 
       const productItem = {
-        _id: `${product?._id}-${selectedColor?.color?.label || ""}-${
-          selectedTabName || ""
-        }`,
+  _id: product?._id,
+  cartItemId: `${product?._id}-${selectedColor?.color?.label || ""}-${selectedTabName || ""}`,
         name: product?.name,
         image:
           selectedColor?.color?.images?.[0] ||
@@ -205,7 +202,6 @@ export const ProductDetailsComponent = (props) => {
       };
 
       setIsLoading(true);
-      context?.alertBox("success", "Item added");
       context?.addToCart(productItem, userId, quantity);
       context?.getCartItems();
       setTimeout(() => {

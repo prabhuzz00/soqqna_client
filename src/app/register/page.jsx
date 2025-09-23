@@ -32,7 +32,7 @@ const Register = () => {
   const { data: session, status } = useSession();
 
   const isStrongPassword = (password) => {
-    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
+  return password.length >= 6;
   };
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const Register = () => {
     if (!isStrongPassword(formFields.password)) {
       context.alertBox(
         "error",
-        "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character"
+        "Password must be at least 6 characters long."
       );
       setIsLoading(false);
       return;
@@ -80,7 +80,7 @@ const Register = () => {
     setIsLoading(true);
     try {
       const res = await postData("/api/user/verifyEmail", {
-        email: formFields.email,
+  email: formFields.email.toLowerCase(),
         otp,
       });
       setIsLoading(false);

@@ -22,8 +22,8 @@ const CartPanel = (props) => {
       const currentCart = localStorage.getItem("cart");
       const parsedCart = currentCart ? JSON.parse(currentCart) : [];
 
-      // Filter out the item to remove
-      const updatedCart = parsedCart.filter((item) => item._id !== id);
+      // Filter out the item to remove by cartItemId (variant-specific)
+      const updatedCart = parsedCart.filter((item) => item.cartItemId !== id);
 
       // Save updated cart back to localStorage
       localStorage.setItem("cart", JSON.stringify(updatedCart));
@@ -103,7 +103,7 @@ const CartPanel = (props) => {
 
                 <MdOutlineDeleteOutline
                   className="absolute top-[10px] right-[10px] cursor-pointer text-[20px] link transition-all"
-                  onClick={() => removeItem(item?._id)}
+                  onClick={() => removeItem(item?.cartItemId)}
                 />
               </div>
             </div>
