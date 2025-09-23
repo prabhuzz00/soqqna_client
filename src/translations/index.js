@@ -707,7 +707,7 @@ export const translations = {
       login_button: "تسجيل الدخول",
       not_registered: "ليس لديك حساب؟",
       sign_up: "إنشاء حساب",
-      identifier_label: "البريد الإلكتروني أو رقم الهاتف",
+      identifier_label: " البريد الإلكتروني",
       error_identifier_required: "يرجى إدخال البريد الإلكتروني أو رقم الهاتف",
       error_phone_required: "يرجى إدخال رقم الهاتف",
       error_password_required: "يرجى إدخال كلمة المرور",
