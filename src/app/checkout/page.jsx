@@ -79,6 +79,11 @@ const Checkout = () => {
   const [pendingCOD, setPendingCOD] = useState(null); // remembers addr & amt
   const { zones: serviceZones, loaded: zonesLoaded } = useServiceZones();
 
+  // Wallet states
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [useWallet, setUseWallet] = useState(false);
+  const [walletAmountToUse, setWalletAmountToUse] = useState(0);
+
   /* ---------- hooks ---------- */
   const context = useContext(MyContext);
   const { t } = useTranslation();
@@ -102,6 +107,11 @@ const Checkout = () => {
         setShippingSetting({ deliveryFee, FreeDeliveryFee });
       }
     });
+
+    // Fetch wallet balance
+    if (context?.userData?._id) {
+      fetchWalletBalance();
+    }
   }, [context?.userData]);
 
   /* ---------- recalc subtotal when cart changes ---------- */
@@ -119,6 +129,22 @@ const Checkout = () => {
     setCouponMessage("");
     setCouponError("");
   }, [context.cartData]);
+
+  /* ---------- fetch wallet balance ---------- */
+  const fetchWalletBalance = async () => {
+    try {
+      const token = Cookies.get("accessToken");
+      if (!token) return;
+
+      const response = await fetchDataFromApi("/api/wallet/balance");
+      if (response?.success) {
+        setWalletBalance(response.data.balance || 0);
+      }
+    } catch (error) {
+      console.error("Failed to fetch wallet balance:", error);
+      setWalletBalance(0);
+    }
+  };
 
   /* ---------- fetch coupons ---------- */
   useEffect(() => {
@@ -139,14 +165,37 @@ const Checkout = () => {
   }, []);
 
   /* ---------- shipping + final calculations ---------- */
+  /* ---------- shipping + final calculations ---------- */
   const shippingCost =
     (appliedCoupon ? discountedAmount : totalAmount) >=
     shippingSetting.FreeDeliveryFee
       ? 0
-      : shippingSetting.deliveryFee; // NEW
+      : shippingSetting.deliveryFee;
 
-  const finalAmount =
-    (appliedCoupon ? discountedAmount : totalAmount) + shippingCost; // NEW
+  // Calculate amounts step by step to avoid circular dependencies
+  const baseAmount = appliedCoupon ? discountedAmount : totalAmount;
+  const amountWithShipping = baseAmount + shippingCost;
+  const walletDeduction = useWallet ? Math.min(walletAmountToUse, amountWithShipping) : 0;
+  const finalAmount = amountWithShipping - walletDeduction;
+
+  /* ---------- wallet amount change handler ---------- */
+  const handleWalletAmountChange = (amount) => {
+    const currentTotal = (appliedCoupon ? discountedAmount : totalAmount) + shippingCost;
+    const maxAmount = Math.min(walletBalance, currentTotal);
+    const validAmount = Math.max(0, Math.min(amount, maxAmount));
+    setWalletAmountToUse(validAmount);
+  };
+
+  /* ---------- update wallet amount when cart changes ---------- */
+  useEffect(() => {
+    if (useWallet && walletAmountToUse > 0) {
+      const currentTotal = (appliedCoupon ? discountedAmount : totalAmount) + shippingCost;
+      const maxUsable = Math.min(walletBalance, currentTotal);
+      if (walletAmountToUse > maxUsable) {
+        setWalletAmountToUse(maxUsable);
+      }
+    }
+  }, [appliedCoupon, discountedAmount, totalAmount, shippingCost, walletBalance, useWallet, walletAmountToUse]);
 
   /* ---------- PayPal integration ---------- */
   useEffect(() => {
@@ -304,14 +353,23 @@ const Checkout = () => {
       name: "Advanced UI Techniques",
       description: "for testing purpose",
       handler: function (response) {
+        // Transform cartData to ensure _id is a valid ObjectId
+        const products = context?.cartData?.map(({ cartItemId, _id, productId, ...rest }) => ({
+          _id: productId,
+          ...rest
+        }));
+
         const payLoad = {
           userId: context?.userData?._id,
-          products: context?.cartData,
+          products,
           paymentId: response.razorpay_payment_id,
           payment_status: "COMPLETED",
           delivery_address: selectedAddress,
-          totalAmt: finalAmount, // MOD
+          totalAmt: amountWithShipping, // Original amount before wallet deduction
+          finalAmt: finalAmount, // Amount after wallet deduction
           couponId: appliedCoupon?.couponId || null,
+          walletUsed: useWallet,
+          walletAmount: walletDeduction,
           date: new Date().toLocaleString("en-US", {
             month: "short",
             day: "2-digit",
@@ -319,7 +377,11 @@ const Checkout = () => {
           }),
         };
 
-        postData(`/api/order/create`, payLoad).then((res) => {
+        const apiEndpoint = useWallet && walletAmountToUse > 0 
+          ? `/api/order/create-with-wallet` 
+          : `/api/order/create`;
+        
+        postData(apiEndpoint, payLoad).then((res) => {
           if (res.error) {
             context.alertBox("error", res.message);
             router.push("/my-orders/failed");
@@ -340,6 +402,10 @@ const Checkout = () => {
             deleteData(`/api/cart/emptyCart/${context?.userData?._id}`).then(
               () => context.getCartItems()
             );
+            // Refresh wallet balance if wallet was used
+            if (useWallet && walletAmountToUse > 0) {
+              fetchWalletBalance();
+            }
             router.push("/my-orders/success");
           }
         });
@@ -511,11 +577,14 @@ const Checkout = () => {
       paymentId: "",
       payment_status: "CASH ON DELIVERY",
       delivery_address: selectedAddress,
-      totalAmt: finalAmount,
+      totalAmt: amountWithShipping, // Original amount before wallet deduction
+      finalAmt: finalAmount, // Amount after wallet deduction
       barcode: genBarcode,
       couponId: appliedCoupon?.couponId || null,
       couponCode: appliedCoupon?.code || null,
       couponDiscount: appliedCoupon?.discount || null,
+      walletUsed: useWallet,
+      walletAmount: walletDeduction,
       pickupPoint: isDoorStep ? "DoorStep" : "PickupPoint",
       date: new Date().toLocaleString("en-US", {
         month: "short",
@@ -524,7 +593,11 @@ const Checkout = () => {
       }),
     };
 
-    postData(`/api/order/create`, payLoad).then((res) => {
+    const apiEndpoint = useWallet && walletAmountToUse > 0 
+      ? `/api/order/create-with-wallet` 
+      : `/api/order/create`;
+    
+    postData(apiEndpoint, payLoad).then((res) => {
       setIsLoading(false);
       if (res.error) return context.alertBox("error", res.message);
 
@@ -543,6 +616,10 @@ const Checkout = () => {
       }
 
       context.clearCart();
+      // Refresh wallet balance if wallet was used
+      if (useWallet && walletAmountToUse > 0) {
+        fetchWalletBalance();
+      }
       router.push("/my-orders/success");
     });
   };
@@ -735,7 +812,49 @@ const Checkout = () => {
                           : `${getSymbol()}${convertPrice(shippingCost)}`}
                       </span>
                     </h3>
-                    <h3 className="!text-[16px] flex items-center justify-between py-1">
+                    
+                    {/* Wallet Section */}
+                    {walletBalance > 0 && (
+                      <div className="wallet-section border-t pt-3 mt-3">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              id="useWallet"
+                              checked={useWallet}
+                              onChange={(e) => {
+                                setUseWallet(e.target.checked);
+                                if (e.target.checked) {
+                                  // Use full wallet balance or order total, whichever is smaller
+                                  const currentTotal = (appliedCoupon ? discountedAmount : totalAmount) + shippingCost;
+                                  const maxUsable = Math.min(walletBalance, currentTotal);
+                                  setWalletAmountToUse(maxUsable);
+                                } else {
+                                  setWalletAmountToUse(0);
+                                }
+                              }}
+                              className="w-4 h-4"
+                            />
+                            <label htmlFor="useWallet" className="text-[14px] font-[500]">
+                              Use Wallet Balance
+                            </label>
+                          </div>
+                          <span className="font-[500] text-[14px] text-green-600">
+                            {`${getSymbol()}${convertPrice(walletBalance)}`}
+                          </span>
+                        </div>
+                        {useWallet && walletDeduction > 0 && (
+                          <h3 className="!text-[16px] flex items-center justify-between py-1">
+                            <span className="font-[600] text-green-600">Wallet Applied:</span>
+                            <span className="font-[500] text-[14px] text-green-600">
+                              -{`${getSymbol()}${convertPrice(walletDeduction)}`}
+                            </span>
+                          </h3>
+                        )}
+                      </div>
+                    )}
+
+                    <h3 className="!text-[16px] flex items-center justify-between py-1 border-t pt-3 mt-3">
                       <span className="font-[600]">{t("checkout.total")}:</span>
                       <span className="font-[500] text-[14px]">
                         {`${getSymbol()}${convertPrice(finalAmount)}`}
