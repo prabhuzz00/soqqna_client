@@ -9,22 +9,53 @@ import Button from "@mui/material/Button";
 import Link from "next/link";
 import Breadcrumb from "@/components/Breadcrumb";
 import { useRouter } from "next/navigation";
+// import { useAuthRedirect } from "@/hooks/useAuthRedirect";
+import CircularProgress from "@mui/material/CircularProgress";
+import Cookies from "js-cookie";
 
 const MyList = () => {
   const context = useContext(MyContext);
   const router = useRouter();
 
+  // Simple authentication check
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const token = Cookies.get("accessToken");
+
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    setTimeout(() => {
+      setIsCheckingAuth(false);
+    }, 500);
+  });
+
+  // Handle context changes after initial load
   useEffect(() => {
     if (context?.isLogin === false) {
       router.push("/login");
     }
-  }, [context?.isLogin, router]);
+  });
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       window.scrollTo(0, 0);
     }
   }, []);
+
+  // Show loading while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <>

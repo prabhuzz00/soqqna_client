@@ -26,7 +26,7 @@ const ThemeProvider = ({ children }) => {
   const [addressMode, setAddressMode] = useState("add");
   const [addressId, setAddressId] = useState("");
   const [searchData, setSearchData] = useState([]);
-  const [windowWidth, setWindowWidth] = useState(null);
+  const [windowWidth, setWindowWidth] = useState(1200); // Default to desktop width to match server render
 
   const [openFilter, setOpenFilter] = useState(false);
   const [isFilterBtnShow, setisFilterBtnShow] = useState(false);
@@ -201,7 +201,9 @@ const ThemeProvider = ({ children }) => {
       const cart = getCart();
       // const index = cart.findIndex((item) => item._id === product._id);
 
-      const index = cart.findIndex((item) => item.cartItemId === product.cartItemId);
+      const index = cart.findIndex(
+        (item) => item.cartItemId === product.cartItemId
+      );
 
       if (index !== -1) {
         // Update quantity if same variation exists

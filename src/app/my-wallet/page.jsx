@@ -6,10 +6,12 @@ import { MyContext } from "@/context/ThemeProvider";
 import CircularProgress from "@mui/material/CircularProgress";
 import { fetchDataFromApi } from "@/utils/api";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import { useTranslation } from "@/utils/useTranslation";
 import Breadcrumb from "@/components/Breadcrumb";
 import { FaWallet, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { useCurrency } from "@/context/CurrencyContext";
+// import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 const MyWallet = () => {
   const [walletData, setWalletData] = useState(null);
@@ -24,12 +26,30 @@ const MyWallet = () => {
   const { t } = useTranslation();
   const { convertPrice, getSymbol } = useCurrency();
 
-  // Redirect to login if not logged in
+  // Simple authentication check
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const token = Cookies.get("accessToken");
+
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    setTimeout(() => {
+      setIsCheckingAuth(false);
+    }, 500);
+  });
+
+  // Handle context changes after initial load
   useEffect(() => {
     if (context?.isLogin === false) {
       router.push("/login");
     }
-  }, [context?.isLogin, router]);
+  });
 
   // Fetch wallet data
   const fetchWalletData = async () => {
@@ -57,7 +77,9 @@ const MyWallet = () => {
         ...(type && { type }),
       });
 
-      const response = await fetchDataFromApi(`/api/wallet/transactions?${queryParams}`);
+      const response = await fetchDataFromApi(
+        `/api/wallet/transactions?${queryParams}`
+      );
       if (response.success) {
         setTransactions(response.data);
         setTotalPages(response.pagination.totalPages);
@@ -107,7 +129,8 @@ const MyWallet = () => {
     return type === "CREDIT" ? "text-green-600" : "text-red-600";
   };
 
-  if (isLoading) {
+  // Show loading while checking authentication
+  if (isCheckingAuth || isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <CircularProgress />
@@ -146,7 +169,8 @@ const MyWallet = () => {
                         {t("wallet.availableBalance") || "Available Balance"}
                       </p>
                       <h3 className="text-3xl font-bold">
-                        {getSymbol()}{convertPrice(walletData?.walletBalance || 0)}
+                        {getSymbol()}
+                        {convertPrice(walletData?.walletBalance || 0)}
                       </h3>
                     </div>
                   </div>
@@ -195,7 +219,10 @@ const MyWallet = () => {
                 <>
                   <div className="divide-y divide-gray-200">
                     {transactions.map((transaction, index) => (
-                      <div key={transaction._id} className="p-4 hover:bg-gray-50">
+                      <div
+                        key={transaction._id}
+                        className="p-4 hover:bg-gray-50"
+                      >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
@@ -214,17 +241,27 @@ const MyWallet = () => {
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className={`font-bold ${getTransactionColor(transaction.type)}`}>
+                            <p
+                              className={`font-bold ${getTransactionColor(
+                                transaction.type
+                              )}`}
+                            >
                               {transaction.type === "CREDIT" ? "+" : "-"}
-                              {getSymbol()}{convertPrice(transaction.amount)}
+                              {getSymbol()}
+                              {convertPrice(transaction.amount)}
                             </p>
                             <p className="text-xs text-gray-500">
-                              {t("wallet.balance") || "Balance"}: {getSymbol()}{convertPrice(transaction.balanceAfter)}
+                              {t("wallet.balance") || "Balance"}: {getSymbol()}
+                              {convertPrice(transaction.balanceAfter)}
                             </p>
                             <Chip
                               label={transaction.status}
                               size="small"
-                              color={transaction.status === "COMPLETED" ? "success" : "default"}
+                              color={
+                                transaction.status === "COMPLETED"
+                                  ? "success"
+                                  : "default"
+                              }
                               className="!text-xs mt-1"
                             />
                           </div>
@@ -232,7 +269,9 @@ const MyWallet = () => {
                         {transaction.orderId && (
                           <div className="mt-2 pl-13">
                             <p className="text-xs text-blue-600">
-                              {t("wallet.relatedOrder") || "Related to order"}: {transaction.orderId.barcode || transaction.orderId}
+                              {t("wallet.relatedOrder") || "Related to order"}:{" "}
+                              {transaction.orderId.barcode ||
+                                transaction.orderId}
                             </p>
                           </div>
                         )}
@@ -260,7 +299,8 @@ const MyWallet = () => {
                     {t("wallet.noTransactions") || "No Transactions Yet"}
                   </h3>
                   <p className="text-gray-500">
-                    {t("wallet.noTransactionsDesc") || "Your wallet transactions will appear here"}
+                    {t("wallet.noTransactionsDesc") ||
+                      "Your wallet transactions will appear here"}
                   </p>
                 </div>
               )}

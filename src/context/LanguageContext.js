@@ -8,6 +8,9 @@ export const LanguageProvider = ({ children }) => {
   const [locale, setLocale] = useState("en");
 
   useEffect(() => {
+    // Only run on client side to prevent hydration mismatch
+    if (typeof window === "undefined") return;
+
     const storedLocale = localStorage.getItem("locale");
     if (storedLocale) {
       setLocale(storedLocale);

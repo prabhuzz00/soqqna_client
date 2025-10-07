@@ -16,6 +16,7 @@ import Cookies from "js-cookie";
 import { editData, postData } from "@/utils/api";
 import { useTranslation } from "@/utils/useTranslation";
 import Breadcrumb from "@/components/Breadcrumb";
+// import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 
 const MyAccount = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,6 +25,9 @@ const MyAccount = () => {
   const [isChangePasswordFormShow, setisChangePasswordFormShow] =
     useState(false);
   const [phone, setPhone] = useState("");
+
+  // Simple authentication check with delay
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const [formFields, setFormsFields] = useState({
     name: "",
@@ -50,12 +54,27 @@ const MyAccount = () => {
   //   }
   // }, [context?.isLogin]);
 
-  // Redirect to login if not logged in
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const token = Cookies.get("accessToken");
+
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    setTimeout(() => {
+      setIsCheckingAuth(false);
+    }, 500);
+  });
+
+  // Handle context changes after initial load
   useEffect(() => {
     if (context?.isLogin === false) {
       router.push("/login");
     }
-  }, [context?.isLogin, router]);
+  });
 
   useEffect(() => {
     if (context?.userData?._id !== "" && context?.userData?._id !== undefined) {
@@ -167,6 +186,15 @@ const MyAccount = () => {
       }
     });
   };
+
+  // Show loading while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <>

@@ -114,6 +114,32 @@ const Checkout = () => {
     }
   }, [context?.userData]);
 
+  /* ---------- Load barcode script ---------- */
+  useEffect(() => {
+    // Check if script is already loaded
+    if (typeof window !== "undefined" && window.JsBarcode) {
+      setIsJsBarcodeLoaded(true);
+      return;
+    }
+
+    // Load script dynamically
+    const script = document.createElement("script");
+    script.src =
+      "https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js";
+    script.async = true;
+    script.onload = () => {
+      setIsJsBarcodeLoaded(true);
+    };
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup if component unmounts
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
+
   /* ---------- recalc subtotal when cart changes ---------- */
   useEffect(() => {
     const amt = context.cartData?.length
@@ -137,8 +163,9 @@ const Checkout = () => {
       if (!token) return;
 
       const response = await fetchDataFromApi("/api/wallet/balance");
+      console.log("Wallet API response:", response); // Debug log
       if (response?.success) {
-        setWalletBalance(response.data.balance || 0);
+        setWalletBalance(response.balance || 0); // Fixed: removed .data
       }
     } catch (error) {
       console.error("Failed to fetch wallet balance:", error);
@@ -175,12 +202,15 @@ const Checkout = () => {
   // Calculate amounts step by step to avoid circular dependencies
   const baseAmount = appliedCoupon ? discountedAmount : totalAmount;
   const amountWithShipping = baseAmount + shippingCost;
-  const walletDeduction = useWallet ? Math.min(walletAmountToUse, amountWithShipping) : 0;
+  const walletDeduction = useWallet
+    ? Math.min(walletAmountToUse, amountWithShipping)
+    : 0;
   const finalAmount = amountWithShipping - walletDeduction;
 
   /* ---------- wallet amount change handler ---------- */
   const handleWalletAmountChange = (amount) => {
-    const currentTotal = (appliedCoupon ? discountedAmount : totalAmount) + shippingCost;
+    const currentTotal =
+      (appliedCoupon ? discountedAmount : totalAmount) + shippingCost;
     const maxAmount = Math.min(walletBalance, currentTotal);
     const validAmount = Math.max(0, Math.min(amount, maxAmount));
     setWalletAmountToUse(validAmount);
@@ -189,13 +219,22 @@ const Checkout = () => {
   /* ---------- update wallet amount when cart changes ---------- */
   useEffect(() => {
     if (useWallet && walletAmountToUse > 0) {
-      const currentTotal = (appliedCoupon ? discountedAmount : totalAmount) + shippingCost;
+      const currentTotal =
+        (appliedCoupon ? discountedAmount : totalAmount) + shippingCost;
       const maxUsable = Math.min(walletBalance, currentTotal);
       if (walletAmountToUse > maxUsable) {
         setWalletAmountToUse(maxUsable);
       }
     }
-  }, [appliedCoupon, discountedAmount, totalAmount, shippingCost, walletBalance, useWallet, walletAmountToUse]);
+  }, [
+    appliedCoupon,
+    discountedAmount,
+    totalAmount,
+    shippingCost,
+    walletBalance,
+    useWallet,
+    walletAmountToUse,
+  ]);
 
   /* ---------- PayPal integration ---------- */
   useEffect(() => {
@@ -281,10 +320,12 @@ const Checkout = () => {
   /* ---------- payment helpers ---------- */
   const onApprovePayment = async (data) => {
     // Transform cartData to ensure _id is a valid ObjectId and cartItemId is not sent to backend
-    const products = context?.cartData?.map(({ cartItemId, _id, productId, ...rest }) => ({
-      _id: productId,
-      ...rest
-    }));
+    const products = context?.cartData?.map(
+      ({ cartItemId, _id, productId, ...rest }) => ({
+        _id: productId,
+        ...rest,
+      })
+    );
     const info = {
       userId: context?.userData?._id,
       products,
@@ -354,10 +395,12 @@ const Checkout = () => {
       description: "for testing purpose",
       handler: function (response) {
         // Transform cartData to ensure _id is a valid ObjectId
-        const products = context?.cartData?.map(({ cartItemId, _id, productId, ...rest }) => ({
-          _id: productId,
-          ...rest
-        }));
+        const products = context?.cartData?.map(
+          ({ cartItemId, _id, productId, ...rest }) => ({
+            _id: productId,
+            ...rest,
+          })
+        );
 
         const payLoad = {
           userId: context?.userData?._id,
@@ -377,10 +420,11 @@ const Checkout = () => {
           }),
         };
 
-        const apiEndpoint = useWallet && walletAmountToUse > 0 
-          ? `/api/order/create-with-wallet` 
-          : `/api/order/create`;
-        
+        const apiEndpoint =
+          useWallet && walletAmountToUse > 0
+            ? `/api/order/create-with-wallet`
+            : `/api/order/create`;
+
         postData(apiEndpoint, payLoad).then((res) => {
           if (res.error) {
             context.alertBox("error", res.message);
@@ -511,6 +555,15 @@ const Checkout = () => {
   // };
 
   const cashOnDelivery = () => {
+    console.log("Cash on Delivery - Wallet Info:", {
+      useWallet,
+      walletBalance,
+      walletAmountToUse,
+      walletDeduction,
+      finalAmount,
+      amountWithShipping,
+    }); // Debug log
+
     if (!userData?.address_details?.length)
       return context.alertBox("error", "Please add address");
 
@@ -567,10 +620,12 @@ const Checkout = () => {
     setBarcode(genBarcode);
 
     // Transform cartData to ensure _id is a valid ObjectId and cartItemId is not sent to backend
-    const products = context?.cartData?.map(({ cartItemId, _id, productId, ...rest }) => ({
-      _id: productId,
-      ...rest
-    }));
+    const products = context?.cartData?.map(
+      ({ cartItemId, _id, productId, ...rest }) => ({
+        _id: productId,
+        ...rest,
+      })
+    );
     const payLoad = {
       userId: context?.userData?._id,
       products,
@@ -578,13 +633,11 @@ const Checkout = () => {
       payment_status: "CASH ON DELIVERY",
       delivery_address: selectedAddress,
       totalAmt: amountWithShipping, // Original amount before wallet deduction
-      finalAmt: finalAmount, // Amount after wallet deduction
       barcode: genBarcode,
       couponId: appliedCoupon?.couponId || null,
       couponCode: appliedCoupon?.code || null,
       couponDiscount: appliedCoupon?.discount || null,
-      walletUsed: useWallet,
-      walletAmount: walletDeduction,
+      walletAmountUsed: useWallet ? walletDeduction : 0, // Match backend expectation
       pickupPoint: isDoorStep ? "DoorStep" : "PickupPoint",
       date: new Date().toLocaleString("en-US", {
         month: "short",
@@ -593,11 +646,9 @@ const Checkout = () => {
       }),
     };
 
-    const apiEndpoint = useWallet && walletAmountToUse > 0 
-      ? `/api/order/create-with-wallet` 
-      : `/api/order/create`;
-    
-    postData(apiEndpoint, payLoad).then((res) => {
+    console.log("Order payload:", payLoad); // Debug log
+
+    postData("/api/order/create", payLoad).then((res) => {
       setIsLoading(false);
       if (res.error) return context.alertBox("error", res.message);
 
@@ -797,7 +848,9 @@ const Checkout = () => {
                         <span className="font-[500] text-[14px]">
                           {" "}
                           {/* {moneyFmt(appliedCoupon.discount)} */}
-                         {` ${getSymbol()}${convertPrice(appliedCoupon.discount)}`}
+                          {` ${getSymbol()}${convertPrice(
+                            appliedCoupon.discount
+                          )}`}
                         </span>
                       </h3>
                     )}
@@ -812,7 +865,7 @@ const Checkout = () => {
                           : `${getSymbol()}${convertPrice(shippingCost)}`}
                       </span>
                     </h3>
-                    
+
                     {/* Wallet Section */}
                     {walletBalance > 0 && (
                       <div className="wallet-section border-t pt-3 mt-3">
@@ -826,47 +879,172 @@ const Checkout = () => {
                                 setUseWallet(e.target.checked);
                                 if (e.target.checked) {
                                   // Use full wallet balance or order total, whichever is smaller
-                                  const currentTotal = (appliedCoupon ? discountedAmount : totalAmount) + shippingCost;
-                                  const maxUsable = Math.min(walletBalance, currentTotal);
+                                  const currentTotal =
+                                    (appliedCoupon
+                                      ? discountedAmount
+                                      : totalAmount) + shippingCost;
+                                  const maxUsable = Math.min(
+                                    walletBalance,
+                                    currentTotal
+                                  );
                                   setWalletAmountToUse(maxUsable);
                                 } else {
                                   setWalletAmountToUse(0);
                                 }
                               }}
-                              className="w-4 h-4"
+                              className="w-4 h-4 accent-green-600"
                             />
-                            <label htmlFor="useWallet" className="text-[14px] font-[500]">
-                              Use Wallet Balance
+                            <label
+                              htmlFor="useWallet"
+                              className="text-[14px] font-[500] cursor-pointer"
+                            >
+                              Use Wallet Balance (
+                              {`${getSymbol()}${convertPrice(walletBalance)}`})
                             </label>
                           </div>
-                          <span className="font-[500] text-[14px] text-green-600">
-                            {`${getSymbol()}${convertPrice(walletBalance)}`}
-                          </span>
+                          <div className="text-right">
+                            <div className="font-[500] text-[12px] text-gray-500">
+                              Available Balance
+                            </div>
+                            <div className="font-[600] text-[14px] text-green-600">
+                              {`${getSymbol()}${convertPrice(walletBalance)}`}
+                            </div>
+                          </div>
                         </div>
+
+                        {/* Wallet Amount Input */}
+                        {useWallet && (
+                          <div className="mb-3 p-3 bg-green-50 rounded-md border border-green-200">
+                            <div className="flex items-center justify-between mb-2">
+                              <label className="text-[13px] font-[500] text-green-700">
+                                Amount to use from wallet:
+                              </label>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const currentTotal =
+                                    (appliedCoupon
+                                      ? discountedAmount
+                                      : totalAmount) + shippingCost;
+                                  const maxUsable = Math.min(
+                                    walletBalance,
+                                    currentTotal
+                                  );
+                                  setWalletAmountToUse(maxUsable);
+                                }}
+                                className="text-[12px] text-blue-600 hover:text-blue-800 underline"
+                              >
+                                Use Maximum
+                              </button>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[14px] font-[500]">
+                                {getSymbol()}
+                              </span>
+                              <input
+                                type="number"
+                                min="0"
+                                max={Math.min(
+                                  walletBalance,
+                                  (appliedCoupon
+                                    ? discountedAmount
+                                    : totalAmount) + shippingCost
+                                )}
+                                value={walletAmountToUse}
+                                onChange={(e) => {
+                                  const amount =
+                                    parseFloat(e.target.value) || 0;
+                                  handleWalletAmountChange(amount);
+                                }}
+                                className="border border-green-300 rounded-md px-2 py-1 w-full text-[14px] focus:outline-none focus:border-green-500"
+                                placeholder="0.00"
+                              />
+                            </div>
+                            <div className="text-[12px] text-gray-600 mt-1">
+                              Max:{" "}
+                              {`${getSymbol()}${convertPrice(
+                                Math.min(
+                                  walletBalance,
+                                  (appliedCoupon
+                                    ? discountedAmount
+                                    : totalAmount) + shippingCost
+                                )
+                              )}`}
+                            </div>
+                          </div>
+                        )}
+
                         {useWallet && walletDeduction > 0 && (
-                          <h3 className="!text-[16px] flex items-center justify-between py-1">
-                            <span className="font-[600] text-green-600">Wallet Applied:</span>
-                            <span className="font-[500] text-[14px] text-green-600">
-                              -{`${getSymbol()}${convertPrice(walletDeduction)}`}
-                            </span>
-                          </h3>
+                          <div className="bg-green-100 p-2 rounded-md border border-green-300">
+                            <h3 className="!text-[14px] flex items-center justify-between">
+                              <span className="font-[600] text-green-700">
+                                Wallet Applied:
+                              </span>
+                              <span className="font-[600] text-[14px] text-green-700">
+                                -
+                                {`${getSymbol()}${convertPrice(
+                                  walletDeduction
+                                )}`}
+                              </span>
+                            </h3>
+                            <div className="text-[12px] text-green-600 mt-1">
+                              Remaining wallet balance:{" "}
+                              {`${getSymbol()}${convertPrice(
+                                walletBalance - walletDeduction
+                              )}`}
+                            </div>
+                          </div>
                         )}
                       </div>
                     )}
 
-                    <h3 className="!text-[16px] flex items-center justify-between py-1 border-t pt-3 mt-3">
-                      <span className="font-[600]">{t("checkout.total")}:</span>
-                      <span className="font-[500] text-[14px]">
-                        {`${getSymbol()}${convertPrice(finalAmount)}`}
-                      </span>
-                    </h3>
+                    <div className="border-t pt-3 mt-3">
+                      {useWallet && walletDeduction > 0 ? (
+                        <div className="space-y-1">
+                          <h3 className="!text-[14px] flex items-center justify-between py-1">
+                            <span className="font-[500] text-gray-600">
+                              Subtotal:
+                            </span>
+                            <span className="font-[500] text-[14px]">
+                              {`${getSymbol()}${convertPrice(
+                                amountWithShipping
+                              )}`}
+                            </span>
+                          </h3>
+                          <h3 className="!text-[14px] flex items-center justify-between py-1">
+                            <span className="font-[500] text-green-600">
+                              Wallet Payment:
+                            </span>
+                            <span className="font-[500] text-[14px] text-green-600">
+                              -
+                              {`${getSymbol()}${convertPrice(walletDeduction)}`}
+                            </span>
+                          </h3>
+                          <h3 className="!text-[16px] flex items-center justify-between py-2 font-bold border-t pt-2">
+                            <span className="font-[700]">Amount to Pay:</span>
+                            <span className="font-[700] text-[16px] text-blue-600">
+                              {`${getSymbol()}${convertPrice(finalAmount)}`}
+                            </span>
+                          </h3>
+                        </div>
+                      ) : (
+                        <h3 className="!text-[16px] flex items-center justify-between py-1">
+                          <span className="font-[600]">
+                            {t("checkout.total")}:
+                          </span>
+                          <span className="font-[500] text-[14px]">
+                            {`${getSymbol()}${convertPrice(finalAmount)}`}
+                          </span>
+                        </h3>
+                      )}
+                    </div>
                   </div>
                 </div>
 
                 <div className="flex items-center flex-col gap-3 mb-2">
                   <Button
                     type="button"
-                    className="btn-dark btn-lg w-full flex gap-2 items-center"
+                    className="btn-dark btn-lg w-full flex gap-2 items-center justify-center"
                     onClick={cashOnDelivery}
                   >
                     {isLoading ? (
@@ -874,10 +1052,43 @@ const Checkout = () => {
                     ) : (
                       <>
                         <BsFillBagCheckFill className="text-[20px]" />
-                        {t("checkout.cod")}
+                        <div className="flex flex-col items-center">
+                          <span>{t("checkout.cod")}</span>
+                          {finalAmount > 0 && (
+                            <span className="text-[12px] opacity-90">
+                              Pay {`${getSymbol()}${convertPrice(finalAmount)}`}{" "}
+                              on delivery
+                            </span>
+                          )}
+                          {finalAmount === 0 && useWallet && (
+                            <span className="text-[12px] opacity-90">
+                              Fully paid with wallet
+                            </span>
+                          )}
+                        </div>
                       </>
                     )}
                   </Button>
+
+                  {/* Wallet Summary Alert */}
+                  {useWallet && walletDeduction > 0 && (
+                    <div className="w-full p-3 bg-green-50 border border-green-200 rounded-md">
+                      <div className="flex items-center gap-2 text-green-700">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-[13px] font-[500]">
+                          {finalAmount === 0
+                            ? `Order fully paid using wallet balance (${getSymbol()}${convertPrice(
+                                walletDeduction
+                              )})`
+                            : `${getSymbol()}${convertPrice(
+                                walletDeduction
+                              )} will be deducted from wallet, ${getSymbol()}${convertPrice(
+                                finalAmount
+                              )} to pay on delivery`}
+                        </span>
+                      </div>
+                    </div>
+                  )}
 
                   {/* ---------- Coupon UI remains unchanged ---------- */}
                   <div className="coupon-section mt-4 w-full">
@@ -942,14 +1153,16 @@ const Checkout = () => {
                                 currency: "USD",
                               })} off`}{" "}
                           {coupon.maxDiscountAmount
-                            ? `(up to ${getSymbol()}${convertPrice(coupon.maxDiscountAmount)})`
+                            ? `(up to ${getSymbol()}${convertPrice(
+                                coupon.maxDiscountAmount
+                              )})`
                             : ""}
-                             
                         </p>
                         <p className="text-[14px] text-gray-700 !my-0">
                           {t("checkout.minOrder")}{" "}
-                          {`${getSymbol()}${convertPrice(coupon.minOrderAmount)}`}
-                          
+                          {`${getSymbol()}${convertPrice(
+                            coupon.minOrderAmount
+                          )}`}
                         </p>
                         <p className="text-[14px] text-gray-700 !my-0">
                           {t("checkout.expires")}{" "}
@@ -966,10 +1179,9 @@ const Checkout = () => {
       </section>
 
       <Script
-        src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"
-        onLoad={() => setIsJsBarcodeLoaded(true)}
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="lazyOnload"
       />
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
       <style jsx>{`
         .invoice-content {

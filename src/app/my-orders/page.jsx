@@ -15,7 +15,10 @@ import Breadcrumb from "@/components/Breadcrumb";
 import { MyContext } from "@/context/ThemeProvider";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Cookies from "js-cookie";
 import { useCurrency } from "@/context/CurrencyContext";
+// import { useAuthRedirect } from "@/hooks/useAuthRedirect";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const Orders = () => {
   const { convertPrice, getSymbol } = useCurrency();
@@ -26,11 +29,30 @@ const Orders = () => {
   const [page, setPage] = useState(1);
   const [openModalOrder, setOpenModalOrder] = useState(null);
 
+  // Simple authentication check
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const token = Cookies.get("accessToken");
+
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    setTimeout(() => {
+      setIsCheckingAuth(false);
+    }, 500);
+  });
+
+  // Handle context changes after initial load
   useEffect(() => {
     if (context?.isLogin === false) {
       router.push("/login");
     }
-  }, [context?.isLogin, router]);
+  });
 
   const isShowOrderdProduct = (index) => {
     if (isOpenOrderdProduct === index) {
@@ -183,6 +205,15 @@ const Orders = () => {
     const filename = `invoice-${orderId}.pdf`;
     downloadFile(`/api/order/invoice/${orderId}`, filename);
   };
+
+  // Show loading while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -478,7 +509,8 @@ const Orders = () => {
                                                         currency: "USD",
                                                       }
                                                     )} */}
-                                                    {getSymbol()}{convertPrice(item?.price)}
+                                                    {getSymbol()}
+                                                    {convertPrice(item?.price)}
                                                   </td>
                                                   <td className="px-6 py-4 font-[500]">
                                                     {/* {(
@@ -489,7 +521,11 @@ const Orders = () => {
                                                         currency: "USD",
                                                         })} */}
 
-                                                        {getSymbol()}{convertPrice(item?.price * item?.quantity)}
+                                                    {getSymbol()}
+                                                    {convertPrice(
+                                                      item?.price *
+                                                        item?.quantity
+                                                    )}
                                                   </td>
                                                   <td className="px-6 py-4 font-[500] whitespace-nowrap">
                                                     {isReturnEligible(

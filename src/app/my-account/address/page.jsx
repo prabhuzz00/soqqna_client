@@ -11,6 +11,9 @@ import AddressBox from "./addressBox";
 import { deleteData, fetchDataFromApi } from "@/utils/api";
 import Breadcrumb from "@/components/Breadcrumb";
 import { useRouter } from "next/navigation";
+// import { useAuthRedirect } from "@/hooks/useAuthRedirect";
+import CircularProgress from "@mui/material/CircularProgress";
+import Cookies from "js-cookie";
 
 const label = { inputProps: { "aria-label": "Radio demo" } };
 
@@ -20,11 +23,30 @@ const Address = () => {
   const context = useContext(MyContext);
   const router = useRouter();
 
+  // Simple authentication check
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const token = Cookies.get("accessToken");
+
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+
+    setTimeout(() => {
+      setIsCheckingAuth(false);
+    }, 500);
+  });
+
+  // Handle context changes after initial load
   useEffect(() => {
     if (context?.isLogin === false) {
       router.push("/login");
     }
-  }, [context?.isLogin, router]);
+  });
 
   useEffect(() => {
     if (context?.windowWidth < 992) {
@@ -34,10 +56,7 @@ const Address = () => {
     }
 
     if (context?.userData?._id !== "" && context?.userData?._id !== undefined) {
-      console.log(
-        "Fetching address for user ",
-        context?.userData
-      );
+      console.log("Fetching address for user ", context?.userData);
       setAddress(context?.userData?.address_details);
     }
   }, [context?.userData]);
@@ -53,6 +72,15 @@ const Address = () => {
       });
     });
   };
+
+  // Show loading while checking authentication
+  if (isCheckingAuth) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <>

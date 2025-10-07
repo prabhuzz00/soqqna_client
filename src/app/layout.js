@@ -94,46 +94,68 @@ export default function RootLayout({ children }) {
         <meta name="theme-color" content="#000000" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
-        
+
         {/* Preconnect to external domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-        
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="true"
+        />
+
         {/* Inline critical CSS */}
         <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
-        
+
         {/* Load Google Fonts asynchronously with font-display: swap */}
         <link
           href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
           rel="stylesheet"
           media="print"
-          onLoad="this.media='all'"
+          onLoad={() => {
+            if (typeof document !== "undefined") {
+              const link = document.querySelector('link[href*="Montserrat"]');
+              if (link) link.media = "all";
+            }
+          }}
         />
-        
+
         {/* Preload the font stylesheet */}
-        <link 
-          rel="preload" 
-          href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" 
-          as="style" 
+        <link
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+          as="style"
         />
-        
+
         {/* Preload main CSS files */}
-        <link 
-          rel="preload" 
-          href="/globals.css" 
-          as="style" 
-          onLoad="this.onload=null;this.rel='stylesheet'"
+        <link
+          rel="preload"
+          href="/globals.css"
+          as="style"
+          onLoad={(e) => {
+            if (e.target) {
+              e.target.onload = null;
+              e.target.rel = "stylesheet";
+            }
+          }}
         />
-        <link 
-          rel="preload" 
-          href="/responsive.css" 
-          as="style" 
-          onLoad="this.onload=null;this.rel='stylesheet'"
+        <link
+          rel="preload"
+          href="/responsive.css"
+          as="style"
+          onLoad={(e) => {
+            if (e.target) {
+              e.target.onload = null;
+              e.target.rel = "stylesheet";
+            }
+          }}
         />
-        
+
         {/* Fallback for browsers without JavaScript */}
         <noscript>
-          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" />
+          <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+          />
           <link rel="stylesheet" href="/globals.css" />
           <link rel="stylesheet" href="/responsive.css" />
         </noscript>
