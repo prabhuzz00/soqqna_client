@@ -111,12 +111,6 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
           rel="stylesheet"
           media="print"
-          onLoad={() => {
-            if (typeof document !== "undefined") {
-              const link = document.querySelector('link[href*="Montserrat"]');
-              if (link) link.media = "all";
-            }
-          }}
         />
 
         {/* Preload the font stylesheet */}
@@ -126,27 +120,23 @@ export default function RootLayout({ children }) {
           as="style"
         />
 
-        {/* Preload main CSS files */}
-        <link
-          rel="preload"
-          href="/globals.css"
-          as="style"
-          onLoad={(e) => {
-            if (e.target) {
-              e.target.onload = null;
-              e.target.rel = "stylesheet";
-            }
-          }}
-        />
-        <link
-          rel="preload"
-          href="/responsive.css"
-          as="style"
-          onLoad={(e) => {
-            if (e.target) {
-              e.target.onload = null;
-              e.target.rel = "stylesheet";
-            }
+        {/* Load CSS files directly */}
+        <link rel="stylesheet" href="/globals.css" />
+        <link rel="stylesheet" href="/responsive.css" />
+
+        {/* Client-side script to handle font loading */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const fontLink = document.querySelector('link[href*="Montserrat"]');
+                if (fontLink) {
+                  fontLink.onload = function() {
+                    this.media = 'all';
+                  };
+                }
+              })();
+            `,
           }}
         />
 
