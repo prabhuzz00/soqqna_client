@@ -295,15 +295,31 @@ const Checkout = () => {
     }
 
     try {
+      // Prepare cart items with necessary fields for coupon validation
+      const cartItems =
+        context?.cartData?.map((item) => ({
+          productId: item.productId || item._id,
+          categoryId: item.categoryId || item.catId, // Try both field names
+          quantity: item.quantity,
+          price: item.price,
+        })) || [];
+
       const { data } = await axios.post(
         `${process.env.NEXT_PUBLIC_APP_API_URL}/api/coupons/validate`,
-        { code, orderAmount: totalAmount },
+        {
+          code,
+          orderAmount: totalAmount,
+          cartItems,
+        },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setAppliedCoupon({
         code,
         discount: data.discount,
         couponId: data.couponId,
+        applicationType: data.applicationType,
+        applicableAmount: data.applicableAmount,
+        totalOrderAmount: data.totalOrderAmount,
       });
       setDiscountedAmount(totalAmount - data.discount);
       setCouponMessage(data.message);
@@ -841,18 +857,38 @@ const Checkout = () => {
                   {/* ---------- SUMMARY footer ---------- */}
                   <div className="invoice-footer">
                     {appliedCoupon && (
-                      <h3 className="!text-[16px] flex items-center justify-between py-1">
-                        <span className="font-[600]">
-                          {t("checkout.discount")}
-                        </span>{" "}
-                        <span className="font-[500] text-[14px]">
-                          {" "}
-                          {/* {moneyFmt(appliedCoupon.discount)} */}
-                          {` ${getSymbol()}${convertPrice(
-                            appliedCoupon.discount
-                          )}`}
-                        </span>
-                      </h3>
+                      <div>
+                        <h3 className="!text-[16px] flex items-center justify-between py-1">
+                          <span className="font-[600]">
+                            {t("checkout.discount")}
+                            {appliedCoupon.applicationType !== "all" && (
+                              <span className="text-[12px] font-[400] text-gray-600 ml-1">
+                                (
+                                {appliedCoupon.applicationType === "categories"
+                                  ? "Category specific"
+                                  : "Product specific"}
+                                )
+                              </span>
+                            )}
+                          </span>{" "}
+                          <span className="font-[500] text-[14px]">
+                            {" "}
+                            {/* {moneyFmt(appliedCoupon.discount)} */}
+                            {` ${getSymbol()}${convertPrice(
+                              appliedCoupon.discount
+                            )}`}
+                          </span>
+                        </h3>
+                        {appliedCoupon.applicationType !== "all" &&
+                          appliedCoupon.applicableAmount && (
+                            <div className="text-[12px] text-gray-600 pb-2">
+                              Applied to {getSymbol()}
+                              {convertPrice(appliedCoupon.applicableAmount)} out
+                              of {getSymbol()}
+                              {convertPrice(appliedCoupon.totalOrderAmount)}
+                            </div>
+                          )}
+                      </div>
                     )}
                     <h3 className="!text-[16px] flex items-center justify-between py-1">
                       <span className="font-[600]">
@@ -1115,9 +1151,24 @@ const Checkout = () => {
                       </Button>
                     </div>
                     {couponMessage && (
-                      <p className="text-green-600 text-[13px] mb-2">
-                        {couponMessage}
-                      </p>
+                      <div className="text-green-600 text-[13px] mb-2">
+                        <p>{couponMessage}</p>
+                        {appliedCoupon &&
+                          appliedCoupon.applicationType !== "all" &&
+                          appliedCoupon.applicableAmount && (
+                            <p className="text-[12px] mt-1 text-gray-600">
+                              Applied to {getSymbol()}
+                              {convertPrice(
+                                appliedCoupon.applicableAmount
+                              )}{" "}
+                              worth of{" "}
+                              {appliedCoupon.applicationType === "categories"
+                                ? "category"
+                                : "product"}{" "}
+                              items
+                            </p>
+                          )}
+                      </div>
                     )}
                     {couponError && (
                       <p className="text-red-600 text-[13px] mb-2">
