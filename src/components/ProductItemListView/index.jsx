@@ -84,7 +84,7 @@ const ProductItem = (props) => {
   // Check cart and myList status
   useEffect(() => {
     const item = context?.cartData?.filter((cartItem) =>
-      cartItem.productId.includes(props?.item?._id)
+      cartItem.productId === props?.item?._id || cartItem.productId?.includes(props?.item?._id)
     );
 
     const myListItem = context?.myListData?.filter((item) =>
@@ -226,16 +226,18 @@ const ProductItem = (props) => {
   };
 
   const minusQty = () => {
-    if (quantity !== 1 && quantity > 1) {
+    if (quantity > 1) {
       setQuantity(quantity - 1);
-      context?.updateCartItemQuantity(cartItem[0]?._id, quantity - 1);
+      const itemId = cartItem[0]?.cartItemId || cartItem[0]?._id;
+      context?.updateCartItemQuantity(itemId, quantity - 1);
       context?.getCartItems();
     } else {
       setQuantity(1);
+      const itemId = cartItem[0]?.cartItemId || cartItem[0]?._id;
       const cart = context?.cartData?.filter(
-        (item) => item._id !== cartItem[0]?._id
+        (item) => item._id !== itemId && item.cartItemId !== itemId
       );
-      Cookies.set("cart", JSON.stringify(cart));
+      localStorage.setItem("cart", JSON.stringify(cart));
       context?.getCartItems();
       setIsAdded(false);
       context.alertBox("success", "Item Removed");
@@ -261,7 +263,8 @@ const ProductItem = (props) => {
 
   const addQty = () => {
     setQuantity(quantity + 1);
-    context?.updateCartItemQuantity(cartItem[0]?._id, quantity + 1);
+    const itemId = cartItem[0]?.cartItemId || cartItem[0]?._id;
+    context?.updateCartItemQuantity(itemId, quantity + 1);
     context?.getCartItems();
   };
 

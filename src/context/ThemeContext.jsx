@@ -249,8 +249,8 @@ const ThemeProvider = ({ children }) => {
     try {
       const cart = getCart();
       const updatedCart = cart.map((item) => {
-        if (item._id === productId) {
-          return { ...item, quantity };
+        if (item._id === productId || item.cartItemId === productId) {
+          return { ...item, quantity, subTotal: parseInt(item.price * quantity) };
         }
         return item;
       });
