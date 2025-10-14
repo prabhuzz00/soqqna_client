@@ -30,6 +30,7 @@ const ProductItem = (props) => {
   const [images, setImages] = useState([]);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
+  const [userHasSelectedOptions, setUserHasSelectedOptions] = useState(false);
   const [currentPrice, setCurrentPrice] = useState(props?.item?.price);
   const [currentStock, setCurrentStock] = useState(props?.item?.countInStock);
 
@@ -40,19 +41,29 @@ const ProductItem = (props) => {
 
   // Initialize images, color, price, and stock
   useEffect(() => {
-    const initialImages = props?.item?.images[0];
-    // props?.item?.variation?.length > 0
-    //   ? props?.item?.images || props?.item?.variation[0]?.color?.images
-    //   : props?.item?.images;
+    const initialImages =
+      props?.item?.variation?.length > 0
+        ? props?.item?.images || props?.item?.variation[0]?.color?.images
+        : props?.item?.images;
     setImages(initialImages || []);
 
     if (props?.item?.variation?.length > 0) {
       const defaultVariation = props?.item?.variation[0];
       setSelectedColor(defaultVariation);
+      setSelectedSize(null); // Reset size when initializing
       setCurrentPrice(props?.item?.price);
       setCurrentStock(props?.item?.countInStock);
+      setUserHasSelectedOptions(false); // Reset user selection flag
+    } else {
+      // For products without variations, reset selections
+      setSelectedColor(null);
+      setSelectedSize(null);
+      setCurrentPrice(props?.item?.price);
+      setCurrentStock(props?.item?.countInStock);
+      setUserHasSelectedOptions(false); // Reset user selection flag
     }
   }, [
+    props?.item?._id, // Add product ID to re-initialize when product changes
     props?.item?.images,
     props?.item?.variation,
     props?.item?.price,
@@ -83,12 +94,39 @@ const ProductItem = (props) => {
 
   // Check cart and myList status
   useEffect(() => {
-    const item = context?.cartData?.filter((cartItem) =>
-      cartItem.productId === props?.item?._id || cartItem.productId?.includes(props?.item?._id)
-    );
+    // For products with variations, check if the SPECIFIC variation exists in cart
+    // For products without variations, check by productId
+    let item = [];
+    
+    if (props?.item?.variation?.length > 0) {
+      // Only check cart if color is properly selected
+      if (selectedColor?.color?.label) {
+        const targetCartItemId = `${props?.item?._id}_${selectedColor.color.label}_${selectedSize || 'default'}`;
+        item = context?.cartData?.filter((cartItem) => {
+          return (
+            cartItem.cartItemId === targetCartItemId ||
+            (cartItem.productId === props?.item?._id &&
+             cartItem.selectedColor === selectedColor.color.label &&
+             cartItem.size === (selectedSize || ''))
+          );
+        });
+      } else {
+        // If no color selected yet, assume not in cart
+        item = [];
+      }
+    } else {
+      // For products without variations, check by exact cartItemId or productId
+      const targetCartItemId = `${props?.item?._id}_default_default`;
+      item = context?.cartData?.filter((cartItem) => {
+        return (
+          cartItem.cartItemId === targetCartItemId ||
+          cartItem.productId === props?.item?._id
+        );
+      });
+    }
 
     const myListItem = context?.myListData?.filter((item) =>
-      item.productId.includes(props?.item?._id)
+      item.productId === props?.item?._id
     );
 
     if (item?.length !== 0) {
@@ -136,10 +174,9 @@ const ProductItem = (props) => {
     context?.cartData,
     context?.myListData,
     props?.item?._id,
-    props?.item?.variation,
-    props?.item?.images,
-    props?.item?.price,
-    props?.item?.countInStock,
+    props?.item?.variation?.length,
+    selectedColor?.color?.label,
+    selectedSize,
   ]);
 
   // Handle color selection
@@ -149,6 +186,7 @@ const ProductItem = (props) => {
     setCurrentPrice(props?.item?.price);
     setCurrentStock(props?.item?.countInStock);
     setImages(props?.item?.images || variation?.color?.images || []);
+    setUserHasSelectedOptions(true); // User has manually selected options
   };
 
   // Handle size selection
@@ -161,10 +199,17 @@ const ProductItem = (props) => {
       setCurrentPrice(sizeData.price || props?.item?.price);
       setCurrentStock(sizeData.countInStock || props?.item?.countInStock);
     }
+    setUserHasSelectedOptions(true); // User has manually selected options
   };
 
   // Add to cart function
   const addToCart = (product, userId, quantity) => {
+    // Check if quantity exceeds available stock
+    if (quantity > currentStock) {
+      context?.alertBox("error", "Requested quantity exceeds available stock");
+      return;
+    }
+
     const discountPercentage =
       product?.oldPrice && currentPrice
         ? Math.round(
@@ -172,19 +217,22 @@ const ProductItem = (props) => {
           )
         : 0;
 
+    // Create unique identifier for cart items (especially for variations)
+    const cartItemId = `${product?._id}_${selectedColor?.color?.label || 'default'}_${selectedSize || 'default'}`;
+
     const productItem = {
-      _id: product?._id,
+      _id: cartItemId, // Use unique cart item ID
+      cartItemId: cartItemId, // Also store for reference
       name: product?.name,
       arName: product?.arbName,
-      image: product?.images?.[0] || selectedColor?.color?.images?.[0] || "",
-      // image: product?.images?.[0],
+      image: selectedColor?.color?.images?.[0] || product?.images?.[0] || "",
       rating: product?.rating,
       price: currentPrice,
       oldPrice: product?.oldPrice,
       discount: discountPercentage,
       quantity: quantity,
       subTotal: parseInt(currentPrice * quantity),
-      productId: product?._id,
+      productId: product?._id, // Keep original product ID
       countInStock: currentStock,
       brand: product?.brand,
       size: selectedSize || "",
@@ -200,47 +248,77 @@ const ProductItem = (props) => {
     setIsLoading(true);
 
     if (props?.item?.variation?.length > 0) {
-      if (!selectedColor || !selectedSize) {
+      // If user hasn't manually selected options, show selection modal
+      if (!userHasSelectedOptions) {
         setIsShowTabs(true);
         setTimeout(() => {
           setIsLoading(false);
         }, 500);
-      } else {
-        context?.addToCart(productItem, userId, quantity);
-        context?.getCartItems();
-        setIsAdded(true);
-        setIsShowTabs(false);
+        return;
+      }
+      
+      // Check if color is selected
+      if (!selectedColor?.color?.label) {
+        setIsShowTabs(true);
         setTimeout(() => {
           setIsLoading(false);
         }, 500);
+        return;
       }
-    } else {
-      setIsAdded(true);
-      setIsShowTabs(false);
+      
+      // Check if size is required and selected
+      if (selectedColor?.sizes?.length > 0 && !selectedSize) {
+        setIsShowTabs(true);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 500);
+        return;
+      }
+    }
+    
+    // Add item to cart
+    try {
       context?.addToCart(productItem, userId, quantity);
-      context?.getCartItems();
+      
+      // Ensure cart data is refreshed
+      setTimeout(() => {
+        context?.getCartItems();
+        setIsShowTabs(false);
+        setIsLoading(false);
+      }, 100);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      context?.alertBox('error', 'Failed to add item to cart');
       setTimeout(() => {
         setIsLoading(false);
-      }, 500);
+      }, 300);
     }
   };
 
   const minusQty = () => {
     if (quantity > 1) {
-      setQuantity(quantity - 1);
+      const newQuantity = quantity - 1;
+      setQuantity(newQuantity);
       const itemId = cartItem[0]?.cartItemId || cartItem[0]?._id;
-      context?.updateCartItemQuantity(itemId, quantity - 1);
+      context?.updateCartItemQuantity(itemId, newQuantity);
       context?.getCartItems();
     } else {
+      // Remove item from cart when quantity reaches 0
       setQuantity(1);
       const itemId = cartItem[0]?.cartItemId || cartItem[0]?._id;
-      const cart = context?.cartData?.filter(
+      
+      // Get current cart and filter out the item
+      const currentCart = localStorage.getItem("cart");
+      const parsedCart = currentCart ? JSON.parse(currentCart) : [];
+      const updatedCart = parsedCart.filter(
         (item) => item._id !== itemId && item.cartItemId !== itemId
       );
-      localStorage.setItem("cart", JSON.stringify(cart));
+      
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
       context?.getCartItems();
       setIsAdded(false);
-      context.alertBox("success", "Item Removed");
+      setCartItem([]);
+      context?.alertBox("success", "Item Removed from Cart");
       setIsShowTabs(false);
       // Reset selections when item is removed
       if (props?.item?.variation?.length > 0) {
@@ -262,9 +340,15 @@ const ProductItem = (props) => {
   };
 
   const addQty = () => {
-    setQuantity(quantity + 1);
+    if (quantity >= currentStock) {
+      context?.alertBox("error", "Cannot exceed available stock");
+      return;
+    }
+    
+    const newQuantity = quantity + 1;
+    setQuantity(newQuantity);
     const itemId = cartItem[0]?.cartItemId || cartItem[0]?._id;
-    context?.updateCartItemQuantity(itemId, quantity + 1);
+    context?.updateCartItemQuantity(itemId, newQuantity);
     context?.getCartItems();
   };
 
@@ -490,10 +574,11 @@ const ProductItem = (props) => {
                   >
                     <FaMinus className="text-[rgba(0,0,0,0.7)]" />
                   </Button>
-                  <span>{quantity}</span>
+                  <span className="min-w-[30px] text-center">{quantity}</span>
                   <Button
                     className="!min-w-[35px] !w-[35px] !h-[30px] !bg-primary !rounded-none"
                     onClick={addQty}
+                    disabled={quantity >= currentStock}
                   >
                     <FaPlus className="text-white" />
                   </Button>

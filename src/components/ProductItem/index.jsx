@@ -31,6 +31,7 @@ const ProductItem = (props) => {
   const [images, setImages] = useState([]);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
+  const [userHasSelectedOptions, setUserHasSelectedOptions] = useState(false);
   const [currentPrice, setCurrentPrice] = useState(props?.item?.price);
   const [currentStock, setCurrentStock] = useState(props?.item?.countInStock);
 
@@ -53,12 +54,14 @@ const ProductItem = (props) => {
       setSelectedSize(null); // Reset size when initializing
       setCurrentPrice(props?.item?.price);
       setCurrentStock(props?.item?.countInStock);
+      setUserHasSelectedOptions(false); // Reset user selection flag
     } else {
       // For products without variations, reset selections
       setSelectedColor(null);
       setSelectedSize(null);
       setCurrentPrice(props?.item?.price);
       setCurrentStock(props?.item?.countInStock);
+      setUserHasSelectedOptions(false); // Reset user selection flag
     }
   }, [
     props?.item?._id, // Add product ID to re-initialize when product changes
@@ -169,6 +172,7 @@ const ProductItem = (props) => {
     setCurrentPrice(props?.item?.price);
     setCurrentStock(props?.item?.countInStock);
     setImages(variation?.color?.images || props?.item?.images || []);
+    setUserHasSelectedOptions(true); // User has manually selected options
   };
 
   // Handle size selection
@@ -181,6 +185,7 @@ const ProductItem = (props) => {
       setCurrentPrice(sizeData.price || props?.item?.price);
       setCurrentStock(sizeData.countInStock || props?.item?.countInStock);
     }
+    setUserHasSelectedOptions(true); // User has manually selected options
   };
 
   // Add to cart function
@@ -229,7 +234,26 @@ const ProductItem = (props) => {
     setIsLoading(true);
 
     if (props?.item?.variation?.length > 0) {
-      if (!selectedColor || !selectedSize) {
+      // If user hasn't manually selected options, show selection modal
+      if (!userHasSelectedOptions) {
+        setIsShowTabs(true);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 500);
+        return;
+      }
+      
+      // Check if color is selected
+      if (!selectedColor?.color?.label) {
+        setIsShowTabs(true);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 500);
+        return;
+      }
+      
+      // Check if size is required and selected
+      if (selectedColor?.sizes?.length > 0 && !selectedSize) {
         setIsShowTabs(true);
         setTimeout(() => {
           setIsLoading(false);
@@ -530,7 +554,6 @@ const ProductItem = (props) => {
                   <Button
                     className="!min-w-[35px] !w-[35px] !h-[30px] !bg-[#f1f1f1] !rounded-none"
                     onClick={minusQty}
-                    disabled={quantity <= 1}
                   >
                     <FaMinus className="text-[rgba(0,0,0,0.7)]" />
                   </Button>
