@@ -31,6 +31,7 @@ const ProductItem = (props) => {
   const [images, setImages] = useState([]);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
+  const [userHasSelectedOptions, setUserHasSelectedOptions] = useState(false);
   const [currentPrice, setCurrentPrice] = useState(props?.item?.price);
   const [currentStock, setCurrentStock] = useState(props?.item?.countInStock);
 
@@ -50,10 +51,20 @@ const ProductItem = (props) => {
     if (props?.item?.variation?.length > 0) {
       const defaultVariation = props?.item?.variation[0];
       setSelectedColor(defaultVariation);
+      setSelectedSize(null); // Reset size when initializing
       setCurrentPrice(props?.item?.price);
       setCurrentStock(props?.item?.countInStock);
+      setUserHasSelectedOptions(false); // Reset user selection flag
+    } else {
+      // For products without variations, reset selections
+      setSelectedColor(null);
+      setSelectedSize(null);
+      setCurrentPrice(props?.item?.price);
+      setCurrentStock(props?.item?.countInStock);
+      setUserHasSelectedOptions(false); // Reset user selection flag
     }
   }, [
+    props?.item?._id, // Add product ID to re-initialize when product changes
     props?.item?.images,
     props?.item?.variation,
     props?.item?.price,
@@ -84,41 +95,53 @@ const ProductItem = (props) => {
 
   // Check cart and myList status
   useEffect(() => {
-    const item = context?.cartData?.filter((cartItem) =>
-      cartItem.productId.includes(props?.item?._id)
-    );
+    // For products with variations, check if the SPECIFIC variation exists in cart
+    // For products without variations, check by productId
+    let item = [];
+    
+    if (props?.item?.variation?.length > 0) {
+      // Only check cart if color is properly selected
+      if (selectedColor?.color?.label) {
+        const targetCartItemId = `${props?.item?._id}_${selectedColor.color.label}_${selectedSize || 'default'}`;
+        item = context?.cartData?.filter((cartItem) => {
+          return (
+            cartItem.cartItemId === targetCartItemId ||
+            (cartItem.productId === props?.item?._id &&
+             cartItem.selectedColor === selectedColor.color.label &&
+             cartItem.size === (selectedSize || ''))
+          );
+        });
+      } else {
+        // If no color selected yet, assume not in cart
+        item = [];
+      }
+    } else {
+      // For products without variations, check by exact cartItemId or productId
+      const targetCartItemId = `${props?.item?._id}_default_default`;
+      item = context?.cartData?.filter((cartItem) => {
+        return (
+          cartItem.cartItemId === targetCartItemId ||
+          cartItem.productId === props?.item?._id
+        );
+      });
+    }
+
+
 
     const myListItem = context?.myListData?.filter((item) =>
-      item.productId.includes(props?.item?._id)
+      item.productId === props?.item?._id
     );
 
     if (item?.length !== 0) {
       setCartItem(item);
       setIsAdded(true);
-      setQuantity(item[0]?.quantity);
-      // Optionally, restore selectedColor and selectedSize from cartItem if stored
-      if (item[0]?.selectedColor) {
-        const variation = props?.item?.variation?.find(
-          (v) => v.color.label === item[0].selectedColor
-        );
-        if (variation) {
-          setSelectedColor(variation);
-          setImages(variation?.color?.images || props?.item?.images || []);
-          const sizeData = variation?.sizes?.find(
-            (s) => s.label === item[0].size
-          );
-          if (sizeData) {
-            setSelectedSize(item[0].size);
-            setCurrentPrice(sizeData.price || props?.item?.price);
-            setCurrentStock(sizeData.countInStock || props?.item?.countInStock);
-          }
-        }
-      }
+      setQuantity(item[0]?.quantity || 1);
     } else {
+      setCartItem([]);
       setIsAdded(false);
       setQuantity(1);
-      // Reset selections when item is not in cart
-      if (props?.item?.variation?.length > 0) {
+      // Initialize selections for products with variations
+      if (props?.item?.variation?.length > 0 && !selectedColor) {
         const defaultVariation = props?.item?.variation[0];
         setSelectedColor(defaultVariation);
         setSelectedSize(null);
@@ -137,10 +160,9 @@ const ProductItem = (props) => {
     context?.cartData,
     context?.myListData,
     props?.item?._id,
-    props?.item?.variation,
-    props?.item?.images,
-    props?.item?.price,
-    props?.item?.countInStock,
+    props?.item?.variation?.length,
+    selectedColor?.color?.label,
+    selectedSize,
   ]);
 
   // Handle color selection
@@ -150,6 +172,7 @@ const ProductItem = (props) => {
     setCurrentPrice(props?.item?.price);
     setCurrentStock(props?.item?.countInStock);
     setImages(variation?.color?.images || props?.item?.images || []);
+    setUserHasSelectedOptions(true); // User has manually selected options
   };
 
   // Handle size selection
@@ -162,10 +185,17 @@ const ProductItem = (props) => {
       setCurrentPrice(sizeData.price || props?.item?.price);
       setCurrentStock(sizeData.countInStock || props?.item?.countInStock);
     }
+    setUserHasSelectedOptions(true); // User has manually selected options
   };
 
   // Add to cart function
   const addToCart = (product, userId, quantity) => {
+    // Check if quantity exceeds available stock
+    if (quantity > currentStock) {
+      context?.alertBox("error", "Requested quantity exceeds available stock");
+      return;
+    }
+
     const discountPercentage =
       product?.oldPrice && currentPrice
         ? Math.round(
@@ -173,8 +203,12 @@ const ProductItem = (props) => {
           )
         : 0;
 
+    // Create unique identifier for cart items (especially for variations)
+    const cartItemId = `${product?._id}_${selectedColor?.color?.label || 'default'}_${selectedSize || 'default'}`;
+
     const productItem = {
-      _id: product?._id,
+      _id: cartItemId, // Use unique cart item ID
+      cartItemId: cartItemId, // Also store for reference
       name: product?.name,
       arName: product?.arbName,
       image: selectedColor?.color?.images?.[0] || product?.images?.[0] || "",
@@ -184,7 +218,7 @@ const ProductItem = (props) => {
       discount: discountPercentage,
       quantity: quantity,
       subTotal: parseInt(currentPrice * quantity),
-      productId: product?._id,
+      productId: product?._id, // Keep original product ID
       countInStock: currentStock,
       brand: product?.brand,
       size: selectedSize || "",
@@ -200,46 +234,81 @@ const ProductItem = (props) => {
     setIsLoading(true);
 
     if (props?.item?.variation?.length > 0) {
-      if (!selectedColor || !selectedSize) {
+      // If user hasn't manually selected options, show selection modal
+      if (!userHasSelectedOptions) {
         setIsShowTabs(true);
         setTimeout(() => {
           setIsLoading(false);
         }, 500);
-      } else {
-        context?.addToCart(productItem, userId, quantity);
-        context?.getCartItems();
-        setIsAdded(true);
-        setIsShowTabs(false);
+        return;
+      }
+      
+      // Check if color is selected
+      if (!selectedColor?.color?.label) {
+        setIsShowTabs(true);
         setTimeout(() => {
           setIsLoading(false);
         }, 500);
+        return;
       }
-    } else {
-      setIsAdded(true);
-      setIsShowTabs(false);
+      
+      // Check if size is required and selected
+      if (selectedColor?.sizes?.length > 0 && !selectedSize) {
+        setIsShowTabs(true);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 500);
+        return;
+      }
+    }
+    
+
+    
+    // Add item to cart
+    try {
       context?.addToCart(productItem, userId, quantity);
-      context?.getCartItems();
+      
+      // Ensure cart data is refreshed
+      setTimeout(() => {
+        context?.getCartItems();
+        setIsShowTabs(false);
+        setIsLoading(false);
+      }, 100);
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      context?.alertBox('error', 'Failed to add item to cart');
       setTimeout(() => {
         setIsLoading(false);
-      }, 500);
+      }, 300);
     }
   };
 
   const minusQty = () => {
-    if (quantity !== 1 && quantity > 1) {
-      setQuantity(quantity - 1);
-      context?.updateCartItemQuantity(cartItem[0]?._id, quantity - 1);
+    if (quantity > 1) {
+      const newQuantity = quantity - 1;
+      setQuantity(newQuantity);
+      const itemId = cartItem[0]?.cartItemId || cartItem[0]?._id;
+      context?.updateCartItemQuantity(itemId, newQuantity);
       context?.getCartItems();
     } else {
+      // Remove item from cart when quantity reaches 0
       setQuantity(1);
-      const cart = context?.cartData?.filter(
-        (item) => item._id !== cartItem[0]?._id
+      const itemId = cartItem[0]?.cartItemId || cartItem[0]?._id;
+      
+      // Get current cart and filter out the item
+      const currentCart = localStorage.getItem("cart");
+      const parsedCart = currentCart ? JSON.parse(currentCart) : [];
+      const updatedCart = parsedCart.filter(
+        (item) => item._id !== itemId && item.cartItemId !== itemId
       );
-      Cookies.set("cart", JSON.stringify(cart));
+      
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
       context?.getCartItems();
       setIsAdded(false);
-      context.alertBox("success", "Item Removed");
+      setCartItem([]);
+      context?.alertBox("success", "Item Removed from Cart");
       setIsShowTabs(false);
+      
       // Reset selections when item is removed
       if (props?.item?.variation?.length > 0) {
         const defaultVariation = props?.item?.variation[0];
@@ -259,8 +328,15 @@ const ProductItem = (props) => {
   };
 
   const addQty = () => {
-    setQuantity(quantity + 1);
-    context?.updateCartItemQuantity(cartItem[0]?._id, quantity + 1);
+    if (quantity >= currentStock) {
+      context?.alertBox("error", "Cannot exceed available stock");
+      return;
+    }
+    
+    const newQuantity = quantity + 1;
+    setQuantity(newQuantity);
+    const itemId = cartItem[0]?.cartItemId || cartItem[0]?._id;
+    context?.updateCartItemQuantity(itemId, newQuantity);
     context?.getCartItems();
   };
 
@@ -324,51 +400,64 @@ const ProductItem = (props) => {
         </Link>
 
         {isShowTabs === true && (
-          <div className="flex items-center justify-center absolute top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.7)] z-[60] p-3 gap-2 flex-col">
+          <div className="flex items-center justify-center absolute top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.8)] z-[60] p-2 flex-col overflow-hidden">
             <Button
-              className="!absolute top-[10px] right-[10px] !min-w-[30px] !min-h-[30px] !w-[30px] !h-[30px] !rounded-full !bg-[rgba(255,255,255,1)] text-black"
+              className="!absolute top-[8px] right-[8px] !min-w-[28px] !min-h-[28px] !w-[28px] !h-[28px] !rounded-full !bg-white text-black hover:!bg-gray-100 z-[70]"
               onClick={() => setIsShowTabs(false)}
             >
-              <MdClose className="text-black z-[90] text-[25px]" />
+              <MdClose className="text-black text-[18px]" />
             </Button>
 
-            {/* Color Selection */}
-            {props?.item?.variation?.length > 0 && (
-              <div className="flex items-center gap-2">
-                {props?.item?.variation?.map((variation, index) => (
-                  <button
-                    key={index}
-                    className={`w-8 h-8 rounded-full border-2 transition-all duration-200 ${
-                      selectedColor?.color?.label === variation?.color?.label
-                        ? "border-white scale-110"
-                        : "border-gray-300"
-                    }`}
-                    style={{
-                      backgroundColor: variation?.color?.label.toLowerCase(),
-                    }}
-                    onClick={() => handleColorClick(variation)}
-                    title={variation?.color?.label}
-                  />
-                ))}
-              </div>
-            )}
+            {/* Selection Container */}
+            <div className="flex flex-col items-center justify-center gap-3 w-full max-w-[90%] h-full">
+              
+              {/* Color Selection */}
+              {props?.item?.variation?.length > 0 && (
+                <div className="w-full text-center">
+                  <div className="text-white text-xs font-medium mb-2">Select Color</div>
+                  <div className="flex items-center justify-center gap-1.5 flex-wrap px-2">
+                    {props?.item?.variation?.map((variation, index) => (
+                      <button
+                        key={index}
+                        className={`w-8 h-8 rounded-full border-2 transition-all duration-200 flex-shrink-0 ${
+                          selectedColor?.color?.label === variation?.color?.label
+                            ? "border-white scale-105 shadow-lg"
+                            : "border-gray-400 hover:border-white hover:scale-105"
+                        }`}
+                        style={{
+                          backgroundColor: variation?.color?.label.toLowerCase(),
+                        }}
+                        onClick={() => handleColorClick(variation)}
+                        title={variation?.color?.label}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
 
-            {/* Size Selection */}
-            {selectedColor && selectedColor?.sizes?.length > 0 && (
-              <div className="flex items-center gap-2">
-                {selectedColor?.sizes?.map((size, index) => (
-                  <span
-                    key={index}
-                    className={`flex items-center justify-center p-1 px-2 bg-[rgba(255,255,255,0.8)] max-w-[45px] h-[25px] rounded-sm cursor-pointer hover:bg-white ${
-                      selectedSize === size.label && "!bg-primary text-white"
-                    }`}
-                    onClick={() => handleSizeClick(size.label)}
-                  >
-                    {size.label}
-                  </span>
-                ))}
-              </div>
-            )}
+              {/* Size Selection */}
+              {selectedColor && selectedColor?.sizes?.length > 0 && (
+                <div className="w-full text-center">
+                  <div className="text-white text-xs font-medium mb-2">Select Size</div>
+                  <div className="flex items-center justify-center gap-1.5 flex-wrap px-1 max-h-[120px] overflow-y-auto">
+                    {selectedColor?.sizes?.map((size, index) => (
+                      <button
+                        key={index}
+                        className={`flex items-center justify-center px-2 py-1.5 bg-white min-w-[40px] max-w-[60px] h-[28px] rounded text-xs font-medium cursor-pointer hover:bg-gray-100 transition-all duration-200 whitespace-nowrap ${
+                          selectedSize === size.label 
+                            ? "!bg-primary text-white shadow-md" 
+                            : "text-black"
+                        }`}
+                        onClick={() => handleSizeClick(size.label)}
+                        title={size.label}
+                      >
+                        {size.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -445,7 +534,7 @@ const ProductItem = (props) => {
               className="btn-org addToCartBtn btn-border flex w-full btn-sm gap-2"
               size="small"
               onClick={() =>
-                addToCart(props?.item, context?.userData?._id, quantity)
+                addToCart(props?.item, context?.userData?._id || 'guest', quantity)
               }
             >
               <MdOutlineShoppingCart className="text-[18px]" />{" "}
@@ -468,10 +557,11 @@ const ProductItem = (props) => {
                   >
                     <FaMinus className="text-[rgba(0,0,0,0.7)]" />
                   </Button>
-                  <span>{quantity}</span>
+                  <span className="min-w-[30px] text-center">{quantity}</span>
                   <Button
                     className="!min-w-[35px] !w-[35px] !h-[30px] !bg-gray-800 !rounded-none"
                     onClick={addQty}
+                    disabled={quantity >= currentStock}
                   >
                     <FaPlus className="text-white" />
                   </Button>
