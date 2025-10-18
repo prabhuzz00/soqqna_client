@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.13.5",
     "@mui/material": "^6.1.8",
     "@mui/styled-engine-sc": "^6.1.8",
+    "@stripe/stripe-js": "^8.0.0",
     "axios": "^1.8.4",
     "client": "file:",
     "critters": "^0.0.25",

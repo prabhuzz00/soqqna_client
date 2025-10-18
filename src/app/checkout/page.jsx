@@ -12,7 +12,7 @@ import {
 import Image from "next/image";
 import { Button } from "@mui/material";
 import { BsFillBagCheckFill } from "react-icons/bs";
-import { FaPlus } from "react-icons/fa6";
+import { FaPlus, FaCreditCard } from "react-icons/fa6";
 import Radio from "@mui/material/Radio";
 import axios from "axios";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -26,6 +26,7 @@ import Breadcrumb from "@/components/Breadcrumb";
 import { MyContext } from "@/context/ThemeProvider";
 import { useTranslation } from "@/utils/useTranslation";
 import { useCurrency } from "@/context/CurrencyContext";
+import { loadStripe } from "@stripe/stripe-js";
 
 const useServiceZones = () => {
   const [zones, setZones] = useState({});
@@ -48,6 +49,11 @@ const useServiceZones = () => {
 
   return { zones, loaded };
 };
+
+// Initialize Stripe with environment variable
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+);
 
 const Checkout = () => {
   const { convertPrice, getSymbol } = useCurrency();
@@ -84,15 +90,28 @@ const Checkout = () => {
   const [useWallet, setUseWallet] = useState(false);
   const [walletAmountToUse, setWalletAmountToUse] = useState(0);
 
+  // Stripe payment state
+  const [isStripeLoading, setIsStripeLoading] = useState(false);
+
+  // Hydration fix
+  const [isMounted, setIsMounted] = useState(false);
+
   /* ---------- hooks ---------- */
   const context = useContext(MyContext);
   const { t } = useTranslation();
   const router = useRouter();
+
+  // Fix hydration mismatch
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const invoiceRef = useRef();
 
   /* ---------- helper for money ---------- */
-  const moneyFmt = (v) =>
-    v.toLocaleString("en-US", { style: "currency", currency: "USD" });
+  const moneyFmt = (v) => {
+    if (!isMounted) return `$${v}`;
+    return v.toLocaleString("en-US", { style: "currency", currency: "USD" });
+  };
 
   /* ---------- on mount: scroll, user, shipping ---------- */
   useEffect(() => {
@@ -691,7 +710,178 @@ const Checkout = () => {
     });
   };
 
+  const payOnline = async () => {
+    console.log("Pay Online (Stripe) - Wallet Info:", {
+      useWallet,
+      walletBalance,
+      walletAmountToUse,
+      walletDeduction,
+      finalAmount,
+      amountWithShipping,
+    }); // Debug log
+
+    if (!userData?.address_details?.length)
+      return context.alertBox("error", "Please add address");
+
+    const addr = userData.address_details.find(
+      (a) => a._id === selectedAddress
+    );
+    if (!addr)
+      return context.alertBox("error", "Please select a valid address");
+
+    const city = addr.city?.trim().toLowerCase();
+    const area = addr.area?.trim().toLowerCase();
+    const isDoorStep = addr.addressType === "Home Delivery";
+
+    // Same validation logic as Cash on Delivery
+    for (const item of context.cartData) {
+      // If serviceZone is null/empty, product is available everywhere
+      if (!item.serviceZone || item.serviceZone.trim() === "") continue;
+
+      // Find the zone object for the address city
+      const zone = Object.values(serviceZones).find(
+        (z) => z.name?.trim().toLowerCase() === city
+      );
+      if (!zone) {
+        return context.alertBox(
+          "error",
+          `${item.name} is not available in ${city}.`
+        );
+      }
+
+      // Find the area object for the address area
+      const matchedArea = zone.areas?.find(
+        (a) => a.name?.trim().toLowerCase() === area
+      );
+      if (!matchedArea) {
+        return context.alertBox(
+          "error",
+          `${item.name} is not available in ${area}, ${city}.`
+        );
+      }
+
+      // If Home Delivery is selected, check if area supports doorstep
+      if (isDoorStep && !matchedArea.doorStep) {
+        return context.alertBox(
+          "error",
+          `${item.name} cannot be delivered to your area (${area}) via Home Delivery. Please choose Pickup Point.`
+        );
+      }
+    }
+
+    try {
+      setIsStripeLoading(true);
+
+      const stripe = await stripePromise;
+      if (!stripe) {
+        throw new Error("Stripe failed to load");
+      }
+
+      // Create payment intent on the server
+      const stamp = Date.now().toString();
+      const rand = Math.floor(1e8 + Math.random() * 9e8).toString();
+      const genBarcode = (stamp + rand).slice(0, 20);
+      setBarcode(genBarcode);
+
+      // Transform cartData to ensure _id is a valid ObjectId and cartItemId is not sent to backend
+      const products = context?.cartData?.map(
+        ({ cartItemId, _id, productId, ...rest }) => ({
+          _id: productId,
+          ...rest,
+        })
+      );
+
+      const paymentData = {
+        amount: Math.round(finalAmount * 100), // Stripe expects amount in cents
+        currency: "usd", // You can make this dynamic based on your currency context
+        userId: context?.userData?._id,
+        products,
+        delivery_address: selectedAddress,
+        totalAmt: amountWithShipping, // Original amount before wallet deduction
+        barcode: genBarcode,
+        couponId: appliedCoupon?.couponId || null,
+        couponCode: appliedCoupon?.code || null,
+        couponDiscount: appliedCoupon?.discount || null,
+        walletAmountUsed: useWallet ? walletDeduction : 0,
+        pickupPoint: isDoorStep ? "DoorStep" : "PickupPoint",
+        date: new Date().toLocaleString("en-US", {
+          month: "short",
+          day: "2-digit",
+          year: "numeric",
+        }),
+      };
+
+      console.log("Creating Stripe payment intent with data:", paymentData);
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_APP_API_URL}/api/payment/create-payment-intent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get("accessToken")}`,
+          },
+          body: JSON.stringify(paymentData),
+        }
+      );
+
+      const { clientSecret, error } = await response.json();
+
+      if (error) {
+        throw new Error(error);
+      }
+
+      // Since we're using the live key, we'll redirect to Stripe Checkout
+      // This is more secure and user-friendly for production
+      const checkoutResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_APP_API_URL}/api/payment/create-checkout-session`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get("accessToken")}`,
+          },
+          body: JSON.stringify({
+            ...paymentData,
+            success_url: `${window.location.origin}/my-orders/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${window.location.origin}/checkout`,
+          }),
+        }
+      );
+
+      const {
+        sessionId,
+        url,
+        error: checkoutError,
+      } = await checkoutResponse.json();
+
+      if (checkoutError) {
+        throw new Error(checkoutError);
+      }
+
+      // Redirect to Stripe Checkout
+      window.location.href = url;
+    } catch (error) {
+      console.error("Stripe payment error:", error);
+      context.alertBox(
+        "error",
+        error.message || "Payment failed. Please try again."
+      );
+    } finally {
+      setIsStripeLoading(false);
+    }
+  };
+
   /* ---------- JSX ---------- */
+  // Prevent hydration mismatch by not rendering until mounted
+  if (!isMounted) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <CircularProgress />
+      </div>
+    );
+  }
+
   return (
     <>
       <Breadcrumb paths={[{ label: `${t("cartPage.checkout")}`, href: "/" }]} />
@@ -1078,6 +1268,32 @@ const Checkout = () => {
                 </div>
 
                 <div className="flex items-center flex-col gap-3 mb-2">
+                  {/* Pay Online Button */}
+                  <Button
+                    type="button"
+                    className="btn-org btn-lg w-full flex gap-2 items-center justify-center"
+                    onClick={payOnline}
+                    disabled={finalAmount <= 0} // Disable if fully paid with wallet
+                  >
+                    {isStripeLoading ? (
+                      <CircularProgress />
+                    ) : (
+                      <>
+                        <FaCreditCard className="text-[20px]" />
+                        <div className="flex flex-col items-center">
+                          <span>Pay Online</span>
+                          {finalAmount > 0 && (
+                            <span className="text-[12px] opacity-90">
+                              Pay {`${getSymbol()}${convertPrice(finalAmount)}`}{" "}
+                              securely with Stripe
+                            </span>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </Button>
+
+                  {/* Cash on Delivery Button */}
                   <Button
                     type="button"
                     className="btn-dark btn-lg w-full flex gap-2 items-center justify-center"
@@ -1199,10 +1415,17 @@ const Checkout = () => {
                         <p className="text-[14px] text-gray-700 !my-0">
                           {coupon.discountType === "percentage"
                             ? `${coupon.discountValue}% off`
-                            : `${coupon.discountValue.toLocaleString("en-US", {
-                                style: "currency",
-                                currency: "USD",
-                              })} off`}{" "}
+                            : `${
+                                isMounted
+                                  ? coupon.discountValue.toLocaleString(
+                                      "en-US",
+                                      {
+                                        style: "currency",
+                                        currency: "USD",
+                                      }
+                                    )
+                                  : `$${coupon.discountValue}`
+                              } off`}{" "}
                           {coupon.maxDiscountAmount
                             ? `(up to ${getSymbol()}${convertPrice(
                                 coupon.maxDiscountAmount
@@ -1217,7 +1440,9 @@ const Checkout = () => {
                         </p>
                         <p className="text-[14px] text-gray-700 !my-0">
                           {t("checkout.expires")}{" "}
-                          {new Date(coupon.expiryDate).toLocaleDateString()}
+                          {isMounted
+                            ? new Date(coupon.expiryDate).toLocaleDateString()
+                            : ""}
                         </p>
                       </div>
                     ))}
